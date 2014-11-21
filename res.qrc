@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="doc-open">document-open.png</file>
+        <file alias="doc-close">document-close.png</file>
+        <file alias="copyI">copy.png</file>
+        <file alias="pasteI">paste.png</file>
+        <file alias="searchI">search.png</file>
+    </qresource>
+</RCC>
