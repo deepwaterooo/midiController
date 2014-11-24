@@ -51,6 +51,13 @@
 #include <QPlainTextEdit>
 #include <QSpinBox>
 #include <QScrollBar>
+#include <QRect>
+#include <QRegion>
+#include <QPoint>
+#include <QPolygon>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QScrollArea>
 
 #include "mainwindow.h"
 
@@ -59,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
 //MainWindow::MainWindow()
 
     setWindowTitle(tr("MIDI Command Interface Main Window"));
-
+    /*
     openAction = new QAction(QIcon(":/images/doc-open"), tr("&Open..."), this);
     openAction->setShortcuts(QKeySequence::Open);
     openAction->setStatusTip(tr("Open an existing .wav file"));
@@ -89,7 +96,9 @@ MainWindow::MainWindow(QWidget *parent)
     toolBar->addAction(openAction5);
 
     statusBar();
+    */
 
+    
     // for main window layout    
     centralWidget = new QWidget();
     this->setCentralWidget(centralWidget);
@@ -97,9 +106,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // for midi keyboard layout hbox
     QHBoxLayout *hbox = new QHBoxLayout();   // for overall layout vbox
-    QLabel* top[13];
+    QLabel* top[15];
     QLabel* bottom[15];
-    for (int i = 0; i < 13; ++i) {        
+    for (int i = 0; i < 15; ++i) {        
         top[i] = new QLabel;
         /*
           top[i]->setStyleSheet("background-color: black;"
@@ -109,19 +118,24 @@ MainWindow::MainWindow(QWidget *parent)
         topKeys[i] = new QPushButton();
         topKeys[i]->setFixedSize(50, 100);
     }
-    top[0]->setText(tr("  10"));
-    top[1]->setText(tr("  11"));
-    top[2]->setText(tr(""));
-    top[3]->setText(tr("  12"));
-    top[4]->setText(tr("Channel"));
-    top[5]->setText(tr("Rotate"));
-    top[6]->setText(tr(""));
-    top[7]->setText(tr(" CoMA"));
-    top[8]->setText(tr("Xpose"));
-    top[9]->setText(tr(""));
-    top[10]->setText(tr(" Rec"));
-    top[11]->setText(tr(" Stop"));
-    top[12]->setText(tr("Play"));
+    topKeys[0]->setFixedSize(20, 100);
+    topKeys[14]->setFixedSize(70, 100);
+
+    top[0]->setText(tr(""));
+    top[1]->setText(tr("    10"));
+    top[2]->setText(tr("    11"));
+    top[3]->setText(tr(""));
+    top[4]->setText(tr("   12"));
+    top[5]->setText(tr("Channel"));
+    top[6]->setText(tr("Rotate"));
+    top[7]->setText(tr(""));
+    top[8]->setText(tr(" CoMA"));
+    top[9]->setText(tr("Xpose"));
+    top[10]->setText(tr(""));
+    top[11]->setText(tr(" Rec"));
+    top[12]->setText(tr(" Stop"));
+    top[13]->setText(tr("Play"));
+    top[14]->setText(tr(""));
     
     for (int i = 0; i < 15; ++i) {        
             bottom[i] = new QLabel;
@@ -148,13 +162,15 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout *topkeys = new QHBoxLayout();
     QHBoxLayout *bottomLabel = new QHBoxLayout();
     QHBoxLayout *bottomkeys = new QHBoxLayout();
-    for (int i = 0; i < 13; ++i) {
+    for (int i = 0; i < 15; ++i) {
         top[i]->setAlignment(Qt::AlignJustify);
         top[i]->setFixedWidth(50);
         topKeys[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
         topLabel->addWidget(top[i]);
         topkeys->addWidget(topKeys[i]);
     }
+    top[0]->setFixedWidth(20);
+    
     for (int i = 0; i < 15; ++i) {        
         bottom[i]->setAlignment(Qt::AlignJustify);
         bottom[i]->setFixedWidth(50);
@@ -163,47 +179,181 @@ MainWindow::MainWindow(QWidget *parent)
         bottomkeys->addWidget(bottomKeys[i]);
     }
     // setflat for several keys
-    topKeys[2]->setFlat(true);
-    topKeys[6]->setFlat(true);
-    topKeys[9]->setFlat(true);
-    // topLabel add one vertial
-    QVBoxLayout *topright = new QVBoxLayout();
-    QLabel* trLabel[4];
-    for (int i = 0; i < 4; ++i) {
-        trLabel[i] = new QLabel;
-    }
-    trLabel[0]->setText(tr("QuNexus"));
-    trLabel[1]->setText(tr("MIDI Expander")); // "MIDI Expander"
-    trLabel[2]->setText(tr("Pedal In"));
-    trLabel[3]->setText(tr("CV 1-2 In"));
-    for (int i = 0; i < 4; ++i) {
-        trLabel[i]->setAlignment(Qt::AlignRight);
-        topright->addWidget(trLabel[i], Qt::AlignRight);
-    }
-    
-    QVBoxLayout *vboxF3 = new QVBoxLayout();
+    topKeys[0]->setFlat(true);
+    topKeys[3]->setFlat(true);
+    topKeys[7]->setFlat(true);
+    topKeys[10]->setFlat(true);
+    topKeys[14]->setFlat(true);
+
     QVBoxLayout *vbox4 = new QVBoxLayout();
-    //QGridLayout *vbox4 = new QGridLayout();   // need grid layout eventually
     vbox4->addLayout(topLabel);
     vbox4->addLayout(topkeys);
-    QHBoxLayout *first = new QHBoxLayout();
-    first->addLayout(vbox4);
-    first->addLayout(topright);
-    vboxF3->addLayout(first);
-    vboxF3->addLayout(bottomkeys);
-    vboxF3->addLayout(bottomLabel);
+    vbox4->addLayout(bottomkeys);
+    vbox4->addLayout(bottomLabel);
 
-    // textbox
+
+    // for leftside circle and other buttons
+    QPushButton *topB[3];
+    QPushButton *midB[3];
+    QPushButton *botB[3];
+    QLabel *topT[3];
+    QLabel *midT[3];
+    QLabel *botT[3];
+    // for circles and triangles
+    QRect *rect = new QRect(0,0,30,30);
+    QRegion *region = new QRegion(*rect, QRegion::Ellipse);
+    // for triangle
+    //QPainter painter2(this); 
+    //painter2.drawPolyline(points, 3);
+    /*
+    QPainter painter(this);   // this ?
+    QPolygon p();
+    p.append( QPoint(10,10) );
+    p.append(QPoint(14,10));
+    p.append(QPoint(12,14));
+    */
+    for (int i = 0; i < 3; ++i) {        
+        topB[i] = new QPushButton();
+        midB[i] = new QPushButton();
+        botB[i] = new QPushButton();
+        topB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
+        midB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
+        botB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
+        topB[i]->setFixedSize(30,30);
+        midB[i]->setFixedSize(30,30);
+        botB[i]->setFixedSize(30,30);
+        topB[i]->setMask(*region);
+        midB[i]->setMask(*region);
+        botB[i]->setMask(*region);
+        topT[i] = new QLabel;
+        midT[i] = new QLabel;
+        botT[i] = new QLabel;
+    }
+    topB[0]->setFlat(true); // make invisible
+    
+    topT[0]->setText("  Shift");
+    topT[1]->setText("Togl A");
+    topT[2]->setText("Velo B");
+    midT[0]->setText("Preset");
+    midT[1]->setText("Pres C");
+    midT[2]->setText("Tilt D");
+    botT[0]->setText("Bend");
+    botT[1]->setText("-Oct");
+    botT[2]->setText("Oct+");
+    
+    // for containing these topleft
+    QHBoxLayout *hbox0 = new QHBoxLayout(); // for layout propose only
+    QHBoxLayout *hbox1 = new QHBoxLayout();
+    QHBoxLayout *hbox2 = new QHBoxLayout();
+    QHBoxLayout *hbox3 = new QHBoxLayout();
+    QHBoxLayout *hbox4 = new QHBoxLayout();
+    QHBoxLayout *hbox5 = new QHBoxLayout();
+    QHBoxLayout *hbox6 = new QHBoxLayout();
+    for (int i = 0; i < 3; ++i) {
+        hbox1->addWidget(topB[i]);
+        hbox2->addWidget(topT[i]);
+        hbox3->addWidget(midB[i]);
+        hbox4->addWidget(midT[i]);
+        hbox5->addWidget(botB[i]);
+        hbox6->addWidget(botT[i]);
+    }
+    QVBoxLayout *topleft = new QVBoxLayout();
+    QPushButton *space = new QPushButton();
+    space->setFixedSize(150, 50);
+    space->setFlat(true);
+    hbox0->addWidget(space);
+    topleft->addLayout(hbox0);
+    topleft->addLayout(hbox1);
+    topleft->addLayout(hbox2);
+    topleft->addLayout(hbox3);
+    topleft->addLayout(hbox4);
+    topleft->addLayout(hbox5);
+    topleft->addLayout(hbox6);
+
+    
+    // textbox  istead of using this one, change to something else
+    /*
     QPlainTextEdit *text = new QPlainTextEdit();
     text->insertPlainText("| Keys     | Commands            |\n| 10        |                     |\n| 11        |                     |\n| 12       |                     |\n| Channel |                     |\n| Rotate  |                     |\n| CoMA    |                     |\n| Xpose   |                     |\n| Rec     |                     |\n| Stop    |                     |\n| Play    |                     |\n| 0       | Call Me Maybe       |\n| 1       | Shake It Off        |\n| 2       | All About That Bass |\n");
     QScrollBar *v = text->verticalScrollBar();
     v->setValue(0);
     //v->setValue(v->maxValue());
-    vboxF3->addWidget(text);
-
+    //vbox4->addWidget(text);   // remove this part temporatorily
+    */
+    //QHBoxLayout *hboxL[33];
+    QLabel *label[33];
+    QPlainTextEdit *edit[33];
+    QPushButton *brow[33];
+    for (int i = 0; i < 33; ++i) {
+        label[i] = new QLabel;
+    }
+    label[0]->setText(tr("     0"));
+    label[1]->setText(tr("     1"));
+    label[2]->setText(tr("     2"));
+    label[3]->setText(tr("     3"));
+    label[4]->setText(tr("     4"));
+    label[5]->setText(tr("     5"));
+    label[6]->setText(tr("     6"));
+    label[7]->setText(tr("     7"));
+    label[8]->setText(tr("     8"));
+    label[9]->setText(tr("     9"));
+    label[10]->setText(tr("  Notes"));
+    label[11]->setText(tr("     CC"));
+    label[12]->setText(tr("  Bend"));
+    label[13]->setText(tr("  AftTch"));
+    label[14]->setText(tr("ChnPres"));
+    label[15]->setText(tr("    10"));
+    label[16]->setText(tr("    11"));
+    label[17]->setText(tr("   12"));
+    label[18]->setText(tr("Channel"));
+    label[19]->setText(tr("Rotate"));
+    label[20]->setText(tr(" CoMA"));
+    label[21]->setText(tr("Xpose"));
+    label[22]->setText(tr(" Rec"));
+    label[23]->setText(tr(" Stop"));
+    label[24]->setText(tr("Play"));
+    label[25]->setText("Togl A");
+    label[26]->setText("Velo B");
+    label[27]->setText("Preset");
+    label[28]->setText("Pres C");
+    label[29]->setText("Tilt D");
+    label[30]->setText("Bend");
+    label[31]->setText("-Oct");
+    label[32]->setText("Oct+");
     
-    // final layout set    
-    vbox->addLayout(vboxF3);   // vbox4 will be updated 
+    // final layout set
+    QHBoxLayout *hboxMidi = new QHBoxLayout();  // for midi keyboard
+    hboxMidi->addLayout(topleft);
+    hboxMidi->addLayout(vbox4);
+    vbox->addLayout(hboxMidi);   // vbox4 will be updated
+
+    // grid with a vertical scrollbar
+    QScrollArea * scrollArea = new QScrollArea();
+    QWidget *contentsWidget = new QWidget(scrollArea);
+    QGridLayout *grid = new QGridLayout(contentsWidget);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(contentsWidget);
+    contentsWidget->setLayout(grid);
+    contentsWidget->setMinimumSize(scrollArea->width(), scrollArea->height());
+    grid->setHorizontalSpacing(2);
+    grid->setVerticalSpacing(2);
+    
+    for (int i = 0; i < 33; ++i) {
+        label[i]->setFixedWidth(100);
+        label[i]->setAlignment(Qt::AlignRight);
+        edit[i] = new QPlainTextEdit;
+        brow[i] = new QPushButton(QIcon(":/images/doc-open"), tr("&Browse"));
+        edit[i]->setFont(QFont ("Courier", 10));
+        setHeight(edit[i], 2);
+        //brow[i]->setFixedSize(80, 25);
+        brow[i]->setFixedWidth(80);
+        grid->addWidget(label[i], i, 0);
+        grid->addWidget(edit[i], i, 1);
+        grid->addWidget(brow[i], i, 2);
+    }
+    // Make the scroll step the same width as the fixed widgets in the grid
+    //grid->verticalScrollBar()->setSingleStep(contentsWidget->height() / 33);
+    vbox->addWidget(scrollArea);
     centralWidget->setLayout(vbox);
 }
 

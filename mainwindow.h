@@ -8,11 +8,11 @@
 #include <QDialogButtonBox>
 #include <QPlainTextEdit>
 
-/*
-  namespace Ui {
-  class MainWindow;
-  }
-*/
+static const QPointF points[3] = {
+    QPointF(10.0, 80.0),
+    QPointF(20.0, 10.0),
+    QPointF(80.0, 30.0)
+};
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -21,9 +21,11 @@ class MainWindow : public QMainWindow {
  public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    //void paintEvent( QPaintEvent* event );
+    void setHeight(QPlainTextEdit *edit, int nRows);
+
  private:
     void open();
-    void setHeight(QPlainTextEdit *edit, int nRows);
     
     enum { NumGridRows = 12, NumButtons = 6 };
 
@@ -40,7 +42,7 @@ class MainWindow : public QMainWindow {
     QDialogButtonBox *buttonBox;
 
     // for layoutw
-    QPushButton* topKeys[13];
+    QPushButton* topKeys[15];
     QPushButton* bottomKeys[15];
     
 };
