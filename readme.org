@@ -53,9 +53,9 @@
   - I believe C++ is the most widely used Language used by those midi sequencer softwares, so I have no better choice than c++ right now. 
     
 * Interface Design
-  [[./menu.png]]
+  [[./pic/menu.png]]
   
-  [[./midi.jpg]]
+  [[./pic/midi.jpg]]
   
 * Midi keys and corresponded operations
   #+caption: midi keys and corresponded operations
