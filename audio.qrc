@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/snd">
+        <file>Surfinusa.wav</file>
+    </qresource>
+</RCC>

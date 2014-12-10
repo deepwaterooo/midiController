@@ -1,5 +1,6 @@
-#include <QAction>
-#include <QMenuBar>
+#include "mainwindow.h"
+
+#include <QObject>
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QToolBar>
@@ -44,7 +45,6 @@
 #include <QFile>
 #include <QString>
 #include <string>
-#include <QObject>
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QMainWindow>
@@ -58,46 +58,108 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QScrollArea>
+#include <stdlib.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <QDebug>
+#include <QSound>
+//#include <phonon>
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-        : QMainWindow(parent) {
-//MainWindow::MainWindow()
+/*
+  void* threadFunction(void*) {
+  int status;            
+  while (1) {
+  char* fd = (char*)("/dev/snd/midiC1D0");
+  status = open(fd, O_RDONLY, 0);
+  if (status < 0) {
+  printf("Error reading %s\n", MIDI_DEVICE);
+  exit(1);
+  }
+  int bytes_read = read(status, &inbytes, sizeof(inbytes));
+  if (bytes_read < 0) {
+  qDebug("Error reading %s\n", MIDI_DEVICE);
+  exit(1);
+  }
+  if (inbytes[1] != 0) {            
+  for (int i = 0; i < 4; ++i) {            
+  qDebug("received MIDI byte: ", inbytes[i]);
+  }
+  }
+  }
+  }
+*/
 
-    setWindowTitle(tr("MIDI Command Interface Main Window"));
+void MainWindow::playSurfUSA() {
+    QSound::play(":/snd/Surfinusa.wav");
     /*
-    openAction = new QAction(QIcon(":/images/doc-open"), tr("&Open..."), this);
-    openAction->setShortcuts(QKeySequence::Open);
-    openAction->setStatusTip(tr("Open an existing .wav file"));
-    connect(openAction, &QAction::triggered, this, &MainWindow::open);
+    mediaObject = new Phonon::MediaObject(this);
+    mediaObject->setCurrentSource(Phonon::MediaSource(":/snd/Surfinusa.wav"));
+    Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+    Phonon::Path path = Phonon::createPath(mediaObject, audioOutput);
+    Phonon::SeekSlider *seekSlider = new Phonon::SeekSlider(mediaObject, this);
+    mediaObject->play();
+    */
+}
 
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(openAction);
-    QMenu *edit = menuBar()->addMenu(tr("&Edit"));
-    QMenu *insert = menuBar()->addMenu(tr("&Insert"));
-    QMenu *animate = menuBar()->addMenu(tr("&Practice"));
-    QMenu *view = menuBar()->addMenu(tr("&View"));
-    QMenu *help = menuBar()->addMenu(tr("&Docus"));
-    QMenu *about = menuBar()->addMenu(tr("&Help"));
-
-    openAction2 = new QAction(QIcon(":/images/doc-close"), tr("&Close..."), this);
-    openAction3 = new QAction(QIcon(":/images/searchI"), tr("&Search..."), this);
-    openAction4 = new QAction(QIcon(":/images/copyI"), tr("&Copy..."), this);
-    openAction5 = new QAction(QIcon(":/images/pasteI"), tr("&Paste..."), this);
-    openAction2->setShortcuts(QKeySequence::Close);
-    openAction2->setStatusTip(tr("Close an existing .wav file"));
-
-    toolBar = addToolBar(tr("&File"));
-    toolBar->addAction(openAction);
-    toolBar->addAction(openAction2);
-    toolBar->addAction(openAction3);
-    toolBar->addAction(openAction4);
-    toolBar->addAction(openAction5);
-
-    statusBar();
+void MainWindow::readFromDevice() {
+    int fd;          
+    //fd = open(MIDI_DEVICE, O_RDONLY);
+    char* device = (char*)("/dev/snd/midiC1D0");
+    fd = open(device, O_RDONLY, 0);
+    if (fd == -1) {
+        qDebug("Error: cannot open \n");
+        exit(1);
+    }
+    /*
+      pthread_t midiInThread;
+      int status = pthread_create(&midiInThread, NULL, threadFunction, NULL);
+      if (status == -1) {
+      printf("Error: unable to create MIDI input thread.\n");
+      exit(1);
+      }
     */
 
+    int cnt = 0;
+    while (cnt < 3) {
+        int bytes_read = read(fd, &inbytes, sizeof(inbytes));
+        while (bytes_read < 0) {
+            qDebug("Error reading %s\n", MIDI_DEVICE);
+            bytes_read = read(fd, &inbytes, sizeof(inbytes));
+        }
+        if (inbytes[1] == 60) {            
+            bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(0,0,255)}");
+            playSurfUSA();
+            idol(3);
+            return;
+        }
+    }
+}
+
+void MainWindow::idol(int x) {
+    //sleep(x);
+    QEventLoop loop;
+    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
+    loop.exec();
+    bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
+}
+
+// speciall work on bottomKeys[7] for playing one sequence
+// 1. create a thread to read from device, and scanning for the input values;
+// 2. if scanned value == 59 (key indexed 7), do the folloring:
+//    a, paint the GUI key color to be blue;
+//    b, write back to device to light LED on for the key;
+//    c, trigger the playing audio file
+//    d, when audio file done, light LED off
+void MainWindow::oneKeyClicked() {
+    readFromDevice();
+}
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent) {
+    setWindowTitle(tr("MIDI Command Interface Main Window"));
     
     // for main window layout    
     centralWidget = new QWidget();
@@ -110,17 +172,11 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel* bottom[15];
     for (int i = 0; i < 15; ++i) {        
         top[i] = new QLabel;
-        /*
-          top[i]->setStyleSheet("background-color: black;"
-          "qproperty-alignment: AlignCenter;"
-          "qproperty-wordWrap: false;");
-        */
         topKeys[i] = new QPushButton();
         topKeys[i]->setFixedSize(50, 100);
     }
     topKeys[0]->setFixedSize(20, 100);
     topKeys[14]->setFixedSize(70, 100);
-
     top[0]->setText(tr(""));
     top[1]->setText(tr("    10"));
     top[2]->setText(tr("    11"));
@@ -136,11 +192,10 @@ MainWindow::MainWindow(QWidget *parent)
     top[12]->setText(tr(" Stop"));
     top[13]->setText(tr("Play"));
     top[14]->setText(tr(""));
-    
     for (int i = 0; i < 15; ++i) {        
-            bottom[i] = new QLabel;
-            bottomKeys[i] = new QPushButton();
-            bottomKeys[i]->setFixedSize(50, 100);
+        bottom[i] = new QLabel;
+        bottomKeys[i] = new QPushButton();
+        bottomKeys[i]->setFixedSize(50, 100);
     }
     bottom[0]->setText(tr("     0"));
     bottom[1]->setText(tr("     1"));
@@ -157,7 +212,6 @@ MainWindow::MainWindow(QWidget *parent)
     bottom[12]->setText(tr("  Bend"));
     bottom[13]->setText(tr("  AftTch"));
     bottom[14]->setText(tr("ChnPres"));
-
     QHBoxLayout *topLabel = new QHBoxLayout();
     QHBoxLayout *topkeys = new QHBoxLayout();
     QHBoxLayout *bottomLabel = new QHBoxLayout();
@@ -170,7 +224,6 @@ MainWindow::MainWindow(QWidget *parent)
         topkeys->addWidget(topKeys[i]);
     }
     top[0]->setFixedWidth(20);
-    
     for (int i = 0; i < 15; ++i) {        
         bottom[i]->setAlignment(Qt::AlignJustify);
         bottom[i]->setFixedWidth(50);
@@ -185,12 +238,23 @@ MainWindow::MainWindow(QWidget *parent)
     topKeys[10]->setFlat(true);
     topKeys[14]->setFlat(true);
 
+    // speciall work on bottomKeys[7] for playing one sequence
+    // 1. create a thread to read from device, and scanning for the input values;
+    // 2. if scanned value == 59 (key indexed 7), do the folloring:
+    //    a, paint the GUI key color to be blue;
+    //    b, write back to device to light LED on for the key;
+    //    c, trigger the playing audio file
+    //    d, when audio file done, light LED off
+    connect(bottomKeys[7], SIGNAL(released()), this, SLOT(oneKeyClicked()));
+
+
+
+    
     QVBoxLayout *vbox4 = new QVBoxLayout();
     vbox4->addLayout(topLabel);
     vbox4->addLayout(topkeys);
     vbox4->addLayout(bottomkeys);
     vbox4->addLayout(bottomLabel);
-
 
     // for leftside circle and other buttons
     QPushButton *topB[3];
@@ -206,11 +270,11 @@ MainWindow::MainWindow(QWidget *parent)
     //QPainter painter2(this); 
     //painter2.drawPolyline(points, 3);
     /*
-    QPainter painter(this);   // this ?
-    QPolygon p();
-    p.append( QPoint(10,10) );
-    p.append(QPoint(14,10));
-    p.append(QPoint(12,14));
+      QPainter painter(this);   // this ?
+      QPolygon p();
+      p.append( QPoint(10,10) );
+      p.append(QPoint(14,10));
+      p.append(QPoint(12,14));
     */
     for (int i = 0; i < 3; ++i) {        
         topB[i] = new QPushButton();
@@ -271,15 +335,6 @@ MainWindow::MainWindow(QWidget *parent)
     topleft->addLayout(hbox6);
 
     
-    // textbox  istead of using this one, change to something else
-    /*
-    QPlainTextEdit *text = new QPlainTextEdit();
-    text->insertPlainText("| Keys     | Commands            |\n| 10        |                     |\n| 11        |                     |\n| 12       |                     |\n| Channel |                     |\n| Rotate  |                     |\n| CoMA    |                     |\n| Xpose   |                     |\n| Rec     |                     |\n| Stop    |                     |\n| Play    |                     |\n| 0       | Call Me Maybe       |\n| 1       | Shake It Off        |\n| 2       | All About That Bass |\n");
-    QScrollBar *v = text->verticalScrollBar();
-    v->setValue(0);
-    //v->setValue(v->maxValue());
-    //vbox4->addWidget(text);   // remove this part temporatorily
-    */
     //QHBoxLayout *hboxL[33];
     QLabel *label[33];
     QPlainTextEdit *edit[33];
@@ -365,7 +420,40 @@ void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) {
 
 MainWindow::~MainWindow() {
 }
+/*
+  void MainWindow::open() {
+  QMessageBox::information(this, tr("Information"), tr("Open"));
+  }
+*/
+/*
+  openAction = new QAction(QIcon(":/images/doc-open"), tr("&Open..."), this);
+  openAction->setShortcuts(QKeySequence::Open);
+  openAction->setStatusTip(tr("Open an existing .wav file"));
+  connect(openAction, &QAction::triggered, this, &MainWindow::open);
 
-void MainWindow::open() {
-    QMessageBox::information(this, tr("Information"), tr("Open"));
-}
+  QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+  fileMenu->addAction(openAction);
+  QMenu *edit = menuBar()->addMenu(tr("&Edit"));
+  QMenu *insert = menuBar()->addMenu(tr("&Insert"));
+  QMenu *animate = menuBar()->addMenu(tr("&Practice"));
+  QMenu *view = menuBar()->addMenu(tr("&View"));
+  QMenu *help = menuBar()->addMenu(tr("&Docus"));
+  QMenu *about = menuBar()->addMenu(tr("&Help"));
+
+  openAction2 = new QAction(QIcon(":/images/doc-close"), tr("&Close..."), this);
+  openAction3 = new QAction(QIcon(":/images/searchI"), tr("&Search..."), this);
+  openAction4 = new QAction(QIcon(":/images/copyI"), tr("&Copy..."), this);
+  openAction5 = new QAction(QIcon(":/images/pasteI"), tr("&Paste..."), this);
+  openAction2->setShortcuts(QKeySequence::Close);
+  openAction2->setStatusTip(tr("Close an existing .wav file"));
+
+  toolBar = addToolBar(tr("&File"));
+  toolBar->addAction(openAction);
+  toolBar->addAction(openAction2);
+  toolBar->addAction(openAction3);
+  toolBar->addAction(openAction4);
+  toolBar->addAction(openAction5);
+
+  statusBar();
+*/
+

@@ -5,15 +5,24 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsProxyWidget>
 #include <QtGui>
+
 #include "mainwindow.h"
+//#include "play.h"
 
-int main(int argc, char *argv[])
-{
+//unsigned char inbytes[4];
+
+int main(int argc, char *argv[]) {
+    
     QApplication a(argc, argv);
-
     MainWindow w;
     w.show();
-
+    /*
+    //if (inbytes[1] != 0) {            
+        for (int i = 0; i < 4; ++i) {            
+            qDebug("received MIDI byte: %d\n", inbytes[i]);
+        }
+        //}
+        */
     /*
     // doesn't work here
     // try QGraphicsScene for QPushButton triangle
