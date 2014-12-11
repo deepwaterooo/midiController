@@ -248,13 +248,29 @@ MainWindow::MainWindow(QWidget *parent)
     connect(bottomKeys[7], SIGNAL(released()), this, SLOT(oneKeyClicked()));
 
 
-
-    
+    // add slider and MyDoubleSpinBox for seekslider
+    QSlider *slider02 = new QSlider(Qt::Horizontal, this);
+    slider02->setRange(0, 149);
+    //slider02->setRange(0, 0);
+    MyDoubleSpinBox *b02 = new MyDoubleSpinBox;
+    //QSpinBox *b02 = new QSpinBox(this);
+    b02->setRange(0.000,149);
+    b02->setSingleStep(1.0);
+    b02->setValue(0);   
+    QObject::connect(slider02, &QSlider::valueChanged, b02, &MyDoubleSpinBox::setValue);
+    void (MyDoubleSpinBox::*spinBoxSignal)(double) = &MyDoubleSpinBox::valueChanged;
+    QObject::connect(b02, spinBoxSignal, slider02, &QSlider::setValue);
+    /*
+    QEventLoop loop;
+    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
+    loop.exec();
+    */
     QVBoxLayout *vbox4 = new QVBoxLayout();
     vbox4->addLayout(topLabel);
     vbox4->addLayout(topkeys);
     vbox4->addLayout(bottomkeys);
     vbox4->addLayout(bottomLabel);
+
 
     // for leftside circle and other buttons
     QPushButton *topB[3];
@@ -382,6 +398,14 @@ MainWindow::MainWindow(QWidget *parent)
     hboxMidi->addLayout(vbox4);
     vbox->addLayout(hboxMidi);   // vbox4 will be updated
 
+    QHBoxLayout *hbox02 = new QHBoxLayout();
+    hbox02->addWidget(slider02);
+    hbox02->addWidget(b02);
+    vbox->addStretch(1);
+    vbox->addLayout(hbox02);
+    // the very first part
+
+
     // grid with a vertical scrollbar
     QScrollArea * scrollArea = new QScrollArea();
     QWidget *contentsWidget = new QWidget(scrollArea);
@@ -406,6 +430,9 @@ MainWindow::MainWindow(QWidget *parent)
         grid->addWidget(edit[i], i, 1);
         grid->addWidget(brow[i], i, 2);
     }
+    edit[7]->setFont(QFont ("Courier", 10));
+    setHeight(edit[7], 2);
+    edit[7]->insertPlainText("Surfinusa.wav");
     // Make the scroll step the same width as the fixed widgets in the grid
     //grid->verticalScrollBar()->setSingleStep(contentsWidget->height() / 33);
     vbox->addWidget(scrollArea);

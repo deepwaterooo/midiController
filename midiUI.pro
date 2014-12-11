@@ -15,9 +15,11 @@ CONFIG += console
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    myDoubleSpinBox.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    myDoubleSpinBox.h
 
 
 RESOURCES += \

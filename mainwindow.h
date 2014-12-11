@@ -10,7 +10,7 @@
 //#include <QSound>
 //#include <phonon>
 
-//#include "space.h"
+#include "myDoubleSpinBox.h"
 
 #define MIDI_DEVICE "/dev/snd/midiC1D0"
 /*

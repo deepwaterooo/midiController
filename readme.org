@@ -3,6 +3,12 @@
 #+title: MIDI Command Controller Interface
 #+author: Heyan Huang
 
+* Update 12/11/2014, updates include
+- Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
+- This seekslider may still eventually came back to use Phonon library using Qt4.8 version;
+- So far consider this as a bonux feature;
+[[./pic/Screenshot_from_2014-12-11_13:33:46.png]]
+
 * Update 12/09/2014, updates include
 - worked in it a little bit to set the connections between Midi controller and Qt Creator;
 - tried to implement pthead for reading user input, but got slightly frustrated today, and applied easier methods instead;
@@ -176,3 +182,4 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - Phonon
   - http://bbs.qter.org/forum.php?mod=viewthread&tid=784
   - seek slider: http://pencil-animation.org/forum/viewtopic.php?id=672
+- 

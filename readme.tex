@@ -1,4 +1,4 @@
-% Created 2014-12-09 Tue 22:50
+% Created 2014-12-11 Thu 13:35
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -33,8 +33,17 @@
 \tableofcontents
 
 
-\section{Update 12/09/2014, updates include}
+\section{Update 12/11/2014, updates include}
 \label{sec-1}
+\begin{itemize}
+\item Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
+\item This seekslider may still eventually came back to use Phonon library using Qt4.8 version;
+\item So far consider this as a bonux feature;
+\end{itemize}
+\includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2014-12-11_13:33:46.png}
+
+\section{Update 12/09/2014, updates include}
+\label{sec-2}
 \begin{itemize}
 \item worked in it a little bit to set the connections between Midi controller and Qt Creator;
 \item tried to implement pthead for reading user input, but got slightly frustrated today, and applied easier methods instead;
@@ -43,7 +52,7 @@
 \end{itemize}
 
 \section{Update 11/23/2014, updates include}
-\label{sec-2}
+\label{sec-3}
 \begin{itemize}
 \item Cleaned repository so that it looks clean and nice;
 \item Remove menubar as suggested by advisor;
@@ -58,9 +67,9 @@
 \includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2014-11-23_13:20:06.png}  
 
 \section{Review 11/21/2014, updates include}
-\label{sec-3}
+\label{sec-4}
 \subsection{Review Contents}
-\label{sec-3-1}
+\label{sec-4-1}
 \begin{itemize}
 \item Created most basic interface for the client, and reviewed with course instructor.
 \item Demo the most basic interface to him, and get corresponding specific requirements as listed followed.
@@ -69,7 +78,7 @@
 \includegraphics[width=.9\linewidth]{./pic/2014-11-20_21:52:19.png}
 
 \subsection{Detailed Requirements}
-\label{sec-3-2}
+\label{sec-4-2}
 \begin{itemize}
 \item menubar is NOT necessary, and could be removed away;
 \item Interface topright four line texts are not necessary, could be removed away;
@@ -80,22 +89,22 @@
 \end{itemize}
 
 \section{Project Requirements}
-\label{sec-4}
+\label{sec-5}
 \begin{itemize}
 \item Use QuNexus Midi controller as a command controller to manipulate play sequence for tower lights show;
 \item Besides the main functionalities, create a Qt Creator Interface to help facilate the tower light playing process for clients convenience.
 \end{itemize}
 
 \section{main functionality}
-\label{sec-5}
+\label{sec-6}
 \subsection{Read data from MIDI}
-\label{sec-5-1}
+\label{sec-6-1}
 \begin{itemize}
 \item Use the MIDI Controller as a speical Controller that can be operated to play specific songs sequence, or do some specific work.
 \item play specific sequence may be the work for keys 0-9, and 10-12, how about other 20 keys? Do they require specific work to be done?
 \end{itemize}
 \subsection{Write data back to MIDI}
-\label{sec-5-2}
+\label{sec-6-2}
 \begin{itemize}
 \item When a key was pushed, the specific Controller key's LED is supposed to be on to indicate the operation.
 \item Trick about the LED to be continuously on is that when a key is pressed, that is 1 byte that indicates the "Duration" of the key press, I may need to 
@@ -107,27 +116,27 @@
 \end{itemize}
 
 \section{Programming Language}
-\label{sec-6}
+\label{sec-7}
 \subsection{Qt}
-\label{sec-6-1}
+\label{sec-7-1}
 \begin{itemize}
 \item the worries that I have by using Qt is that if Qt has the capability to handle the MIDI-Linux connection problems.
 \item And also Qt-to-Audio (linux) connection things as well. Should it be Qt, or as far as I can set it to work in Linux, just let it be that way then?
 \end{itemize}
 \subsection{c++}
-\label{sec-6-2}
+\label{sec-7-2}
 \begin{itemize}
 \item I believe C++ is the most widely used Language used by those midi sequencer softwares, so I have no better choice than c++ right now.
 \end{itemize}
 
 \section{Interface Design}
-\label{sec-7}
+\label{sec-8}
 \includegraphics[width=.9\linewidth]{./pic/menu.png}
 
 \includegraphics[width=.9\linewidth]{./pic/midi.jpg}
 
 \section{Midi keys and corresponded operations}
-\label{sec-8}
+\label{sec-9}
 \begin{table}[htb]
 \caption{midi keys and corresponded operations}
 \centering
@@ -176,14 +185,14 @@ Oct+ & \\
 \end{table}
 
 \section{Interface Guide}
-\label{sec-9}
+\label{sec-10}
 \begin{itemize}
 \item Give text instructions on how to use the Interface, and what are the corresponded operations by press specific keys.
 \item Like list the above table in the Interface Guide text area.
 \end{itemize}
 
 \section{References}
-\label{sec-10}
+\label{sec-11}
 \begin{itemize}
 \item For circle QPushButton
 \begin{itemize}
@@ -292,6 +301,7 @@ unable to open ftdi (xbee) device: -3 (device not found)
 \item \url{http://bbs.qter.org/forum.php?mod=viewthread&tid=784}
 \item seek slider: \url{http://pencil-animation.org/forum/viewtopic.php?id=672}
 \end{itemize}
+\item 
 \end{itemize}
 % Emacs 24.3.1 (Org mode 8.2.7c)
 \end{document}
