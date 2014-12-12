@@ -130,7 +130,8 @@ void MainWindow::readFromDevice() {
             bytes_read = read(fd, &inbytes, sizeof(inbytes));
         }
         if (inbytes[1] == 60) {            
-            bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(0,0,255)}");
+            //bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(0,0,255)}");
+            bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
             playSurfUSA();
             idol(3);
             return;

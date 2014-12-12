@@ -8,7 +8,7 @@
 - Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
 - This seekslider may still eventually came back to use Phonon library using Qt4.8 version;
 - So far consider this as a bonus feature;
-[[./pic/Screenshot_from_2014-12-11_13:33:46.png]]
+[[./pic/Screenshot_from_2014-12-11_17:34:24.png]]
 ** review
 - Because of lack Xbee modules (needs devices from intstructor), so far playing only .wav file is ok;
 - It is basic, setting one buttone to work only, without any threads yet, but will expend it to be better during spring semester.
