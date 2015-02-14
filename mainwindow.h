@@ -7,10 +7,15 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QPlainTextEdit>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QList>
 //#include <QSound>
 //#include <phonon>
 
 #include "myDoubleSpinBox.h"
+#include "DrawLabel.h"
+#include "renderarea.h"
 
 #define MIDI_DEVICE "/dev/snd/midiC1D0"
 /*
@@ -46,6 +51,9 @@ class MainWindow : public QMainWindow {
         QDialogButtonBox *buttonBox;
         QPushButton* topKeys[15];
         QPushButton* bottomKeys[15];
+        QList<RenderArea*> renderAreas;
+        //QGraphicsScene *scene;
+        //QGraphicsView *view;
  public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();

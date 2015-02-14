@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include <QGraphicsProxyWidget>
 #include <QObject>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -65,6 +66,7 @@
 #include <QDebug>
 #include <QSound>
 //#include <phonon>
+#include <QGraphicsScene>
 
 #include "mainwindow.h"
 
@@ -293,6 +295,61 @@ MainWindow::MainWindow(QWidget *parent)
       p.append(QPoint(14,10));
       p.append(QPoint(12,14));
     */
+
+    QPainter painter(this);
+    painter.drawConvexPolygon(points, 3);
+     QPainterPath roundRectPath;
+     roundRectPath.moveTo(80.0, 35.0);
+     roundRectPath.arcTo(70.0, 30.0, 10.0, 10.0, 0.0, 90.0);
+     roundRectPath.lineTo(25.0, 30.0);
+     roundRectPath.arcTo(20.0, 30.0, 10.0, 10.0, 90.0, 90.0);
+     roundRectPath.lineTo(20.0, 65.0);
+     roundRectPath.arcTo(20.0, 60.0, 10.0, 10.0, 180.0, 90.0);
+     roundRectPath.lineTo(75.0, 70.0);
+     roundRectPath.arcTo(70.0, 60.0, 10.0, 10.0, 270.0, 90.0);
+     roundRectPath.closeSubpath();
+     QPainterPath rectPath;
+     /*     rectPath.moveTo(10.0, 15);
+     rectPath.lineTo(50.0, 15);
+     rectPath.lineTo(50, 45);
+     rectPath.lineTo(10.0, 45);
+     rectPath.closeSubpath(); */
+     QRect boundingRect(2, 0, 60, 60);
+     rectPath.moveTo(6.0, 15);
+     rectPath.lineTo(58.0, 15);
+     //rectPath.moveTo(boundingRect.center());
+     rectPath.arcTo(boundingRect, 30, -60);
+     rectPath.lineTo(6.0, 45);
+     //rectPath.moveTo(boundingRect.center());
+     rectPath.arcTo(boundingRect, 210, -60);
+     QPainterPath triLftPath;
+     triLftPath.moveTo(41, 15);
+     triLftPath.lineTo(15, 30);
+     triLftPath.lineTo(41, 45);
+     triLftPath.closeSubpath();
+     QPainterPath triRitPath;
+     triRitPath.moveTo(5, 15);
+     triRitPath.lineTo(31, 30);
+     triRitPath.lineTo(5, 45);
+     triRitPath.closeSubpath();
+     renderAreas.push_back(new RenderArea(rectPath));
+     renderAreas.push_back(new RenderArea(triLftPath));
+     renderAreas.push_back(new RenderArea(triRitPath));
+    /*
+    QPainterPath roundRect = roundRectPath(option->rect);
+    int radius = qMin(width, height) / 2;
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->fillPath(roundRect, brush);
+    view = new QGraphicsView(this);
+    scene = new QGraphicsScene();
+    view->setGeometry(QRect(60, 20, 24, 24));
+    //DrawLabel *triangle = new DrawLabel();
+    //QRegion *r2 = new QRegion(*triangle);
+    view->setScene(scene);
+    //scene->addPath(roundRectPath, QPen(Qt::black), QBrush(QColor(255, 255, 255)));
+    //scene->addPath(triPath, QPen(Qt::black), QBrush(QColor(255, 255, 255)));
+    */
     for (int i = 0; i < 3; ++i) {        
         topB[i] = new QPushButton();
         midB[i] = new QPushButton();
@@ -305,7 +362,7 @@ MainWindow::MainWindow(QWidget *parent)
         botB[i]->setFixedSize(30,30);
         topB[i]->setMask(*region);
         midB[i]->setMask(*region);
-        botB[i]->setMask(*region);
+        //botB[i]->setMask(*region);
         topT[i] = new QLabel;
         midT[i] = new QLabel;
         botT[i] = new QLabel;
@@ -335,9 +392,16 @@ MainWindow::MainWindow(QWidget *parent)
         hbox2->addWidget(topT[i]);
         hbox3->addWidget(midB[i]);
         hbox4->addWidget(midT[i]);
-        hbox5->addWidget(botB[i]);
+        //hbox5->addWidget(botB[i]);
         hbox6->addWidget(botT[i]);
     }
+    //hbox5->addWidget(view);
+    int i = 0;
+    for(QList<RenderArea*>::iterator it = renderAreas.begin(); it != renderAreas.end(); it++, i++) {
+        (*it)->setFillGradient(QColor(255, 255, 255), QColor(255, 255, 255));
+        hbox5->addWidget(*it, Qt::AlignCenter);        
+    }
+    hbox5->setSpacing(0);
     QVBoxLayout *topleft = new QVBoxLayout();
     QPushButton *space = new QPushButton();
     space->setFixedSize(150, 50);
@@ -448,6 +512,7 @@ void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) {
 
 MainWindow::~MainWindow() {
 }
+
 /*
   void MainWindow::open() {
   QMessageBox::information(this, tr("Information"), tr("Open"));

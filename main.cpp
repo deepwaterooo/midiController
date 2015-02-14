@@ -8,15 +8,23 @@
 
 #include "mainwindow.h"
 //#include "play.h"
+#include "DrawLabel.h"
 
 //unsigned char inbytes[4];
 
 int main(int argc, char *argv[]) {
-    
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
+
     /*
+    QApplication a(argc, argv);
+    DrawLabel dl;
+    dl.resize(60,100);
+    dl.show();
+
+    
     //if (inbytes[1] != 0) {            
         for (int i = 0; i < 4; ++i) {            
             qDebug("received MIDI byte: %d\n", inbytes[i]);

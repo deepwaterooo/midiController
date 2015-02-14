@@ -3,6 +3,18 @@
 #+title: MIDI Command Controller Interface
 #+author: Heyan Huang
 
+* Update 2/12/2014, Thursday,  updates include
+** updates
+- Didn't start until this week was mainly before the foot court work
+  had waited more than one week to get docs processed, and waiting for
+  work Schedule before Scheduling with advisor, and advisor approved
+  it. 
+- Scheduled Wednesday 12:30-1:30pm to meet advisor weekly, and will
+  update at least once a week to record progress.
+- For coming week's meeting, advisor suggested to get more keys
+  combines with songs in the normal 25 key set besides the finished
+  one. 
+- Today got the Rectangle/Triangle shapes work and ready. 
 * Update 12/11/2014, updates include
 ** updates
 - Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
@@ -122,43 +134,43 @@
   - Like list the above table in the Interface Guide text area. 
     
 * References
-- For circle QPushButton
-  - http://stackoverflow.com/questions/12734319/change-rectangular-qt-button-to-round
-- Draw circle separate
-  - https://coderalbert.wordpress.com/2014/03/16/creating-circle-in-linux-using-qt-creator/
-- For Rectangle Arc
-  - http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget
-- PaintEvent Triangle
-  - http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget
-  - http://stackoverflow.com/questions/3894737/qt4-how-to-draw-inside-a-widget
-  - http://qt-project.org/forums/viewthread/1623
-  - http://stackoverflow.com/questions/7968269/basic-qt-gui-qpushbutton-for-drawing-a-line
-- QPushButton::drawButton(QPainter *painter);
-  - https://www.tbi.univie.ac.at/~pmg/tutorials/QT/html/qpushbutton.html
-- QGraphicsSene QGraphicsProxy...
-  - http://qt-project.org/forums/viewthread/4020
-- QPushButton raised enabled
-  - http://www.qtcentre.org/threads/42852-QStyledItemDelegate-paint-QPushButton-with-stylesheet
-- QPushButton two icons
-  - http://www.qtcentre.org/threads/39445-How-to-add-two-icons-images-to-the-same-QPushButton
-- QPainter
-  - http://qt-project.org/forums/viewthread/23628
-- QGridLayout ScrollArea
-  - http://qt-project.org/forums/viewthread/20843
-  - http://qt-project.org/forums/viewthread/20924/
-- Linux Midi
-  - https://ccrma.stanford.edu/~craig/articles/linuxmidi/input/section1.html
-  - https://ccrma.stanford.edu/~craig/articles/linuxmidi/
-- Open device
-  - http://pubs.opengroup.org/onlinepubs/009695399/functions/open.html
-- Qt QIODevice
-  - http://doc.qt.digia.com/qq/qq12-iodevice.html
-  - http://stackoverflow.com/questions/14821792/what-does-file-openqiodevicereadonly-mean
-- Qt Debugging
-  - https://bbs.archlinux.org/viewtopic.php?id=174523
-  - http://www.qtcentre.org/threads/53549-connect()-terminates-the-program
-- pulseaudio linux mint
-  - http://community.linuxmint.com/software/view/pulseaudio
+** For circle QPushButton
+- http://stackoverflow.com/questions/12734319/change-rectangular-qt-button-to-round
+** Draw circle separate
+- https://coderalbert.wordpress.com/2014/03/16/creating-circle-in-linux-using-qt-creator/
+** For Rectangle Arc
+- http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget
+** PaintEvent Triangle
+- http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget
+- http://stackoverflow.com/questions/3894737/qt4-how-to-draw-inside-a-widget
+- http://qt-project.org/forums/viewthread/1623
+- http://stackoverflow.com/questions/7968269/basic-qt-gui-qpushbutton-for-drawing-a-line
+** QPushButton::drawButton(QPainter *painter);
+- https://www.tbi.univie.ac.at/~pmg/tutorials/QT/html/qpushbutton.html
+** QGraphicsSene QGraphicsProxy...
+- http://qt-project.org/forums/viewthread/4020
+** QPushButton raised enabled
+- http://www.qtcentre.org/threads/42852-QStyledItemDelegate-paint-QPushButton-with-stylesheet
+** QPushButton two icons
+- http://www.qtcentre.org/threads/39445-How-to-add-two-icons-images-to-the-same-QPushButton
+** QPainter
+- http://qt-project.org/forums/viewthread/23628
+** QGridLayout ScrollArea
+- http://qt-project.org/forums/viewthread/20843
+- http://qt-project.org/forums/viewthread/20924/
+** Linux Midi
+- https://ccrma.stanford.edu/~craig/articles/linuxmidi/input/section1.html
+- https://ccrma.stanford.edu/~craig/articles/linuxmidi/
+** Open device
+- http://pubs.opengroup.org/onlinepubs/009695399/functions/open.html
+** Qt QIODevice
+- http://doc.qt.digia.com/qq/qq12-iodevice.html
+- http://stackoverflow.com/questions/14821792/what-does-file-openqiodevicereadonly-mean
+** Qt Debugging
+- https://bbs.archlinux.org/viewtopic.php?id=174523
+- http://www.qtcentre.org/threads/53549-connect()-terminates-the-program
+** pulseaudio linux mint
+- http://community.linuxmint.com/software/view/pulseaudio
   #+begin_src
 towerplayer  ./towerplayer Surfinusa.wav surfinUSA.tan
 Loading Surfinusa.wav
@@ -169,15 +181,21 @@ Done reading tan file!
 Checking for fast nodes
 unable to open ftdi (xbee) device: -3 (device not found)
   #+end_src
-- QSound example
-  - http://doc.qt.digia.com/3.3/sound-example.html
-- QSound QSoundEffect(pulseaudio): Error Decoding course  
-  - https://together.jolla.com/question/53394/qsoundeffectpulseaudio-error-decoding-sourc/
-- QTimer
-  - http://qt-project.org/forums/viewthread/27190
-- play loops
-  - http://stackoverflow.com/questions/16751778/qt-qsound-looping
-  - http://forum.codecall.net/topic/71902-qt-c-play-sound-on-key-press-stops-working-after-a-few-seconds/
-- Phonon
-  - http://bbs.qter.org/forum.php?mod=viewthread&tid=784
-  - seek slider: http://pencil-animation.org/forum/viewtopic.php?id=672
+** QSound example
+- http://doc.qt.digia.com/3.3/sound-example.html
+** QSound QSoundEffect(pulseaudio): Error Decoding course  
+- https://together.jolla.com/question/53394/qsoundeffectpulseaudio-error-decoding-sourc/
+** QTimer
+- http://qt-project.org/forums/viewthread/27190
+** play loops
+- http://stackoverflow.com/questions/16751778/qt-qsound-looping
+- http://forum.codecall.net/topic/71902-qt-c-play-sound-on-key-press-stops-working-after-a-few-seconds/
+** Phonon
+- http://bbs.qter.org/forum.php?mod=viewthread&tid=784
+- seek slider: http://pencil-animation.org/forum/viewtopic.php?id=672
+** Triangle
+- http://en.wikibooks.org/wiki/Qt/Qt_Quick_Overview
+- http://qt-project.org/forums/viewthread/25624
+- http://stackoverflow.com/questions/24672146/qpainter-draw-lien
+- http://doc.qt.digia.com/4.6/widgets-styles.html
+- http://qt-project.org/doc/qt-4.8/painting-painterpaths-window-cpp.html
