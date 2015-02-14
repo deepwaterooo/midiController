@@ -15,7 +15,7 @@
   combines with songs in the normal 25 key set besides the finished
   one. 
 - Today got the Rectangle/Triangle shapes work and ready. 
-  [[./pic/Screenshot_from_2015-2-13_22:19:11.png]]
+[[./pic/Screenshot_from_2015-02-13_22:19:11.png]]
 
 * Update 12/11/2014, updates include
 ** updates
