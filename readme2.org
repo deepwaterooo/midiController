@@ -1,7 +1,7 @@
 #+latex_class: cn-article
 #+latex_header: \lstset{language=c++,numbers=left,numberstyle=\tiny,basicstyle=\ttfamily\small,tabsize=4,frame=none,escapeinside=``,extendedchars=false,keywordstyle=\color{blue!70},commentstyle=\color{red!55!green!55!blue!55!},rulesepcolor=\color{red!20!green!20!blue!20!}}
 #+title: MIDI Command Controller Interface
-#+author: Heyan Huang
+#+author: deepwaterooo
 
 * Update 2/12/2014, Thursday,  updates include
 ** updates
@@ -16,7 +16,6 @@
   one. 
 - Today got the Rectangle/Triangle shapes work and ready. 
   [[./pic/Screenshot_from_2015-2-13_22:19:11.png]]
-
 * Update 12/11/2014, updates include
 ** updates
 - Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
@@ -201,3 +200,4 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://stackoverflow.com/questions/24672146/qpainter-draw-lien
 - http://doc.qt.digia.com/4.6/widgets-styles.html
 - http://qt-project.org/doc/qt-4.8/painting-painterpaths-window-cpp.html
+
