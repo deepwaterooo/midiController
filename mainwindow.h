@@ -14,7 +14,6 @@
 //#include <phonon>
 
 #include "myDoubleSpinBox.h"
-#include "DrawLabel.h"
 #include "renderarea.h"
 
 #define MIDI_DEVICE "/dev/snd/midiC1D0"

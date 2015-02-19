@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-
 #include <QGraphicsProxyWidget>
 #include <QObject>
 #include <QMessageBox>
@@ -131,12 +130,88 @@ void MainWindow::readFromDevice() {
             qDebug("Error reading %s\n", MIDI_DEVICE);
             bytes_read = read(fd, &inbytes, sizeof(inbytes));
         }
-        if (inbytes[1] == 60) {            
-            //bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(0,0,255)}");
+
+        playSurfUSA();
+        idol(3);
+        //if (inbytes[1] == 60) {
+        switch (inbytes[1]) {
+        case 48:
+            bottomKeys[0]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 50:
+            bottomKeys[1]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 52:
+            bottomKeys[2]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 53:
+            bottomKeys[3]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 55:
+            bottomKeys[4]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 57:
+            bottomKeys[5]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 59:
+            bottomKeys[6]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 60:
             bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            playSurfUSA();
-            idol(3);
-            return;
+            break;
+        case 62:
+            bottomKeys[8]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 64:
+            bottomKeys[9]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 65:
+            bottomKeys[10]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 67:
+            bottomKeys[11]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 69:
+            bottomKeys[12]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 71:
+            bottomKeys[13]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 72:
+            bottomKeys[14]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+
+        case 49:
+            topKeys[1]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 51:
+            topKeys[2]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 54:
+            topKeys[4]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 56:
+            topKeys[5]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 58:
+            topKeys[6]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 61:
+            topKeys[8]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 63:
+            topKeys[9]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 66:
+            topKeys[11]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 68:
+            topKeys[12]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+        case 70:
+            topKeys[13]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
+            break;
+            //bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
         }
     }
 }
@@ -248,9 +323,17 @@ MainWindow::MainWindow(QWidget *parent)
     //    b, write back to device to light LED on for the key;
     //    c, trigger the playing audio file
     //    d, when audio file done, light LED off
-    connect(bottomKeys[7], SIGNAL(released()), this, SLOT(oneKeyClicked()));
-
-
+    //connect(bottomKeys[7], SIGNAL(released()), this, SLOT(oneKeyClicked()));
+    // ~~~ 25 keys connections
+    for (int i = 0; i < 15; i++) 
+        connect(bottomKeys[i], SIGNAL(released()), this, SLOT(oneKeyClicked()));
+    for (int i = 0; i < 15; i++)
+        if (i != 0 && i != 3 && i != 7 && i != 10 && i != 14)
+            connect(topKeys[i], SIGNAL(released()), this, SLOT(oneKeyClicked()));
+    // for rectangle "Bend" key connection
+    QList<RenderArea*>::iterator it = renderAreas.begin();
+    //connect(*it, )
+    
     // add slider and MyDoubleSpinBox for seekslider
     QSlider *slider02 = new QSlider(Qt::Horizontal, this);
     slider02->setRange(0, 149);
@@ -503,7 +586,6 @@ MainWindow::MainWindow(QWidget *parent)
     vbox->addWidget(scrollArea);
     centralWidget->setLayout(vbox);
 }
-
 void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) { 
     QFontMetrics m (edit -> font()) ;
     int RowHeight = m.lineSpacing() ;

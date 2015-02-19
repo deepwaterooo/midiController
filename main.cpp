@@ -8,7 +8,6 @@
 
 #include "mainwindow.h"
 //#include "play.h"
-#include "DrawLabel.h"
 
 //unsigned char inbytes[4];
 
