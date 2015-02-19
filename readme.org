@@ -1,21 +1,22 @@
 #+latex_class: cn-article
 #+latex_header: \lstset{language=c++,numbers=left,numberstyle=\tiny,basicstyle=\ttfamily\small,tabsize=4,frame=none,escapeinside=``,extendedchars=false,keywordstyle=\color{blue!70},commentstyle=\color{red!55!green!55!blue!55!},rulesepcolor=\color{red!20!green!20!blue!20!}}
 #+title: MIDI Command Controller Interface
-#+author: Heyan Huang
+#+author: deepwaterooo
 
 * Update 2/19/2014, updates include
 ** updates
 - These are two sets in the MIDI keyboard, the 25 key main board, and the adjustment 8 keys;
 - Corresponded the main keyboard keys with the same "surfinUSA.wav" song, and it works;
 - Tested that all the 25 keys (I tested 4-5 keys by random sample) bonds to one song as a comand controller should work;
-- Applied the same method on the left side 8 keys, but theya are completely different set, so need further look into the sets ("Bend" could show key values, but the value could change to, and the other seven could NOT print Note ON/OFF values cause they are functionally different);
+- Applied the same method on the left side 8 keys, but they are completely different set, so need further look into the sets ("Bend" could show key values, but the value could be changed to, and the other seven could NOT print Note ON/OFF values cause they are functionally different);
 - GUI Interface keeps the same unchanged, so refer to last update for interface snapshot;
 ** todo
 - So far linked to only one song, I have about 4-5, and need to link all of them to the keys (instead of link all the keys to the same song);
 - Add two buttons for "Pause" and "Stop" in GUI to pause/stop playing a song;
 - To light the midi controller LED on while the specific key pressed and light it on during the song time;
-- Two set of input, midi controller and GUI buttons, prefer midi controller for input during tower show; The advisor said use an infinte loop for Checking midi input is ok, but will explore qt threads when loop is functional; And he expect the midi controller should be responsive, so need to update midi-readin frequently;
-- Though "the more information the better", but the sliderbar is not necessary, will list it as low priority.
+- Two set of input, midi controller and GUI buttons, prefer midi controller for input during tower show; The advisor said use an infinte loop for Checking midi input is ok, but I (me~) would expect to explore qt threads when loop is functional; The advisor expect that the midi controller should be responsive, so I should program to update midi-readin frequently;
+- Though "the more information the better", the sliderbar is not necessary, I will list it as low priority.
+- These are the suggestions that the advisor offered during morning meeting, and before the followed week meeting, I will try to finish as much as I can. 
 ** other issues
 - The advisor and I rescheduled our meeting time to be 2:30pm on Wednesday afternoon becuase actually he has bi-weekly meeting at the original meeting time;
 - Then I realize that I failed to state it clear that I need to work at 3pm means I needs to be well uniformly-dressed and be able to clock in and start work immediately, so we will have only about 15 minutes, and even advisor says I may start early, but I don't want to run to work late at times. 
