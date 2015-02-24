@@ -3,37 +3,43 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 2/24/2015, updates include
+** updates
+- idol(3); moved to the correct position to paint GUI button responsively;
+- modified "Play" key to be "Stop" playing a music key, set upper row last key as "STOP" key;
+- made playing a song and stop the song become responsive (two operations in total) by implementing play using a QThread; I mean to use while loop, but even after the advisor approved the method, afterwards I realized that multi-threading is the more intuitive and correct way to do it, so skipped while loops;
+- but main UI still got blocked, this is the first time that I realize such problems, last week's meet update is NOT for one week to finish, but rather eventual goals, so I am confident that eventually I would get all these problems solved;
+- The write back to midi to light LED on for the key pressed, and methods are ready there already, I just need to make my threads work first, then use a thread to write back to midi when necessary, 
+** todo
+- 
+** other issues
+
 * Update 2/19/2014, updates include
 ** updates
 - These are two sets in the MIDI keyboard, the 25 key main board, and the adjustment 8 keys;
 - Corresponded the main keyboard keys with the same "surfinUSA.wav" song, and it works;
 - Tested that all the 25 keys (I tested 4-5 keys by random sample) bonds to one song as a comand controller should work;
 - Applied the same method on the left side 8 keys, but they are completely different set, so need further look into the sets ("Bend" could show key values, but the value could be changed to, and the other seven could NOT print Note ON/OFF values cause they are functionally different);
-- GUI Interface keeps the same unchanged, so refer to last update for interface snapshot;
+- GUI Interface keeps the same unchanged, so refer to last update for interface snapshot; 
+- I have spent tons of hours on Emacs ever since Fall 2012 triggered by Emacs Lisp program hightlights, and I still got blocked by unexpected bugs from time to time, but still, have been blocked by thousands of times, I still like Emacs the most. Fully functional Emacs without bugs significantly improves efficiency for me. Now brought readme.tex and readme.pdf back, I like to have them before git update to avoid multiple unnecessary updates...
 ** todo
 - So far linked to only one song, I have about 4-5, and need to link all of them to the keys (instead of link all the keys to the same song);
 - Add two buttons for "Pause" and "Stop" in GUI to pause/stop playing a song;
 - To light the midi controller LED on while the specific key pressed and light it on during the song time;
-- Two set of input, midi controller and GUI buttons, prefer midi controller for input during tower show; The advisor said use an infinte loop for Checking midi input is ok, but I (me~) would expect to explore qt threads when loop is functional; The advisor expect that the midi controller should be responsive, so I should program to update midi-readin frequently;
+- Two set of input, midi controller and GUI buttons, prefer midi controller for input during tower show; The advisor said use an infinte loop for Checking midi input is ok, but I (me~) would expect to explore qt threads when loop is functional; The advisor expect that the midi controller should be responsive, so I should program to update midi-readin frequently (maybe even less than 500 ms interval according to the advisor);
 - Though "the more information the better", the sliderbar is not necessary, I will list it as low priority.
 - These are the suggestions that the advisor offered during morning meeting, and before the followed week meeting, I will try to finish as much as I can. 
 ** other issues
-- The advisor and I rescheduled our meeting time to be 2:30pm on Wednesday afternoon becuase actually he has bi-weekly meeting at the original meeting time;
+- The advisor and I rescheduled our meeting time to be 2:30pm on Wednesday afternoon because actually he has bi-weekly meeting at the original meeting time;
 - Then I realize that I failed to state it clear that I need to work at 3pm means I needs to be well uniformly-dressed and be able to clock in and start work immediately, so we will have only about 15 minutes, and even advisor says I may start early, but I don't want to run to work late at times. 
-- I wrote to the advisor and during yesterday's short meet we rescheduled the meeting time to be "*10:00am on Tuesday*" and for this week's meeting rescheduled to be this morning at 8:30am (the advisor showed up at 9:05, so we did have about half an hour meeting this morning. He had visitor at 9:30am). 
+- I wrote to the advisor and during yesterday's short meet we rescheduled the meeting time to be "*10:00am - 11:00am on Tuesday*" and for this week's meeting rescheduled to be this morning at 8:30am - 9:30am (the advisor showed up at 9:05, so we did have about half an hour meeting this morning. He had visitor at 9:30am). 
 - Later on will update this repository weekly *around 11:00am within +/- 30 minutes* time period to help and enforce myself to make some progress weekly.
 
 * Update 2/12/2014, updates include
 ** updates
-- Didn't start until this week was mainly before the foot court work
-  had waited more than one week to get docs processed, and waiting for
-  work Schedule before Scheduling with advisor, and advisor approved
-  it. 
-- Scheduled Wednesday 12:30-1:30pm to meet advisor weekly, and will
-  update at least once a week to record progress.
-- For coming week's meeting, advisor suggested to get more keys
-  combines with songs in the normal 25 key set besides the finished
-  one. 
+- Didn't start until this week was mainly before the foot court work had waited more than one week to get docs processed, and waiting for work Schedule before Scheduling with advisor, and advisor approved it. 
+- Scheduled Wednesday 12:30-1:30pm to meet advisor weekly, and will update at least once a week to record progress.
+- For coming week's meeting, advisor suggested to get more keys combines with songs in the normal 25 key set besides the finished one. 
 - Today got the Rectangle/Triangle shapes work and ready. 
 [[./pic/Screenshot_from_2015-02-13_22:19:11.png]]
 
@@ -47,13 +53,11 @@
 - Because of lack Xbee modules (needs devices from intstructor), so far playing only .wav file is ok;
 - It is basic, setting one buttone to work only, without any threads yet, but will expend it to be better during spring semester.
 - Spring semester (1 credit) will pack all my instructor's Tower Play modules into a well-designed fully-functional softwares for user's convenience.
-
 * Update 12/09/2014, updates include
 - worked in it a little bit to set the connections between Midi controller and Qt Creator;
 - tried to implement pthead for reading user input, but got slightly frustrated today, and applied easier methods instead;
 - the project basically satisfied the instructor's requirements for connecting one key to work for playing his sequence, for example, Surfinusa.wav file;
 - Will demo to his to see if he has better suggestions. 
-
 * Update 11/23/2014, updates include
 - Cleaned repository so that it looks clean and nice;
 - Remove menubar as suggested by advisor;
@@ -65,14 +69,12 @@
 - Current layout looks as below snapshotted: 
 
 [[./pic/Screenshot_from_2014-11-23_13:20:06.png]]  
-
 * Review 11/21/2014, updates include
 ** Review Contents
 - Created most basic interface for the client, and reviewed with course instructor.
 - Demo the most basic interface to him, and get corresponding specific requirements as listed followed.
   
 [[./pic/2014-11-20_21:52:19.png]]
-
 ** Detailed Requirements
 - menubar is NOT necessary, and could be removed away;
 - Interface topright four line texts are not necessary, could be removed away;
@@ -80,11 +82,9 @@
 - PlainTextEdit should be changed to be array of 25/33 lines of (text label, file name editor, browse QPushButton keys) layout;
 - Left handside 8 keys should be included in the midi interface even functionalities are not required at this moment;
 - When finished the above basic ones, if I have extra time, could explore the left side 8 keys to test if it is possible to use them to set a bunch of sequence so that save time when needed compared with set sequence one by one from the basic 25 keys.
-  
 * Project Requirements
 - Use QuNexus Midi controller as a command controller to manipulate play sequence for tower lights show;
 - Besides the main functionalities, create a Qt Creator Interface to help facilate the tower light playing process for clients convenience. 
-  
 * main functionality
 ** Read data from MIDI
   - Use the MIDI Controller as a speical Controller that can be operated to play specific songs sequence, or do some specific work.
@@ -95,19 +95,16 @@
     - try to set this byte to be a large value, (1 byte, 2^8 = 256, it has limits!)
     - or continuously reset is to be that large value;
     - or continuously write this key to be pressed data back to MIDI with time intervals
-      
 * Programming Language
 ** Qt
   - the worries that I have by using Qt is that if Qt has the capability to handle the MIDI-Linux connection problems. 
   - And also Qt-to-Audio (linux) connection things as well. Should it be Qt, or as far as I can set it to work in Linux, just let it be that way then?
 ** c++
   - I believe C++ is the most widely used Language used by those midi sequencer softwares, so I have no better choice than c++ right now. 
-    
 * Interface Design
   [[./pic/menu.png]]
   
   [[./pic/midi.jpg]]
-  
 * Midi keys and corresponded operations
   #+caption: midi keys and corresponded operations
   |---------+---------------------|
@@ -150,11 +147,9 @@
   | Oct-    |                     |
   | Oct+    |                     |
   |---------+---------------------|
-  
 * Interface Guide
   - Give text instructions on how to use the Interface, and what are the corresponded operations by press specific keys. 
   - Like list the above table in the Interface Guide text area. 
-    
 * References
 ** For circle QPushButton
 - http://stackoverflow.com/questions/12734319/change-rectangular-qt-button-to-round
@@ -193,7 +188,7 @@
 - http://www.qtcentre.org/threads/53549-connect()-terminates-the-program
 ** pulseaudio linux mint
 - http://community.linuxmint.com/software/view/pulseaudio
-  #+begin_src
+  #+begin_src c++
 towerplayer  ./towerplayer Surfinusa.wav surfinUSA.tan
 Loading Surfinusa.wav
 File Size=26368316
@@ -209,15 +204,22 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - https://together.jolla.com/question/53394/qsoundeffectpulseaudio-error-decoding-sourc/
 ** QTimer
 - http://qt-project.org/forums/viewthread/27190
+** Triangle
+- http://en.wikibooks.org/wiki/Qt/Qt_Quick_Overview
+- http://qt-project.org/forums/viewthread/25624
+- http://stackoverflow.com/questions/24672146/qpainter-draw-lien
+- http://doc.qt.digia.com/4.6/widgets-styles.html
+- http://qt-project.org/doc/qt-4.8/painting-painterpaths-window-cpp.htm
 ** play loops
 - http://stackoverflow.com/questions/16751778/qt-qsound-looping
 - http://forum.codecall.net/topic/71902-qt-c-play-sound-on-key-press-stops-working-after-a-few-seconds/
 ** Phonon
 - http://bbs.qter.org/forum.php?mod=viewthread&tid=784
 - seek slider: http://pencil-animation.org/forum/viewtopic.php?id=672
-** Triangle
-- http://en.wikibooks.org/wiki/Qt/Qt_Quick_Overview
-- http://qt-project.org/forums/viewthread/25624
-- http://stackoverflow.com/questions/24672146/qpainter-draw-lien
-- http://doc.qt.digia.com/4.6/widgets-styles.html
-- http://qt-project.org/doc/qt-4.8/painting-painterpaths-window-cpp.html
+- http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html
+** QThread
+- http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml
+- http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml
+- 
+** QMutex
+- 

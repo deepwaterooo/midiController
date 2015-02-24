@@ -1,4 +1,3 @@
-#include "mainwindow.h"
 #include <QGraphicsProxyWidget>
 #include <QObject>
 #include <QMessageBox>
@@ -59,180 +58,28 @@
 #include <QPaintEvent>
 #include <QScrollArea>
 #include <stdlib.h>
-#include <pthread.h>
+//#include <pthread.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <QDebug>
 #include <QSound>
-//#include <phonon>
 #include <QGraphicsScene>
+//#include <phonon>
 
 #include "mainwindow.h"
+#include "playThread.h"
+#include "db.h"
+#include "ReadBuffThread.h"
 
-/*
-  void* threadFunction(void*) {
-  int status;            
-  while (1) {
-  char* fd = (char*)("/dev/snd/midiC1D0");
-  status = open(fd, O_RDONLY, 0);
-  if (status < 0) {
-  printf("Error reading %s\n", MIDI_DEVICE);
-  exit(1);
-  }
-  int bytes_read = read(status, &inbytes, sizeof(inbytes));
-  if (bytes_read < 0) {
-  qDebug("Error reading %s\n", MIDI_DEVICE);
-  exit(1);
-  }
-  if (inbytes[1] != 0) {            
-  for (int i = 0; i < 4; ++i) {            
-  qDebug("received MIDI byte: ", inbytes[i]);
-  }
-  }
-  }
-  }
-*/
-
-void MainWindow::playSurfUSA() {
-    QSound::play(":/snd/Surfinusa.wav");
-    /*
-    mediaObject = new Phonon::MediaObject(this);
-    mediaObject->setCurrentSource(Phonon::MediaSource(":/snd/Surfinusa.wav"));
-    Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    Phonon::Path path = Phonon::createPath(mediaObject, audioOutput);
-    Phonon::SeekSlider *seekSlider = new Phonon::SeekSlider(mediaObject, this);
-    mediaObject->play();
-    */
-}
-
-void MainWindow::readFromDevice() {
-    int fd;          
-    //fd = open(MIDI_DEVICE, O_RDONLY);
-    char* device = (char*)("/dev/snd/midiC1D0");
-    fd = open(device, O_RDONLY, 0);
-    if (fd == -1) {
-        qDebug("Error: cannot open \n");
-        exit(1);
-    }
-    /*
-      pthread_t midiInThread;
-      int status = pthread_create(&midiInThread, NULL, threadFunction, NULL);
-      if (status == -1) {
-      printf("Error: unable to create MIDI input thread.\n");
-      exit(1);
-      }
-    */
-
-    int cnt = 0;
-    while (cnt < 3) {
-        int bytes_read = read(fd, &inbytes, sizeof(inbytes));
-        while (bytes_read < 0) {
-            qDebug("Error reading %s\n", MIDI_DEVICE);
-            bytes_read = read(fd, &inbytes, sizeof(inbytes));
-        }
-
-        playSurfUSA();
-        idol(3);
-        //if (inbytes[1] == 60) {
-        switch (inbytes[1]) {
-        case 48:
-            bottomKeys[0]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 50:
-            bottomKeys[1]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 52:
-            bottomKeys[2]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 53:
-            bottomKeys[3]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 55:
-            bottomKeys[4]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 57:
-            bottomKeys[5]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 59:
-            bottomKeys[6]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 60:
-            bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 62:
-            bottomKeys[8]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 64:
-            bottomKeys[9]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 65:
-            bottomKeys[10]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 67:
-            bottomKeys[11]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 69:
-            bottomKeys[12]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 71:
-            bottomKeys[13]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 72:
-            bottomKeys[14]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-
-        case 49:
-            topKeys[1]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 51:
-            topKeys[2]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 54:
-            topKeys[4]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 56:
-            topKeys[5]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 58:
-            topKeys[6]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 61:
-            topKeys[8]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 63:
-            topKeys[9]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 66:
-            topKeys[11]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 68:
-            topKeys[12]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-        case 70:
-            topKeys[13]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-            break;
-            //bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,0)}");
-        }
-    }
-}
-
-void MainWindow::idol(int x) {
-    //sleep(x);
-    QEventLoop loop;
-    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
-    loop.exec();
-    bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
-}
-
-// speciall work on bottomKeys[7] for playing one sequence
-// 1. create a thread to read from device, and scanning for the input values;
-// 2. if scanned value == 59 (key indexed 7), do the folloring:
-//    a, paint the GUI key color to be blue;
-//    b, write back to device to light LED on for the key;
-//    c, trigger the playing audio file
-//    d, when audio file done, light LED off
-void MainWindow::oneKeyClicked() {
-    readFromDevice();
+void MainWindow::setColor(QPushButton *pbtn, QColor color) {
+    int r,g,b;
+    color.getRgb(&r, &g, &b);
+    QString temp = "QPushButton{color:red;background-color:rgb(";
+    QString tempr = QString::number(r);
+    QString tempg = QString::number(g);
+    QString tempb = QString::number(b);
+    temp = temp + tempr + "," + tempg + "," + tempb + ")}";
+    pbtn->setStyleSheet(temp); 
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -253,6 +100,9 @@ MainWindow::MainWindow(QWidget *parent)
         topKeys[i] = new QPushButton();
         topKeys[i]->setFixedSize(50, 100);
     }
+    topKeys[13] = new QPushButton(QIcon(":/images/stop"), tr(""));
+    topKeys[13]->setFixedSize(50, 100);
+    
     topKeys[0]->setFixedSize(20, 100);
     topKeys[14]->setFixedSize(70, 100);
     top[0]->setText(tr(""));
@@ -267,8 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
     top[9]->setText(tr("Xpose"));
     top[10]->setText(tr(""));
     top[11]->setText(tr(" Rec"));
-    top[12]->setText(tr(" Stop"));
-    top[13]->setText(tr("Play"));
+    top[12]->setText(tr("Pause"));
+    top[13]->setText(tr("Stop"));
     top[14]->setText(tr(""));
     for (int i = 0; i < 15; ++i) {        
         bottom[i] = new QLabel;
@@ -316,23 +166,6 @@ MainWindow::MainWindow(QWidget *parent)
     topKeys[10]->setFlat(true);
     topKeys[14]->setFlat(true);
 
-    // speciall work on bottomKeys[7] for playing one sequence
-    // 1. create a thread to read from device, and scanning for the input values;
-    // 2. if scanned value == 59 (key indexed 7), do the folloring:
-    //    a, paint the GUI key color to be blue;
-    //    b, write back to device to light LED on for the key;
-    //    c, trigger the playing audio file
-    //    d, when audio file done, light LED off
-    //connect(bottomKeys[7], SIGNAL(released()), this, SLOT(oneKeyClicked()));
-    // ~~~ 25 keys connections
-    for (int i = 0; i < 15; i++) 
-        connect(bottomKeys[i], SIGNAL(released()), this, SLOT(oneKeyClicked()));
-    for (int i = 0; i < 15; i++)
-        if (i != 0 && i != 3 && i != 7 && i != 10 && i != 14)
-            connect(topKeys[i], SIGNAL(released()), this, SLOT(oneKeyClicked()));
-    // for rectangle "Bend" key connection
-    QList<RenderArea*>::iterator it = renderAreas.begin();
-    //connect(*it, )
     
     // add slider and MyDoubleSpinBox for seekslider
     QSlider *slider02 = new QSlider(Qt::Horizontal, this);
@@ -347,9 +180,9 @@ MainWindow::MainWindow(QWidget *parent)
     void (MyDoubleSpinBox::*spinBoxSignal)(double) = &MyDoubleSpinBox::valueChanged;
     QObject::connect(b02, spinBoxSignal, slider02, &QSlider::setValue);
     /*
-    QEventLoop loop;
-    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
-    loop.exec();
+      QEventLoop loop;
+      QTimer::singleShot(150000, &loop, SLOT(quit()));    //
+      loop.exec();
     */
     QVBoxLayout *vbox4 = new QVBoxLayout();
     vbox4->addLayout(topLabel);
@@ -368,71 +201,36 @@ MainWindow::MainWindow(QWidget *parent)
     // for circles and triangles
     QRect *rect = new QRect(0,0,30,30);
     QRegion *region = new QRegion(*rect, QRegion::Ellipse);
-    // for triangle
-    //QPainter painter2(this); 
-    //painter2.drawPolyline(points, 3);
-    /*
-      QPainter painter(this);   // this ?
-      QPolygon p();
-      p.append( QPoint(10,10) );
-      p.append(QPoint(14,10));
-      p.append(QPoint(12,14));
-    */
-
-    QPainter painter(this);
-    painter.drawConvexPolygon(points, 3);
-     QPainterPath roundRectPath;
-     roundRectPath.moveTo(80.0, 35.0);
-     roundRectPath.arcTo(70.0, 30.0, 10.0, 10.0, 0.0, 90.0);
-     roundRectPath.lineTo(25.0, 30.0);
-     roundRectPath.arcTo(20.0, 30.0, 10.0, 10.0, 90.0, 90.0);
-     roundRectPath.lineTo(20.0, 65.0);
-     roundRectPath.arcTo(20.0, 60.0, 10.0, 10.0, 180.0, 90.0);
-     roundRectPath.lineTo(75.0, 70.0);
-     roundRectPath.arcTo(70.0, 60.0, 10.0, 10.0, 270.0, 90.0);
-     roundRectPath.closeSubpath();
-     QPainterPath rectPath;
-     /*     rectPath.moveTo(10.0, 15);
-     rectPath.lineTo(50.0, 15);
-     rectPath.lineTo(50, 45);
-     rectPath.lineTo(10.0, 45);
-     rectPath.closeSubpath(); */
-     QRect boundingRect(2, 0, 60, 60);
-     rectPath.moveTo(6.0, 15);
-     rectPath.lineTo(58.0, 15);
-     //rectPath.moveTo(boundingRect.center());
-     rectPath.arcTo(boundingRect, 30, -60);
-     rectPath.lineTo(6.0, 45);
-     //rectPath.moveTo(boundingRect.center());
-     rectPath.arcTo(boundingRect, 210, -60);
-     QPainterPath triLftPath;
-     triLftPath.moveTo(41, 15);
-     triLftPath.lineTo(15, 30);
-     triLftPath.lineTo(41, 45);
-     triLftPath.closeSubpath();
-     QPainterPath triRitPath;
-     triRitPath.moveTo(5, 15);
-     triRitPath.lineTo(31, 30);
-     triRitPath.lineTo(5, 45);
-     triRitPath.closeSubpath();
-     renderAreas.push_back(new RenderArea(rectPath));
-     renderAreas.push_back(new RenderArea(triLftPath));
-     renderAreas.push_back(new RenderArea(triRitPath));
-    /*
-    QPainterPath roundRect = roundRectPath(option->rect);
-    int radius = qMin(width, height) / 2;
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    painter->fillPath(roundRect, brush);
-    view = new QGraphicsView(this);
-    scene = new QGraphicsScene();
-    view->setGeometry(QRect(60, 20, 24, 24));
-    //DrawLabel *triangle = new DrawLabel();
-    //QRegion *r2 = new QRegion(*triangle);
-    view->setScene(scene);
-    //scene->addPath(roundRectPath, QPen(Qt::black), QBrush(QColor(255, 255, 255)));
-    //scene->addPath(triPath, QPen(Qt::black), QBrush(QColor(255, 255, 255)));
-    */
+    QPainterPath roundRectPath;
+    roundRectPath.moveTo(80.0, 35.0);
+    roundRectPath.arcTo(70.0, 30.0, 10.0, 10.0, 0.0, 90.0);
+    roundRectPath.lineTo(25.0, 30.0);
+    roundRectPath.arcTo(20.0, 30.0, 10.0, 10.0, 90.0, 90.0);
+    roundRectPath.lineTo(20.0, 65.0);
+    roundRectPath.arcTo(20.0, 60.0, 10.0, 10.0, 180.0, 90.0);
+    roundRectPath.lineTo(75.0, 70.0);
+    roundRectPath.arcTo(70.0, 60.0, 10.0, 10.0, 270.0, 90.0);
+    roundRectPath.closeSubpath();
+    QPainterPath rectPath;
+    QRect boundingRect(2, 0, 60, 60);
+    rectPath.moveTo(6.0, 15);
+    rectPath.lineTo(58.0, 15);
+    rectPath.arcTo(boundingRect, 30, -60);
+    rectPath.lineTo(6.0, 45);
+    rectPath.arcTo(boundingRect, 210, -60);
+    QPainterPath triLftPath;
+    triLftPath.moveTo(41, 15);
+    triLftPath.lineTo(15, 30);
+    triLftPath.lineTo(41, 45);
+    triLftPath.closeSubpath();
+    QPainterPath triRitPath;
+    triRitPath.moveTo(5, 15);
+    triRitPath.lineTo(31, 30);
+    triRitPath.lineTo(5, 45);
+    triRitPath.closeSubpath();
+    renderAreas.push_back(new RenderArea(rectPath));
+    renderAreas.push_back(new RenderArea(triLftPath));
+    renderAreas.push_back(new RenderArea(triRitPath));
     for (int i = 0; i < 3; ++i) {        
         topB[i] = new QPushButton();
         midB[i] = new QPushButton();
@@ -445,12 +243,11 @@ MainWindow::MainWindow(QWidget *parent)
         botB[i]->setFixedSize(30,30);
         topB[i]->setMask(*region);
         midB[i]->setMask(*region);
-        //botB[i]->setMask(*region);
         topT[i] = new QLabel;
         midT[i] = new QLabel;
         botT[i] = new QLabel;
     }
-    topB[0]->setFlat(true); // make invisible
+    topB[0]->setFlat(true); 
     
     topT[0]->setText("  Shift");
     topT[1]->setText("Togl A");
@@ -551,8 +348,6 @@ MainWindow::MainWindow(QWidget *parent)
     hbox02->addWidget(b02);
     vbox->addStretch(1);
     vbox->addLayout(hbox02);
-    // the very first part
-
 
     // grid with a vertical scrollbar
     QScrollArea * scrollArea = new QScrollArea();
@@ -563,14 +358,14 @@ MainWindow::MainWindow(QWidget *parent)
     contentsWidget->setLayout(grid);
     contentsWidget->setMinimumSize(scrollArea->width(), scrollArea->height());
     grid->setHorizontalSpacing(2);
-    grid->setVerticalSpacing(2);
+    grid->setVerticalSpacing(1);
     
     for (int i = 0; i < 33; ++i) {
         label[i]->setFixedWidth(100);
         label[i]->setAlignment(Qt::AlignRight);
         edit[i] = new QPlainTextEdit;
         brow[i] = new QPushButton(QIcon(":/images/doc-open"), tr("&Browse"));
-        edit[i]->setFont(QFont ("Courier", 10));
+        edit[i]->setFont(QFont ("Courier", 8));
         setHeight(edit[i], 2);
         //brow[i]->setFixedSize(80, 25);
         brow[i]->setFixedWidth(80);
@@ -585,7 +380,162 @@ MainWindow::MainWindow(QWidget *parent)
     //grid->verticalScrollBar()->setSingleStep(contentsWidget->height() / 33);
     vbox->addWidget(scrollArea);
     centralWidget->setLayout(vbox);
+
+    map[48] = bottomKeys[0];
+    map[50] = bottomKeys[1];
+    map[52] = bottomKeys[2];
+    map[53] = bottomKeys[3];
+    map[55] = bottomKeys[4];
+    map[57] = bottomKeys[5];
+    map[59] = bottomKeys[6];
+    map[60] = bottomKeys[7];
+    map[62] = bottomKeys[8];
+    map[64] = bottomKeys[9];
+    map[65] = bottomKeys[10];
+    map[67] = bottomKeys[11];
+    map[69] = bottomKeys[12];
+    map[71] = bottomKeys[13];
+    map[72] = bottomKeys[14];
+    map[49] = topKeys[1];
+    map[51] = topKeys[2];
+    map[54] = topKeys[4];
+    map[56] = topKeys[5];
+    map[58] = topKeys[6];
+    map[61] = topKeys[8];
+    map[63] = topKeys[9];
+    map[66] = topKeys[11];
+    map[68] = topKeys[12];
+    map[70] = topKeys[13];
+
+    // 1. create a thread to read from device, and scanning for the input values;
+    // 2. if scanned value == 59 (key indexed 7), do the folloring:
+    //    a, paint the GUI key color to be blue;
+    //    b, write back to device to light LED on for the key;
+    //    c, trigger the playing audio file
+    //    d, when audio file done, light LED off
+    // according to the advisor, he doesn't want to use keys (except for STOP) for playing
+    /*
+    for (int i = 0; i < 15; i++) 
+        connect(bottomKeys[i], SIGNAL(released()), this, SLOT(readFromDevice()));
+    for (int i = 0; i < 15; i++)
+        if (i != 0 && i != 3 && i != 7 && i != 10 && i <= 12) // 12 pause
+            connect(topKeys[i], SIGNAL(released()), this, SLOT(readFromDevice()));
+    */
+
+    // maybe more work here for this key
+    connect(topKeys[13], SIGNAL(clicked()), this, SLOT(stopPlayingSong()));
+    /*
+    dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
+    tRead = new ReadBuffThread(this);
+    tRead->set(buff);
+    tRead->start();
+    int cnt = 0;
+
+    while (cnt < 2) {
+        //unsigned char* tmp = buff->get();  // I don't think I can reach here, maybe another thread to read
+        unsigned char* tmp = tRead->data;
+        qDebug() << "got here";
+
+        for (int i = 0; i < 6; i++) {
+            qDebug() << "tmp[i]: " << tmp[i] << " tmp ";
+            inbytes[i] = tmp[i];
+            qDebug() << inbytes[i] << ", ";
+        }
+        //readFromDevice();
+        if (inbytes[0] == 144) {            
+            playSong("Surfinusa.wav");
+            setColor(map[inbytes[1]], QColor(255, 255, 0));
+            idol(3);  
+            setColor(map[inbytes[1]], QColor(255, 255, 255));
+        }
+        sleep(10000);
+        ++cnt;
+        qDebug() << "cnt: " << cnt;
+    }
+    if (cnt == 2) tRead->quit();
+    */
+
+    // for tmp for good
+    int fd;          
+    char* device = (char*)("/dev/snd/midiC1D0");
+    fd = open(device, O_RDONLY, 0);
+    if (fd == -1) {
+        qDebug("Error: cannot open \n");
+        exit(1);
+    }
+    int cnt = 0;
+    while (cnt < 2) {
+        int bytes_read = read(fd, &inbytes, sizeof(inbytes));
+        while (bytes_read < 0) {
+            qDebug("Error reading %s\n", MIDI_DEVICE);
+            bytes_read = read(fd, &inbytes, sizeof(inbytes));
+        }    // moved into a thread
+        for (int i = 0; i < 6; i++) {
+            qDebug() << "inbytes[" << i << "]: " << inbytes[i];
+        }
+        if (inbytes[0] == 144) {            
+            playSong("Surfinusa.wav");
+            setColor(map[inbytes[1]], QColor(255, 255, 0));
+            idol(3);  
+            setColor(map[inbytes[1]], QColor(255, 255, 255));
+        }
+        //sleep(10000);
+        ++cnt;
+        qDebug() << "cnt: " << cnt;
+    }
+    
+    // for rectangle "Bend" key connection
+    QList<RenderArea*>::iterator it = renderAreas.begin();
+    //connect(*it, )
 }
+
+void MainWindow::stopPlayingSong() {
+    pthread->playStop();
+    setColor(map[inbytes[1]], QColor(255, 255, 255));
+}
+
+void MainWindow::playSong(QString s) {
+    if (pthread == NULL)
+        pthread = new playThread(this);   // maybe need to be global
+    else {
+        pthread->quit();
+        pthread = new playThread(this);   // maybe need to be global
+    }
+    pthread->setSongName(s);
+    //connect(pthread, &playThread::finished, pthread, &playThread::deleteLater);   // still causing crash, but why?
+    pthread->start();
+}
+
+void MainWindow::readFromDevice() {
+    /*
+    int fd;          
+    char* device = (char*)("/dev/snd/midiC1D0");
+    fd = open(device, O_RDONLY, 0);
+    if (fd == -1) {
+        qDebug("Error: cannot open \n");
+        exit(1);
+    }
+    int bytes_read = read(fd, &inbytes, sizeof(inbytes));
+    while (bytes_read < 0) {
+        qDebug("Error reading %s\n", MIDI_DEVICE);
+        bytes_read = read(fd, &inbytes, sizeof(inbytes));
+    }    // moved into a thread
+    */
+    
+    playSong("Surfinusa.wav");
+    setColor(map[inbytes[1]], QColor(255, 255, 0));
+    idol(3);  
+    setColor(map[inbytes[1]], QColor(255, 255, 255));
+}
+
+void MainWindow::idol(int x) {
+    //sleep(x);
+    QEventLoop loop;
+    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
+    loop.exec();
+    bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
+}
+
 void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) { 
     QFontMetrics m (edit -> font()) ;
     int RowHeight = m.lineSpacing() ;
@@ -594,12 +544,6 @@ void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) {
 
 MainWindow::~MainWindow() {
 }
-
-/*
-  void MainWindow::open() {
-  QMessageBox::information(this, tr("Information"), tr("Open"));
-  }
-*/
 /*
   openAction = new QAction(QIcon(":/images/doc-open"), tr("&Open..."), this);
   openAction->setShortcuts(QKeySequence::Open);

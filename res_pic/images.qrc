@@ -6,5 +6,6 @@
         <file alias="pasteI">paste.png</file>
         <file alias="searchI">search.png</file>
         <file alias="triangleI">triangle.jpg</file>
+        <file alias="stop">Stop.png</file>
     </qresource>
 </RCC>
