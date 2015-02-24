@@ -26,11 +26,11 @@ class playThread : public QThread {
  private:
     QSound *currSnd;
     QString songName;
-    bool Stop;
+    //    bool Stop;
  protected:
     void run() {
         currSnd->play();
-        emit done();
+        emit done();   // I suspect if I should emit finish signal here
     }
  signals:
     void done();

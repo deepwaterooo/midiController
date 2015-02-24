@@ -1,4 +1,4 @@
-% Created 2015-02-24 Tue 10:03
+% Created 2015-02-24 Tue 11:08
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -41,17 +41,21 @@
 \begin{itemize}
 \item idol(3); moved to the correct position to paint GUI button responsively;
 \item modified "Play" key to be "Stop" playing a music key, set upper row last key as "STOP" key;
-\item made playing a song and stop the song become responsive (two operations in total) by implementing play using a QThread; I mean to use while loop, but even after the advisor approved the method, afterwards I realized that multi-threading is the more intuitive and correct way to do it, so skipped while loops;
-\item but main UI still got blocked, this is the first time that I realize such problems, last week's meet update is NOT for one week to finish, but rather eventual goals, so I am confident that eventually I would get all these problems solved;
+\item made playing a song and stop the song become responsive (two operations in total) by implementing play the song through a thread; This way the "STOP" key could work;
+\item Issue is that only 2 operations responsive, but need to be always responsive. The reason for this failed could be playing thread didn't reinitialize as expected, or need another thread to always check midi user input, and I suspect the reason is more likely the latter; So moved to remove main GUI clicks step and use midi as the main input;
+\item I mean to use while loop, but even after the advisor approved the method, afterwards I realized that multi-threading is the more intuitive and correct way to do it, so skipped while loops;
+\item I packed my data array buffer into an object and include setter/getter; I should have read thread always checking midi input periodically; I should have write thread to write back to midi to light LED on; I was blocked slightly when finished reading but not implementing writing, I failed to read the data needed to play the song; will try this appoarch later;
+\item After get blocked using reading thread, I changed back to the advisor suggested using while loop way. As predicted, the main UI got blocked by the while loop, which still point/approve to the multi-threading appoarch;
+\item This is the first time that I realize such blocking problems, though I made quite some progress, and last week's meet suggestions/updates is NOT for one week to finish, rather eventual goals, so I am confident that eventually I would get all these problems solved;
 \item The write back to midi to light LED on for the key pressed, and methods are ready there already, I just need to make my threads work first, then use a thread to write back to midi when necessary,
 \end{itemize}
-\subsection{todo}
+\subsection{other}
 \label{sec-1-2}
 \begin{itemize}
-\item 
+\item As listed above, review the play/stop details and issues, reading thread issues, and while loop issues sequencially and logically with advisor by demo all these different version, and show necessary codes parts;
+\item The project goal keeps the same, and the advisor actually maybe interested in "PAUSE" button and seekslider bar, and later if I have time, would work on that;
+\item For the followed several weeks, try to get a responsive softwares in fairly reasonable period.
 \end{itemize}
-\subsection{other issues}
-\label{sec-1-3}
 
 \section{Update 2/19/2014, updates include}
 \label{sec-2}

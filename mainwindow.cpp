@@ -64,7 +64,7 @@
 #include <QDebug>
 #include <QSound>
 #include <QGraphicsScene>
-//#include <phonon>
+//#include <phonon>    // advisor still suggested PAUSE if possible, may change back to this module after threads work
 
 #include "mainwindow.h"
 #include "playThread.h"
@@ -421,40 +421,36 @@ MainWindow::MainWindow(QWidget *parent)
         if (i != 0 && i != 3 && i != 7 && i != 10 && i <= 12) // 12 pause
             connect(topKeys[i], SIGNAL(released()), this, SLOT(readFromDevice()));
     */
-
     // maybe more work here for this key
     connect(topKeys[13], SIGNAL(clicked()), this, SLOT(stopPlayingSong()));
+
+      dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
+      tRead = new ReadBuffThread(this);
+      tRead->set(buff);
+      tRead->start();
+      int cnt = 0;
+      while (cnt < 2) {
+          //unsigned char* tmp = buff->get();  // I don't think I can reach here, maybe another thread to read
+          qDebug() << "got here";
+          unsigned char* tmp = tRead->data;
+
+          for (int i = 0; i < 6; i++) {
+              qDebug() << "tmp[i]: " << tmp[i] << " tmp ";
+              inbytes[i] = tmp[i];
+              qDebug() << inbytes[i] << ", ";
+          }
+      //readFromDevice();
+      if (inbytes[0] == 144) {            
+          playSong("Surfinusa.wav");
+          setColor(map[inbytes[1]], QColor(255, 255, 0));
+          idol(3);  
+          setColor(map[inbytes[1]], QColor(255, 255, 255));
+      }
+      sleep(10000);
+      //++cnt;
+      //qDebug() << "cnt: " << cnt;
+
     /*
-    dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
-    tRead = new ReadBuffThread(this);
-    tRead->set(buff);
-    tRead->start();
-    int cnt = 0;
-
-    while (cnt < 2) {
-        //unsigned char* tmp = buff->get();  // I don't think I can reach here, maybe another thread to read
-        unsigned char* tmp = tRead->data;
-        qDebug() << "got here";
-
-        for (int i = 0; i < 6; i++) {
-            qDebug() << "tmp[i]: " << tmp[i] << " tmp ";
-            inbytes[i] = tmp[i];
-            qDebug() << inbytes[i] << ", ";
-        }
-        //readFromDevice();
-        if (inbytes[0] == 144) {            
-            playSong("Surfinusa.wav");
-            setColor(map[inbytes[1]], QColor(255, 255, 0));
-            idol(3);  
-            setColor(map[inbytes[1]], QColor(255, 255, 255));
-        }
-        sleep(10000);
-        ++cnt;
-        qDebug() << "cnt: " << cnt;
-    }
-    if (cnt == 2) tRead->quit();
-    */
-
     // for tmp for good
     int fd;          
     char* device = (char*)("/dev/snd/midiC1D0");
@@ -463,9 +459,12 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug("Error: cannot open \n");
         exit(1);
     }
+
     int cnt = 0;
     while (cnt < 2) {
         int bytes_read = read(fd, &inbytes, sizeof(inbytes));
+        for (int i = 0; i < 6; i++) 
+            inbytes[i] = 0;
         while (bytes_read < 0) {
             qDebug("Error reading %s\n", MIDI_DEVICE);
             bytes_read = read(fd, &inbytes, sizeof(inbytes));
@@ -483,7 +482,7 @@ MainWindow::MainWindow(QWidget *parent)
         ++cnt;
         qDebug() << "cnt: " << cnt;
     }
-    
+    */
     // for rectangle "Bend" key connection
     QList<RenderArea*>::iterator it = renderAreas.begin();
     //connect(*it, )
@@ -497,7 +496,7 @@ void MainWindow::stopPlayingSong() {
 void MainWindow::playSong(QString s) {
     if (pthread == NULL)
         pthread = new playThread(this);   // maybe need to be global
-    else {
+    else {   // if could NOT do the 3rd operation is because of this, I may check thread pause/quit maybe
         pthread->quit();
         pthread = new playThread(this);   // maybe need to be global
     }
@@ -507,21 +506,20 @@ void MainWindow::playSong(QString s) {
 }
 
 void MainWindow::readFromDevice() {
-    /*
-    int fd;          
-    char* device = (char*)("/dev/snd/midiC1D0");
-    fd = open(device, O_RDONLY, 0);
-    if (fd == -1) {
-        qDebug("Error: cannot open \n");
-        exit(1);
-    }
-    int bytes_read = read(fd, &inbytes, sizeof(inbytes));
-    while (bytes_read < 0) {
-        qDebug("Error reading %s\n", MIDI_DEVICE);
-        bytes_read = read(fd, &inbytes, sizeof(inbytes));
-    }    // moved into a thread
-    */
-    
+
+      int fd;          
+      char* device = (char*)("/dev/snd/midiC1D0");
+      fd = open(device, O_RDONLY, 0);
+      if (fd == -1) {
+      qDebug("Error: cannot open \n");
+      exit(1);
+      }
+      int bytes_read = read(fd, &inbytes, sizeof(inbytes));
+      while (bytes_read < 0) {
+      qDebug("Error reading %s\n", MIDI_DEVICE);
+      bytes_read = read(fd, &inbytes, sizeof(inbytes));
+      }    // moved into a thread
+
     playSong("Surfinusa.wav");
     setColor(map[inbytes[1]], QColor(255, 255, 0));
     idol(3);  
