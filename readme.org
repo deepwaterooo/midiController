@@ -3,6 +3,8 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 3/3/2015, meeting canceled for today
+- The meeting was cancelled for today, will update some other day when this week's schedule get fixed.
 * update 2/24/2015, updates include
 ** updates
 - idol(3); moved to the correct position to paint GUI button responsively;
