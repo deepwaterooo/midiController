@@ -30,7 +30,7 @@ class dArr {
         mutex.unlock();
     }
  private:
-    unsigned char buff[6];
+    unsigned char buff[6] = {0};
 };
 
 #endif

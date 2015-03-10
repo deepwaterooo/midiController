@@ -5,8 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += phonon
 
 TARGET = midiUI
 TEMPLATE = app
@@ -28,7 +29,7 @@ HEADERS  += mainwindow.h \
 
 
 RESOURCES += \
-    res_pic/images.qrc \
-    audio.qrc
+    res_pic/images.qrc
 
+QMAKE_CXXFLAGS += -O1
 #QMAKE_CXXFLAGS += -lpthread

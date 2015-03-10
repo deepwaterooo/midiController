@@ -7,5 +7,6 @@
         <file alias="searchI">search.png</file>
         <file alias="triangleI">triangle.jpg</file>
         <file alias="stop">Stop.png</file>
+        <file alias="pause">Pause.png</file>
     </qresource>
 </RCC>

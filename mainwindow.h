@@ -10,8 +10,15 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QList>
-#include <QSound>
+#include <QSocketNotifier>
 //#include <phonon>
+#include <phonon/audiooutput.h>
+#include <phonon/seekslider.h>
+#include <phonon/mediaobject.h>
+#include <phonon/volumeslider.h>
+#include <phonon/backendcapabilities.h>
+#include <QLCDNumber>
+#include <QTableWidget>
 
 #include "myDoubleSpinBox.h"
 #include "renderarea.h"
@@ -26,11 +33,12 @@ class MainWindow : public QMainWindow {
     QWidget *centralWidget;
  private:
     QMap<int, QPushButton*> map;
+
+    //QSocketNotifier *midi;
     playThread *pthread;
     ReadBuffThread *tRead;
     QString songName;
     unsigned char inbytes[6];
-    //int inbytes[6];
     enum { NumGridRows = 12, NumButtons = 6 };
     QPushButton *buttons[NumButtons];
     QGroupBox *horizontalGroupBox;
@@ -38,6 +46,26 @@ class MainWindow : public QMainWindow {
     QPushButton* topKeys[15];
     QPushButton* bottomKeys[15];
     QList<RenderArea*> renderAreas;
+
+    // Phonon: try to get rid of some
+    Phonon::SeekSlider *seekSlider;
+    Phonon::MediaObject *mediaObject;
+    Phonon::MediaObject *metaInformationResolver;
+    Phonon::AudioOutput *audioOutput;
+    Phonon::VolumeSlider *volumeSlider;
+    QList<Phonon::MediaSource> sources;
+    QAction *playAction;
+    QAction *pauseAction;
+    QAction *stopAction;
+    QAction *nextAction;
+    QAction *previousAction;
+    QAction *addFilesAction;
+    QAction *exitAction;
+    QAction *aboutAction;
+    QAction *aboutQtAction;
+    QLCDNumber *timeLcd;
+    QTableWidget *musicTable;
+    
  public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -45,10 +73,22 @@ class MainWindow : public QMainWindow {
     void setColor(QPushButton *pbtn, QColor color);
     void playSong(QString s);
     void idol(int);
+
     public slots:
         //void oneKeyClicked();
+        //void handleData();
         void readFromDevice();
         void stopPlayingSong();
+        
+        // Phonon:
+        void addFiles();
+        void about();
+        void stateChanged(Phonon::State newState, Phonon::State oldState);
+        void tick(qint64 time);
+        void sourceChanged(const Phonon::MediaSource &source);
+        void metaStateChanged(Phonon::State newState, Phonon::State oldState);
+        void aboutToFinish();
+        void tableClicked(int row, int column);   // skip this one for now
 };
 
 #endif

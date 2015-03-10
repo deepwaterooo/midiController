@@ -3,6 +3,62 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* Update 3/10/2015, updates include
+** updates
+- On the thread side, I just simply separate the detecting reading from Midi work into a thread, and connected the thread's signals with mainwindow slot function, and this makes the play and stop 100% responsive already. 
+- Then I tried to light LED on for MIdi keys that I have pressed, and the LED on/off was not as repsonsive as I expected, would look into this later on;
+- exchanged QSound with phonon module to satisfy my advisor's new increased requirements during last review meeting. 
+- Phonon module is fully-functional by down-grading qt Creator from 5.3.x to 4.8.6 version and install phonon module, just need some extra work to fix minor bugs and satisfy the advisor's requirements (while I kept some buttons and toolbars and codes just for my debugging propose and convenience only, I could easily remove them later on according to the advisor's suggestions);
+** other
+- Last week my advisor complained that the hour I showed him too much code, he doesn't want to look into code that much yet. And he would rather help me with threads communications.
+- After all my possible demos by commenting some codes out, even with threads, my advisor didn't offer any constructive suggestions. Gosh, I missed the mentor so much, who as the technical lead know programs and projects great, inspired and taught me sincerely and effectively during the internship.... 
+- For this week's meeting, I am going to set my laptop into CSAC, so that I don't have to put everything on my knees and not formal and convenient at all. 
+- Since my advisor doesn't want to review my codes, even he specificly checked for detail how I declared and initialized my playthread in my mainwindow.cpp file. Since I need to get graduated any way, and I have always been blocked and I have not set up the online full study plan yet, I would need to *discuss the graduation date and process* with my advisor today if I have any extra time. 
+- Current GUI snapshot: 
+
+[[./pic/Screenshot_from_2015-03-08_13:31:00.png]]
+** Last week's meeting explain
+ Last week's weekly meeting was cancelled by advisor, emails are attached below;
+
+*** No meeting today?
+(my advisor)@gmail.com [(my advisor)@gmail.com] on behalf of (my advisor) [(my advisor)@xxxxx.uxxxxx.edu]
+You replied on 3/3/2015 9:47 AM.
+Sent:	Tuesday, March 03, 2015 9:12 AM
+To:	(me~~) ((me~~)@vandals.uxxxxx.edu)
+
+Hi (me~~) - 
+
+I have a deadline today - would it be possible to meet on thursday, 10:00 instead of today?
+
+Thanks!
+
+   - (my advisor)
+*** RE: No meeting today?
+(me~~) ((me~~)@vandals.uxxxxx.edu)
+Sent:	Tuesday, March 03, 2015 9:47 AM
+To:	
+(my advisor) [(my advisor)@xxxxx.uxxxxx.edu]
+Hi Dr. (My Advisor), 
+
+Yes let's meet on Thursday 10:00am then. I will write to you if I have any conflict on that time if there is any by then (so far no conflicts). 
+
+(explain: The reason I wrote this way was that I have short chats with recruitors on Tuesday and Wednesday, and there is NO reason that I should NOT put my job hunting for H1B sponshorship as my first priority. If I would have phone screen on Thursday, I don't want to it be blocked by the weekly review.)
+
+Thanks,
+(me~~)
+*** Can't meet today
+(my advisor)@gmail.com [(my advisor)@gmail.com] on behalf of (my advisor) [(my advisor)@xxxxx.uxxxxx.edu]
+Sent:	Thursday, March 05, 2015 7:31 AM
+To:	
+Huang, (me~~) ((me~~)@vandals.uxxxxx.edu)
+Hi (me~~) - 
+
+I just realized that I have a thesis defense today at 9:30, so I can't meet today. Let's shoot for our regular time next week.
+
+(explain: I guess my advisor simply forgot either my weekly review scheduled by himeself two days ago, or he simply forgot the student's defense which one he was interested. No problem with me at all. )
+
+   - (my advisor)
+
 * update 3/3/2015, meeting canceled for today
 - The meeting was cancelled for today, will update some other day when this week's schedule get fixed.
 * update 2/24/2015, updates include
@@ -221,12 +277,21 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://stackoverflow.com/questions/16751778/qt-qsound-looping
 - http://forum.codecall.net/topic/71902-qt-c-play-sound-on-key-press-stops-working-after-a-few-seconds/
 ** Phonon
+- http://tuxradar.com/content/how-it-works-linux-audio-explained
 - http://bbs.qter.org/forum.php?mod=viewthread&tid=784
-- seek slider: http://pencil-animation.org/forum/viewtopic.php?id=672
+- seek slider failed: http://pencil-animation.org/forum/viewtopic.php?id=672
 - http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html
+- 
+- 
 ** QThread
 - http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml
 - http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml
+- http://qt-project.org/wiki/Threads_Events_QObjects_Chinese
+- http://my.oschina.net/laopiao/blog/88158
+- example http://blog.csdn.net/small_qch/article/details/6681907 
+- http://www.kuqin.com/qtdocument/threads.html
+- http://no001.blog.51cto.com/1142339/277004
 - 
-** QMutex
 - 
+- 
+

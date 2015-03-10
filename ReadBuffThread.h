@@ -6,7 +6,6 @@
 #include <QThread>
 #include <QMutex>
 #include <stdlib.h>
-//#include <pthread.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <QDebug>
@@ -21,6 +20,7 @@ class ReadBuffThread : public QThread {
     ReadBuffThread(QObject *parent = 0)
         : QThread(parent) {
         buff = new dArr(data, 6);
+        lit = false;
         qDebug() << "in ReadBuffThread";
     }
 
@@ -29,21 +29,22 @@ class ReadBuffThread : public QThread {
             *(this->buff) = *src;
     }
     
- private:   // comment out for tmp before buff->get() work
-    unsigned char data[6];
+    //private:   // comment out for tmp before buff->get() work
+    unsigned char data[6] = {0};
+    unsigned char prev[3] = {0};    
     dArr *buff; //(data, 6);
-    
+    bool lit;
  protected:
     void run() {
-        while (true) {
-            int fd;          
-            char* device = (char*)("/dev/snd/midiC1D0");
-            fd = open(device, O_RDONLY, 0);
-            if (fd == -1) {
-                qDebug("Error: cannot open \n");
-                exit(1);
-            }
-
+        int fd;          
+        char* device = (char*)("/dev/snd/midiC1D0");
+        fd = open(device, O_RDWR, 0);  // modify to be at the same time light LED on
+        if (fd == -1) {
+            qDebug("Error: cannot open \n");
+            exit(1);
+        }
+        int cnt = 0;
+        while (cnt < 100) {
             int bytes_read = read(fd, &data, sizeof(data));
             while (bytes_read < 0) {
                 qDebug("Error reading %s\n", MIDI_DEVICE);
@@ -51,20 +52,30 @@ class ReadBuffThread : public QThread {
             }
             for (int i = 0; i < 6; ++i)
                 qDebug() << "data[" << i << "]: " << data[i];
-
             buff->set(data, 6);
-            //msleep(10);
             /*
-              playSong("Surfinusa.wav");
-              //qDebug() << "inbytes[1]]: " << inbytes[1];
-              setColor(map[inbytes[1]], QColor(255, 255, 0));
-              idol(3);  
-              setColor(map[inbytes[1]], QColor(255, 255, 255));
+              // tested this part using qt 5.3 version just read/write from/to midi LED on/off is not as responsive as expected, need more work here
+            // write LED on made it way too slow~~
+            for (int i = 0; i < 3; ++i) {
+                if (data[i] != prev[i]) {
+                    prev[i] = data[i];
+                    lit = true;
+                }
+            }
+            if (lit) {
+                prev[0] = 0x90;
+                prev[2] = 127;
+                write(fd, prev, sizeof(prev));
+                lit = false;
+            }
             */
+            emit valueRead();
+            sleep(5);
+            cnt++;
         }
     }
  signals:
-    void done();
+    void valueRead();
 };
 
 #endif
