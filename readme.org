@@ -2,7 +2,8 @@
 #+latex_header: \lstset{language=c++,numbers=left,numberstyle=\tiny,basicstyle=\ttfamily\small,tabsize=4,frame=none,escapeinside=``,extendedchars=false,keywordstyle=\color{blue!70},commentstyle=\color{red!55!green!55!blue!55!},rulesepcolor=\color{red!20!green!20!blue!20!}}
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
-
+* update 3/24/2015, 
+- This week's meeting was cancelled, struggling all my way out for "*H1B sponsorship before 4/1/2015*"......
 * Update 3/10/2015, updates include
 ** updates
 - On the thread side, I just simply separate the detecting reading from Midi work into a thread, and connected the thread's signals with mainwindow slot function, and this makes the play and stop 100% responsive already. 
