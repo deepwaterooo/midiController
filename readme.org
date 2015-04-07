@@ -2,8 +2,6 @@
 #+latex_header: \lstset{language=c++,numbers=left,numberstyle=\tiny,basicstyle=\ttfamily\small,tabsize=4,frame=none,escapeinside=``,extendedchars=false,keywordstyle=\color{blue!70},commentstyle=\color{red!55!green!55!blue!55!},rulesepcolor=\color{red!20!green!20!blue!20!}}
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
-<<<<<<< HEAD
-
 * updates 4/7/2015
 ** updates
 - Googled and reviewed and understood the process flow how Phonon works in Linux environment, but the Phonon MediaObject->play() failed to work properly with separated checking port thread. 
@@ -15,8 +13,6 @@
   - Hope I can get some help from the advisor as well. The advisor would help look into Qt Creator documents, and I need to google more and implement and test all the limited ideas that I have so far....
 ** other
 - Last week's meeting was cancelled by me because of sickness. It was 3/27 evening when the temperature got extremely low 62F and I hadn't paid any attention to the temperature, and I easily caught cold, got headache and running nose for all these days....
-=======
->>>>>>> de86dcebfc0ae10a296bd8ae531f3ac16798abb3
 * update 3/24/2015, 
 - This week's meeting was cancelled, struggling all my way out for "*H1B sponsorship before 4/1/2015*"......
 * Update 3/10/2015, updates include
