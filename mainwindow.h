@@ -11,7 +11,6 @@
 #include <QGraphicsScene>
 #include <QList>
 #include <QSocketNotifier>
-//#include <phonon>
 #include <phonon/audiooutput.h>
 #include <phonon/seekslider.h>
 #include <phonon/mediaobject.h>
@@ -33,7 +32,8 @@ class MainWindow : public QMainWindow {
     QWidget *centralWidget;
  private:
     QMap<int, QPushButton*> map;
-
+    QMap<int, QString> mKeySong;
+    
     //QSocketNotifier *midi;
     playThread *pthread;
     ReadBuffThread *tRead;
@@ -47,7 +47,6 @@ class MainWindow : public QMainWindow {
     QPushButton* bottomKeys[15];
     QList<RenderArea*> renderAreas;
 
-    // Phonon: try to get rid of some
     Phonon::SeekSlider *seekSlider;
     Phonon::MediaObject *mediaObject;
     Phonon::MediaObject *metaInformationResolver;
@@ -73,7 +72,8 @@ class MainWindow : public QMainWindow {
     void setColor(QPushButton *pbtn, QColor color);
     void playSong(QString s);
     void idol(int);
-
+    //void tableClicked(int row, int column);
+ 
     public slots:
         //void oneKeyClicked();
         //void handleData();
@@ -88,7 +88,7 @@ class MainWindow : public QMainWindow {
         void sourceChanged(const Phonon::MediaSource &source);
         void metaStateChanged(Phonon::State newState, Phonon::State oldState);
         void aboutToFinish();
-        void tableClicked(int row, int column);   // skip this one for now
+        void tableClicked(int row, int column);  
 };
 
 #endif

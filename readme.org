@@ -3,7 +3,23 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* updates 4/7/2015
+** updates
+- Googled and reviewed and understood the process flow how Phonon works in Linux environment, but the Phonon MediaObject->play() failed to work properly with separated checking port thread. 
+  - To make sure that my understanding and modifications are correct by removing "addFiles" options, I could try old style irresponsive signal-slots just to make sure MediaObject flowchart is correct (have not tried this yet, just know with existing thread, not work);
+- Still stuggling with big-picture organization, tried: 
+  - separate the checking port tasks into a separate thread, but failed to make Phonon MediaObject->play();
+  - separate the checking port tasks into a separate QObject descendant, but still failed to make it work;
+  - One more option that I can try would be separate the Phonon media player into a a separate QObject descendant, and together with checking port separate QObject descendant, connecting signals and slots correctly, could be a potential solution, but need separate the Phonon media player first;
+  - Hope I can get some help from the advisor as well. The advisor would help look into Qt Creator documents, and I need to google more and implement and test all the limited ideas that I have so far....
+** other
+- Last week's meeting was cancelled by me because of sickness. It was 3/27 evening when the temperature got extremely low 62F and I hadn't paid any attention to the temperature, and I easily caught cold, got headache and running nose for all these days....
+* update 3/24/2015, 
+- This week's meeting was cancelled, struggling all my way out for "*H1B sponsorship before 4/1/2015*"......
 * Update 3/10/2015, updates include
+- Current GUI snapshot: 
+
+[[./pic/Screenshot_from_2015-03-08_13:31:00.png]]
 ** updates
 - On the thread side, I just simply separate the detecting reading from Midi work into a thread, and connected the thread's signals with mainwindow slot function, and this makes the play and stop 100% responsive already. 
 - Then I tried to light LED on for MIdi keys that I have pressed, and the LED on/off was not as repsonsive as I expected, would look into this later on;
@@ -15,9 +31,6 @@
 - For this week's meeting, I am going to set my laptop into CSAC, so that I don't have to put everything on my knees and not formal and convenient at all. 
 - Since my advisor doesn't want to review my codes, even he specificly checked for detail how I declared and initialized my playthread in my mainwindow.cpp file during last review meeting. Since I need to get graduated any way, and I have always been blocked and I have not set up the online full study plan yet, I would need to *discuss the graduation date and process* with my advisor today if I have any extra time. 
 - The advisor sent email saying that he will be slightly late for today's meeting. 
-- Current GUI snapshot: 
-
-[[./pic/Screenshot_from_2015-03-08_13:31:00.png]]
 ** Last week's meeting explain
  Last week's weekly meeting was cancelled by advisor, emails are attached below;
 
@@ -289,8 +302,8 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://bbs.qter.org/forum.php?mod=viewthread&tid=784
 - seek slider failed: http://pencil-animation.org/forum/viewtopic.php?id=672
 - http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html
-- 
-- 
+- http://www.360doc.com/content/12/1110/17/6828497_247047662.shtml
+- http://max.book118.com/html/2014/0117/5589932.shtm
 ** QThread
 - http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml
 - http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml
@@ -299,7 +312,20 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - example http://blog.csdn.net/small_qch/article/details/6681907 
 - http://www.kuqin.com/qtdocument/threads.html
 - http://no001.blog.51cto.com/1142339/277004
+- use *moveToThread()* to change the affinity. explain example http://stackoverflow.com/questions/15034255/launch-phonon-player-in-a-different-thread
+- http://stackoverflow.com/questions/4093159/what-is-the-correct-way-to-implement-a-qthread-example-please
+- http://gotoanswer.com/?q=Qt+Signals+and+slots+in+a+QThread
 - 
 - 
 - 
+** midi read/write separate
+- http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html
+- seems to be something relative https://github.com/mixedinkey-opensource/MIKMIDI
+- https://github.com/vishnubob/python-midi
+- 
+- 
+- 
+- 
+- 
+
 

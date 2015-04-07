@@ -65,6 +65,7 @@
 #include <QGraphicsScene>
 #include <QSocketNotifier>
 #include <phonon> 
+#include <QThread>
 
 #include "mainwindow.h"
 #include "playThread.h"
@@ -100,13 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
         topKeys[i] = new QPushButton();
         topKeys[i]->setFixedSize(50, 100);
     }
-    /*
-    // remove these special ones to use the THREE only
-    topKeys[12] = new QPushButton(QIcon(":/images/pause"), tr(""));
-    topKeys[12]->setFixedSize(50, 100);
-    topKeys[13] = new QPushButton(QIcon(":/images/stop"), tr(""));
-    topKeys[13]->setFixedSize(50, 100);
-    */
+
     topKeys[0]->setFixedSize(20, 100);
     topKeys[14]->setFixedSize(70, 100);
     top[0]->setText(tr(""));
@@ -181,6 +176,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)), this, SLOT(sourceChanged(Phonon::MediaSource)));
     connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
     Phonon::createPath(mediaObject, audioOutput);
+
     // setupActions
     playAction = new QAction(style()->standardIcon(QStyle::SP_MediaPlay), tr("Play"), this);
     playAction->setShortcut(tr("Ctrl+P"));
@@ -195,6 +191,9 @@ MainWindow::MainWindow(QWidget *parent)
     nextAction->setShortcut(tr("Ctrl+N"));
     previousAction = new QAction(style()->standardIcon(QStyle::SP_MediaSkipBackward), tr("Previous"), this);
     previousAction->setShortcut(tr("Ctrl+R"));
+    nextAction->setDisabled(true);
+    previousAction->setDisabled(true);
+        
     addFilesAction = new QAction(tr("Add &Files"), this);
     addFilesAction->setShortcut(tr("Ctrl+F"));
     exitAction = new QAction(tr("E&xit"), this);
@@ -203,6 +202,7 @@ MainWindow::MainWindow(QWidget *parent)
     aboutAction->setShortcut(tr("Ctrl+B"));
     aboutQtAction = new QAction(tr("About &Qt"), this);
     aboutQtAction->setShortcut(tr("Ctrl+Q"));
+    
     connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
     connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
     connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
@@ -210,6 +210,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    
     // setupMenus
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(addFilesAction);
@@ -218,11 +219,14 @@ MainWindow::MainWindow(QWidget *parent)
     QMenu *aboutMenu = menuBar()->addMenu(tr("&Help"));
     aboutMenu->addAction(aboutAction);
     aboutMenu->addAction(aboutQtAction);
+
     // setupUi
     QToolBar *bar = new QToolBar;
     bar->addAction(playAction);
     bar->addAction(pauseAction);
     bar->addAction(stopAction);
+    bar->addAction(previousAction);
+    bar->addAction(nextAction);
     seekSlider = new Phonon::SeekSlider(this);
     seekSlider->setMediaObject(mediaObject);
     volumeSlider = new Phonon::VolumeSlider(this);
@@ -234,6 +238,7 @@ MainWindow::MainWindow(QWidget *parent)
     palette.setBrush(QPalette::Light, Qt::darkGray);
     timeLcd = new QLCDNumber;
     timeLcd->setPalette(palette);
+
     // musicTable
     QStringList headers;
     headers << tr("Title") << tr("Artist") << tr("Album") << tr("Year");
@@ -267,6 +272,7 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel *topT[3];
     QLabel *midT[3];
     QLabel *botT[3];
+
     // for circles and triangles
     QRect *rect = new QRect(0,0,30,30);
     QRegion *region = new QRegion(*rect, QRegion::Ellipse);
@@ -341,10 +347,8 @@ MainWindow::MainWindow(QWidget *parent)
         hbox2->addWidget(topT[i]);
         hbox3->addWidget(midB[i]);
         hbox4->addWidget(midT[i]);
-        //hbox5->addWidget(botB[i]);
         hbox6->addWidget(botT[i]);
     }
-    //hbox5->addWidget(view);
     int i = 0;
     for(QList<RenderArea*>::iterator it = renderAreas.begin(); it != renderAreas.end(); it++, i++) {
         (*it)->setFillGradient(QColor(255, 255, 255), QColor(255, 255, 255));
@@ -471,44 +475,42 @@ MainWindow::MainWindow(QWidget *parent)
     map[66] = topKeys[11];
     map[68] = topKeys[12];
     map[70] = topKeys[13];
-    
-    // 1. create a thread to read from device, and scanning for the input values;
-    // 2. if scanned value == 59 (key indexed 7), do the folloring:
-    //    a, paint the GUI key color to be blue;
-    //    b, write back to device to light LED on for the key;
-    //    c, trigger the playing audio file
-    //    d, when audio file done, light LED off
-    // according to the advisor, he doesn't want to use keys (except for STOP) for playing
+    mKeySong[55] = QString("TheHeavyclip.wav");      // 4 5 6 7 8 9
+    mKeySong[57] = QString("Surfin' U.S.A..wav");
+    mKeySong[59] = QString("05 Grand Experiment.wav");
+    mKeySong[60] = QString("Pharrell_Walliams_-_Happy.wav");
+    mKeySong[62] = QString("Karnintro.wav");
+    mKeySong[64] = QString("Karn Evil 9_1st Impression-Part 2 copy.wav");
 
-    /*
-      for (int i = 0; i < 15; i++) 
-      connect(bottomKeys[i], SIGNAL(released()), this, SLOT(readFromDevice()));
-      for (int i = 0; i < 15; i++)
-      if (i != 0 && i != 3 && i != 7 && i != 10 && i <= 12) // 12 pause
-      connect(topKeys[i], SIGNAL(released()), this, SLOT(readFromDevice()));
-    */
-    /*
-    connect(topKeys[11], SIGNAL(triggered()), this, SLOT(play()));   // Play
-    connect(topKeys[12], SIGNAL(triggered()), this, SLOT(pause()));  // Pause
-    connect(topKeys[13], SIGNAL(triggered()), this, SLOT(stop()));   // Stop
-    */
-
-    // not a GOOD one
+    // not a GOOD one, but a start
+    // I am NOT quite sure why this doesn't work, but it seems it could be feasible if I separate the whole phonon player stuff into a separate QObject descendant, and then moveToThread(...) ...., try this method!
     for (int i = 0; i < 6; i++) inbytes[i] = 0;
     dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
+
+    /*
     tRead = new ReadBuffThread(this);
     tRead->set(buff);
+    // 2, if the problem is here, to test, remove subclass of QThread to test process flow
     connect(tRead, SIGNAL(valueRead()), this, SLOT(readFromDevice()));   // this thread makes play/stop quite responsive using QSound
     tRead->start();
-    
+    */
+
+    // NOT working
+    tRead = new ReadBuffThread();  // I think I got the wrong direction, phonon stuff into separate QObject descendant instead of this one ?!!
+    QThread* th = new QThread();
+    connect(th, SIGNAL(finished()), tRead, SLOT(deleteLater()));
+    // trigger the thread first
+    // don't know how to start the moveToThread() Qthread
+    //connect(topKeys[13], SIGNAL(clicked()), tRead, SLOT(valueRead()));
+    connect(tRead, SIGNAL(readValue()), this, SLOT(readFromDevice()));
+    tRead->moveToThread(th);
+    //th->start();
+    //th->run();    // cannot cal run(), protected
+
     // for rectangle "Bend" key connection
     QList<RenderArea*>::iterator it = renderAreas.begin();
-    //connect(*it, )
 }
-/*
-void MainWindow::handleData() {
-}
-*/
+
 void MainWindow::stopPlayingSong() {
     pthread->playStop();
     setColor(map[inbytes[1]], QColor(255, 255, 255));
@@ -536,24 +538,13 @@ void MainWindow::playSong(QString s) {
         pthread->quit();
         pthread = new playThread(this);   // maybe need to be global
     }
-    qDebug() << "got here before setSongname";
     pthread->setSongName(s);
-    qDebug() << "got here before pthread->start";
     //connect(pthread, &playThread::finished, pthread, &playThread::deleteLater);   // still causing crash, but why?
     pthread->start();
 }
 
 void MainWindow::readFromDevice() {
-    /*
-      int fd;          
-      char* device = (char*)("/dev/snd/midiC1D0");
-      fd = open(device, O_RDONLY, 0);
-      if (fd == -1) {
-      qDebug("Error: cannot open \n");
-      exit(1);
-      }
-    */
-    unsigned char* tmp = tRead->data;  // using tRead->data works.
+    unsigned char* tmp = tRead->data; 
     for (int i = 0; i < 6; i++) {
         qDebug() << "tmp[i]: " << tmp[i];
         inbytes[i] = tmp[i];
@@ -561,17 +552,47 @@ void MainWindow::readFromDevice() {
     }
     if (inbytes[0] == 144) { // need set to more detail         
         setColor(map[inbytes[1]], QColor(255, 255, 0));
-        playSong("TheHeavyclip.wav");
+        if (inbytes[2] > 0) {
+            Phonon::MediaSource source(mKeySong[inbytes[1]]);
+            sources.append(source);
+        }
+        qDebug() << "sources size: " << sources.size();
+
+        //addFiles();
+        if (!sources.isEmpty()) {
+            metaInformationResolver->setCurrentSource(sources.at(0));
+            //qDebug() << "sources.at(0): " << metaInformationResolver->currentSource().fileName();  
+            mediaObject->setCurrentSource(metaInformationResolver->currentSource()); // totalTime() in milliseconds
+            mediaObject->play();   // if the problem is here ? 1 or 2
+        }
+
+        tableClicked(0, 0);
+        
+        /*
+        if (!sources.isEmpty()) {
+            metaInformationResolver->setCurrentSource(sources.at(index));
+            mediaObject->setCurrentSource(metaInformationResolver->currentSource());
+            mediaObject->play();
+        }
+        */
+        //mediaObject->state() = Phonon::PlayingState;
+        /*
+        bool wasPlaying = mediaObject->state() == Phonon::PlayingState;
+        if (!wasPlaying)
+            mediaObject->play();
+        */
+        
+        // try light LED on: correspond to stateChange
+        
         qDebug() << "got here before paint color";
-        idol(0.5);  
+        idol(1);  // need to change this one to sth else
         setColor(map[inbytes[1]], QColor(255, 255, 255));
     }
 }
 
 void MainWindow::idol(int x) {
-    //sleep(x);
     QEventLoop loop;
-    QTimer::singleShot(150000, &loop, SLOT(quit()));    //
+    QTimer::singleShot(15000, &loop, SLOT(quit()));// need change method here 
     loop.exec();
     bottomKeys[7]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
 }
@@ -583,64 +604,29 @@ void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) {
 }
 
 void MainWindow::addFiles() {
+    // add filter, supports .wav, .mp3 & .wma file types
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"), QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    //QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"), "../", "music(*.mp3 *.wma *.wav)");
     if (files.isEmpty()) return;
     int index = sources.size();
     foreach (QString string, files) {
         Phonon::MediaSource source(string);
         sources.append(source);
     }
-    if (!sources.isEmpty())
+    if (!sources.isEmpty()) {
         metaInformationResolver->setCurrentSource(sources.at(index));
-}
-/*
-void MainWindow::stateChanged(Phonon::State newState, Phonon::State) {
-    switch (newState) {
-    case Phonon::ErrorState:
-        if (mediaObject->errorType() == Phonon::FatalError) {
-            QMessageBox::warning(this, tr("Fatal Error"),
-                                 mediaObject->errorString());
-        } else {
-            QMessageBox::warning(this, tr("Error"),
-                                 mediaObject->errorString());
-        }
-        break;
-    case Phonon::PlayingState:
-        //playAction->setEnabled(false);
-        //pauseAction->setEnabled(true);
-        //stopAction->setEnabled(true);
-        topKeys[11]->setEnabled(false);
-        topKeys[12]->setEnabled(true);
-        topKeys[13]->setEnabled(true);
-        break;
-    case Phonon::StoppedState:
-        //stopAction->setEnabled(false);
-        //playAction->setEnabled(true);
-        //pauseAction->setEnabled(false);
-        topKeys[13]->setEnabled(false);
-        topKeys[11]->setEnabled(true);
-        topKeys[12]->setEnabled(false);
-        timeLcd->display("00:00");
-        break;
-    case Phonon::PausedState:
-        //pauseAction->setEnabled(false);
-        //stopAction->setEnabled(true);
-        //playAction->setEnabled(true);
-        topKeys[12]->setEnabled(false);
-        topKeys[13]->setEnabled(true);
-        topKeys[11]->setEnabled(true);
-        break;
+        //metaInformationResolver->setCurrentSource(sources.at(0));
+        mediaObject->setCurrentSource(metaInformationResolver->currentSource());
     }
 }
-*/
+
 void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState */) {
     switch (newState) {
     case Phonon::ErrorState:
-        if (mediaObject->errorType() == Phonon::FatalError) {
+        if (mediaObject->errorType() == Phonon::FatalError) 
             QMessageBox::warning(this, tr("Fatal Error"), mediaObject->errorString());
-        } else {
+        else 
             QMessageBox::warning(this, tr("Error"), mediaObject->errorString());
-        }
         break;
     case Phonon::PlayingState:
         playAction->setEnabled(false);
@@ -658,7 +644,7 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         stopAction->setEnabled(true);
         playAction->setEnabled(true);
         break;
-    case Phonon::BufferingState:
+    case Phonon::BufferingState: // LoadingState
         break;
     default:
         ;
@@ -675,10 +661,12 @@ void MainWindow::tableClicked(int row, int /* column */) {
     mediaObject->stop();
     mediaObject->clearQueue();
     if (row >= sources.size()) return;
+    qDebug() << "sources size: " << sources.size();
     mediaObject->setCurrentSource(sources[row]);
-    if (wasPlaying)
-        mediaObject->play();
-    else
+    if (wasPlaying) {        
+            qDebug() << "got here for playing....";
+            mediaObject->play();
+    } else    
         mediaObject->stop();
 }
 
@@ -728,8 +716,8 @@ void MainWindow::metaStateChanged(Phonon::State newState, Phonon::State /* oldSt
         metaInformationResolver->setCurrentSource(sources.at(index));
     } else {    
         musicTable->resizeColumnsToContents();
-        if (musicTable->columnWidth(0) > 300)
-            musicTable->setColumnWidth(0, 300);
+        if (musicTable->columnWidth(0) > 200)
+            musicTable->setColumnWidth(0, 200);
     }
 }
 

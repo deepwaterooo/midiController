@@ -18,18 +18,9 @@ class playThread : public QThread {
  public:
     playThread(QObject *parent = 0)
         : QThread(parent) {
-        
-            qDebug() << "got here";
         audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
         mediaObject = new Phonon::MediaObject(this);
         /*
-        QPalette palette;
-    palette.setBrush(QPalette::Light, Qt::darkGray);
-            timeLcd = new QLCDNumber;
-    timeLcd->setPalette(palette);
-        timeLcd->display("00:00");
-            qDebug() << "got here playThread constructor";
-
         metaInformationResolver = new Phonon::MediaObject(this);
         mediaObject->setTickInterval(1000);
         connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
@@ -39,13 +30,12 @@ class playThread : public QThread {
         connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
 */
         Phonon::createPath(mediaObject, audioOutput);
-
     }
     void setSongName(QString s) {
         songName = s;
         mediaObject->setCurrentSource(Phonon::MediaSource("/home/jenny/480/qt/midiUI/res_wav/" + songName));
     }
-    void playStop() {   // problems here
+    void playStop() { 
         mediaObject->stop();
     }
     void playPause() {    
@@ -56,8 +46,6 @@ class playThread : public QThread {
     }
     
  private:
-    //QSound *currSnd;
-    //Phonon::MediaObject *mediaObject;
     QString songName;
     Phonon::SeekSlider *seekSlider;
     Phonon::MediaObject *mediaObject;
@@ -69,7 +57,6 @@ class playThread : public QThread {
 
  protected:
     void run() {
-        qDebug() << "got here run";
         mediaObject->play();
         emit done();   // I suspect if I should emit finish signal here
     }
