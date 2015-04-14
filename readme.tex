@@ -1,4 +1,4 @@
-% Created 2015-04-07 Tue 11:29
+% Created 2015-04-14 Tue 11:11
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -33,10 +33,83 @@
 \maketitle
 \tableofcontents
 
-\section{updates 4/7/2015}
+
+\section{update 4/14/2015}
 \label{sec-1}
 \subsection{updates}
 \label{sec-1-1}
+\begin{itemize}
+\item Tested the Phonon mediaObject audioOutput process flow is working properly, and the not able to play after having added mediaSource from a thread is caused by the thread, which means it is rather a thread-signal-slot combining/connection problem, rather than Phonon mediaObject audioOutput process flow one;
+\item At this point, I still don't have any clear feather idea to solve this problem yet, but together with the idea I presented to the advisor last week, there are several aspect I can try to work on:
+\begin{itemize}
+\item 1. Try to understand Qt signal-slot connection mechanism deeper and better, the fifth parameter of QObject::connect() has several different types, Qt::QueuedConnection, direct, auto, and implicit sharing;
+\item 2. Need to understand through code implementation the most important concepts of "thread safe" and "re-entrant", together with thread-signal-slot implicit sharing mechanism, where could be possibly wrong or potentially affect my current implementation?
+\item 3. After above two steps, I believe I would NOT be blinded-trying any more, start to pack Phonon media-related into one thread as I had thought about it before last week's review;
+\item 4. And for step 2, one major area that I have not really look into and tried is about eventloop, how to control minor events, especially when multiple threads, QueuedConnection type. This could be a minor aspect of 2.
+\item 5. One more trial could conduct on "Serial Communications", not sure if I have translated it correctly. Just like I have "borrowed" some codes from internet about Phonon and made me be able to focus on this dammit thread hell, maybe I could learn from some examples, like how they design and implement when they need audit a port, read from and write to somewhere, one linux example was found in \url{http://mobile.51cto.com/symbian-270754.htm}, will try to copy/paste/test locally and digest and apply if it's helpful.
+\end{itemize}
+\item That's all the things I have so far, since I have barely made any progress and it is really something interesting, I will work on them this Friday and Saturday, and will update this repository when it's convenient for me for version control among different trials.
+\end{itemize}
+\subsection{other}
+\label{sec-1-2}
+\begin{itemize}
+\item This morning, I was 10 minutes late, when I set up my computer in CSAC and wrote to the advisor, it was 10:12am already; And it happened that the advisor didn't reply email and didn't show up in his office as well;
+\item For last week's meeting, the advisor wrote email that he will be slightly late, but when he show up in CSAC, it was later than 10:40am already, and that's reason I forgot to update the repository before the review;
+\item For this spring semester, besides check my codes for details when he wanted, I don't remember if the advisor has offered any constructive suggestions except having asked to open() and close() device each time to see if it could be responsive from different threads on 3/24/2015, while we haven't meet many times neither yet\ldots{}.
+\end{itemize}
+\subsubsection{Meeting$_{\text{4}}$/7/2015}
+\label{sec-1-2-1}
+(me\textasciitilde{}) ((me\textasciitilde{})@uxxxx.edu)
+Sent:        Tuesday, April 07, 2015 9:25 AM
+To:        
+(advisor) (advisor@uxxxx.edu)
+Hi Dr. Advisor, 
+
+I am in CSAC. When you have your meeting done, or when you are ready, please find me in CSAC.
+
+See you soon\textasciitilde{}!
+
+Thanks,
+(me\textasciitilde{})
+\subsubsection{Re: Meeting$_{\text{4}}$/7/2015}
+\label{sec-1-2-2}
+(advisor) (advisor@uxxxx.edu)
+You replied on 4/7/2015 10:40 AM.
+Sent:        Tuesday, April 07, 2015 9:56 AM
+To:        
+(me\textasciitilde{}) ((me\textasciitilde{})@uxxxx.edu)
+Hi (me\textasciitilde{}) - 
+
+Will be there shortly.
+
+\begin{itemize}
+\item advisor
+\end{itemize}
+\subsubsection{Re: Meeting$_{\text{4}}$/7/2015}
+\label{sec-1-2-3}
+(me\textasciitilde{}) ((me\textasciitilde{})@uxxxx.edu)
+You replied on 4/14/2015 10:12 AM.
+Sent:        Tuesday, April 07, 2015 10:40 AM
+To:        
+(advisor) (advisor@uxxxx.edu)
+Sure see you soon.
+\subsubsection{Meeting$_{\text{4}}$/14/2015}
+\label{sec-1-2-4}
+(me\textasciitilde{}) ((me\textasciitilde{})@uxxxx.edu)
+Sent:        Tuesday, April 14, 2015 10:12 AM
+To:        
+(advisor) (advisor@uxxxx.edu)
+Dr. Advisor, 
+
+Sorry I was slightly late today. I am in CSAC now and all set up now. When you are ready, please come and find me sitting in previous sit there. 
+
+Thanks,
+(me\textasciitilde{})
+
+\section{updates 4/7/2015}
+\label{sec-2}
+\subsection{updates}
+\label{sec-2-1}
 \begin{itemize}
 \item Googled and reviewed and understood the process flow how Phonon works in Linux environment, but the Phonon MediaObject->play() failed to work properly with separated checking port thread. 
 \begin{itemize}
@@ -51,24 +124,25 @@
 \end{itemize}
 \end{itemize}
 \subsection{other}
-\label{sec-1-2}
+\label{sec-2-2}
 \begin{itemize}
 \item Last week's meeting was cancelled by me because of sickness. It was 3/27 evening when the temperature got extremely low 62F and I hadn't paid any attention to the temperature, and I easily caught cold, got headache and running nose for all these days\ldots{}.
 \end{itemize}
+
 \section{update 3/24/2015,}
-\label{sec-2}
+\label{sec-3}
 \begin{itemize}
 \item This week's meeting was cancelled, struggling all my way out for "\textbf{H1B sponsorship before 4/1/2015}"\ldots{}\ldots{}
 \end{itemize}
 \section{Update 3/10/2015, updates include}
-\label{sec-3}
+\label{sec-4}
 \begin{itemize}
 \item Current GUI snapshot:
 \end{itemize}
 
 \includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2015-03-08_13:31:00.png}
 \subsection{updates}
-\label{sec-3-1}
+\label{sec-4-1}
 \begin{itemize}
 \item On the thread side, I just simply separate the detecting reading from Midi work into a thread, and connected the thread's signals with mainwindow slot function, and this makes the play and stop 100\% responsive already.
 \item Then I tried to light LED on for MIdi keys that I have pressed, and the LED on/off was not as repsonsive as I expected, would look into this later on;
@@ -76,7 +150,7 @@
 \item Phonon module is fully-functional by down-grading qt Creator from 5.3.x to 4.8.6 version and install phonon module, just need some extra work to fix minor bugs and satisfy the advisor's requirements (while I kept some buttons and toolbars and codes just for my debugging propose and convenience only, I could easily remove them later on according to the advisor's suggestions);
 \end{itemize}
 \subsection{other}
-\label{sec-3-2}
+\label{sec-4-2}
 \begin{itemize}
 \item Last week my advisor complained that the hour I showed him too much code, he doesn't want to look into code that much yet. And he would rather help me with threads communications.
 \item After all my possible demos by commenting some codes out, even with threads, my advisor didn't offer any constructive suggestions. Gosh, I missed the mentor so much, who as the technical lead knows programs and projects great, inspired and taught me sincerely and effectively during the internship season\ldots{}.
@@ -85,11 +159,11 @@
 \item The advisor sent email saying that he will be slightly late for today's meeting.
 \end{itemize}
 \subsection{Last week's meeting explain}
-\label{sec-3-3}
+\label{sec-4-3}
 Last week's weekly meeting was cancelled by advisor, emails are attached below;
 
 \subsubsection{No meeting today?}
-\label{sec-3-3-1}
+\label{sec-4-3-1}
 (my advisor)@gmail.com [(my advisor)@gmail.com] on behalf of (my advisor) [(my advisor)@xxxxx.uxxxxx.edu]
 You replied on 3/3/2015 9:47 AM.
 Sent:        Tuesday, March 03, 2015 9:12 AM
@@ -105,7 +179,7 @@ Thanks!
 \item (my advisor)
 \end{itemize}
 \subsubsection{RE: No meeting today?}
-\label{sec-3-3-2}
+\label{sec-4-3-2}
 (me\textasciitilde{}~) ((me\textasciitilde{}~)@vandals.uxxxxx.edu)
 Sent:        Tuesday, March 03, 2015 9:47 AM
 To:        
@@ -119,7 +193,7 @@ Yes let's meet on Thursday 10:00am then. I will write to you if I have any confl
 Thanks,
 (me\textasciitilde{}~)
 \subsubsection{Can't meet today}
-\label{sec-3-3-3}
+\label{sec-4-3-3}
 (my advisor)@gmail.com [(my advisor)@gmail.com] on behalf of (my advisor) [(my advisor)@xxxxx.uxxxxx.edu]
 Sent:        Thursday, March 05, 2015 7:31 AM
 To:        
@@ -134,7 +208,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item (my advisor)
 \end{itemize}
 \subsection{review resuluts}
-\label{sec-3-4}
+\label{sec-4-4}
 \begin{itemize}
 \item The advisor came to CSAC at 10:26am, and we did have about half an hour meeting before his 11:00am meeting.
 \item For the phonon GUI, except the musicTable and menubar, we agreed that we will keep all the necessary informations including seekslider, timerLCD, volumeSlider, play/pause/stop buttongs;
@@ -145,14 +219,14 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \end{itemize}
 
 \section{update 3/3/2015, meeting canceled for today}
-\label{sec-4}
+\label{sec-5}
 \begin{itemize}
 \item The meeting was cancelled for today, will update some other day when this week's schedule get fixed.
 \end{itemize}
 \section{update 2/24/2015, updates include}
-\label{sec-5}
+\label{sec-6}
 \subsection{updates}
-\label{sec-5-1}
+\label{sec-6-1}
 \begin{itemize}
 \item idol(3); moved to the correct position to paint GUI button responsively;
 \item modified "Play" key to be "Stop" playing a music key, set upper row last key as "STOP" key;
@@ -165,7 +239,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item The write back to midi to light LED on for the key pressed, and methods are ready there already, I just need to make my threads work first, then use a thread to write back to midi when necessary,
 \end{itemize}
 \subsection{other}
-\label{sec-5-2}
+\label{sec-6-2}
 \begin{itemize}
 \item As listed above, review the play/stop details and issues, reading thread issues, and while loop issues sequencially and logically with advisor by demo all these different version, and show necessary codes parts;
 \item The project goal keeps the same, and the advisor actually maybe interested in "PAUSE" button and seekslider bar, and later if I have time, would work on that;
@@ -173,9 +247,9 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \end{itemize}
 
 \section{Update 2/19/2014, updates include}
-\label{sec-6}
+\label{sec-7}
 \subsection{updates}
-\label{sec-6-1}
+\label{sec-7-1}
 \begin{itemize}
 \item These are two sets in the MIDI keyboard, the 25 key main board, and the adjustment 8 keys;
 \item Corresponded the main keyboard keys with the same "surfinUSA.wav" song, and it works;
@@ -185,7 +259,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item I have spent tons of hours on Emacs ever since Fall 2012 triggered by Emacs Lisp program hightlights, and I still got blocked by unexpected bugs from time to time, but still, have been blocked by thousands of times, I still like Emacs the most. Fully functional Emacs without bugs significantly improves efficiency for me. Now brought readme.tex and readme.pdf back, I like to have them before git update to avoid multiple unnecessary updates\ldots{}
 \end{itemize}
 \subsection{todo}
-\label{sec-6-2}
+\label{sec-7-2}
 \begin{itemize}
 \item So far linked to only one song, I have about 4-5, and need to link all of them to the keys (instead of link all the keys to the same song);
 \item Add two buttons for "Pause" and "Stop" in GUI to pause/stop playing a song;
@@ -195,7 +269,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item These are the suggestions that the advisor offered during morning meeting, and before the followed week meeting, I will try to finish as much as I can.
 \end{itemize}
 \subsection{other issues}
-\label{sec-6-3}
+\label{sec-7-3}
 \begin{itemize}
 \item The advisor and I rescheduled our meeting time to be 2:30pm on Wednesday afternoon because actually he has bi-weekly meeting at the original meeting time;
 \item Then I realize that I failed to state it clear that I need to work at 3pm means I needs to be well uniformly-dressed and be able to clock in and start work immediately, so we will have only about 15 minutes, and even advisor says I may start early, but I don't want to run to work late at times.
@@ -204,9 +278,9 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \end{itemize}
 
 \section{Update 2/12/2014, updates include}
-\label{sec-7}
+\label{sec-8}
 \subsection{updates}
-\label{sec-7-1}
+\label{sec-8-1}
 \begin{itemize}
 \item Didn't start until this week was mainly before the foot court work had waited more than one week to get docs processed, and waiting for work Schedule before Scheduling with advisor, and advisor approved it.
 \item Scheduled Wednesday 12:30-1:30pm to meet advisor weekly, and will update at least once a week to record progress.
@@ -216,9 +290,9 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2015-02-13_22:19:11.png}
 
 \section{Update 12/11/2014, updates include}
-\label{sec-8}
+\label{sec-9}
 \subsection{updates}
-\label{sec-8-1}
+\label{sec-9-1}
 \begin{itemize}
 \item Temporatorily mimic phonon seekslider, but have not connected the signals and slots fully functioning yet;
 \item This seekslider may still eventually came back to use Phonon library using Qt4.8 version;
@@ -226,14 +300,14 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \end{itemize}
 \includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2014-12-11_17:34:24.png}
 \subsection{review}
-\label{sec-8-2}
+\label{sec-9-2}
 \begin{itemize}
 \item Because of lack Xbee modules (needs devices from intstructor), so far playing only .wav file is ok;
 \item It is basic, setting one buttone to work only, without any threads yet, but will expend it to be better during spring semester.
 \item Spring semester (1 credit) will pack all my instructor's Tower Play modules into a well-designed fully-functional softwares for user's convenience.
 \end{itemize}
 \section{Update 12/09/2014, updates include}
-\label{sec-9}
+\label{sec-10}
 \begin{itemize}
 \item worked in it a little bit to set the connections between Midi controller and Qt Creator;
 \item tried to implement pthead for reading user input, but got slightly frustrated today, and applied easier methods instead;
@@ -241,7 +315,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item Will demo to his to see if he has better suggestions.
 \end{itemize}
 \section{Update 11/23/2014, updates include}
-\label{sec-10}
+\label{sec-11}
 \begin{itemize}
 \item Cleaned repository so that it looks clean and nice;
 \item Remove menubar as suggested by advisor;
@@ -255,9 +329,9 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 
 \includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2014-11-23_13:20:06.png}  
 \section{Review 11/21/2014, updates include}
-\label{sec-11}
+\label{sec-12}
 \subsection{Review Contents}
-\label{sec-11-1}
+\label{sec-12-1}
 \begin{itemize}
 \item Created most basic interface for the client, and reviewed with course instructor.
 \item Demo the most basic interface to him, and get corresponding specific requirements as listed followed.
@@ -265,7 +339,7 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 
 \includegraphics[width=.9\linewidth]{./pic/2014-11-20_21:52:19.png}
 \subsection{Detailed Requirements}
-\label{sec-11-2}
+\label{sec-12-2}
 \begin{itemize}
 \item menubar is NOT necessary, and could be removed away;
 \item Interface topright four line texts are not necessary, could be removed away;
@@ -275,21 +349,21 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \item When finished the above basic ones, if I have extra time, could explore the left side 8 keys to test if it is possible to use them to set a bunch of sequence so that save time when needed compared with set sequence one by one from the basic 25 keys.
 \end{itemize}
 \section{Project Requirements}
-\label{sec-12}
+\label{sec-13}
 \begin{itemize}
 \item Use QuNexus Midi controller as a command controller to manipulate play sequence for tower lights show;
 \item Besides the main functionalities, create a Qt Creator Interface to help facilate the tower light playing process for clients convenience.
 \end{itemize}
 \section{main functionality}
-\label{sec-13}
+\label{sec-14}
 \subsection{Read data from MIDI}
-\label{sec-13-1}
+\label{sec-14-1}
 \begin{itemize}
 \item Use the MIDI Controller as a speical Controller that can be operated to play specific songs sequence, or do some specific work.
 \item play specific sequence may be the work for keys 0-9, and 10-12, how about other 20 keys? Do they require specific work to be done?
 \end{itemize}
 \subsection{Write data back to MIDI}
-\label{sec-13-2}
+\label{sec-14-2}
 \begin{itemize}
 \item When a key was pushed, the specific Controller key's LED is supposed to be on to indicate the operation.
 \item Trick about the LED to be continuously on is that when a key is pressed, that is 1 byte that indicates the "Duration" of the key press, I may need to 
@@ -300,25 +374,25 @@ I just realized that I have a thesis defense today at 9:30, so I can't meet toda
 \end{itemize}
 \end{itemize}
 \section{Programming Language}
-\label{sec-14}
+\label{sec-15}
 \subsection{Qt}
-\label{sec-14-1}
+\label{sec-15-1}
 \begin{itemize}
 \item the worries that I have by using Qt is that if Qt has the capability to handle the MIDI-Linux connection problems.
 \item And also Qt-to-Audio (linux) connection things as well. Should it be Qt, or as far as I can set it to work in Linux, just let it be that way then?
 \end{itemize}
 \subsection{c++}
-\label{sec-14-2}
+\label{sec-15-2}
 \begin{itemize}
 \item I believe C++ is the most widely used Language used by those midi sequencer softwares, so I have no better choice than c++ right now.
 \end{itemize}
 \section{Interface Design}
-\label{sec-15}
+\label{sec-16}
 \includegraphics[width=.9\linewidth]{./pic/menu.png}
 
 \includegraphics[width=.9\linewidth]{./pic/midi.jpg}
 \section{Midi keys and corresponded operations}
-\label{sec-16}
+\label{sec-17}
 \begin{table}[htb]
 \caption{midi keys and corresponded operations}
 \centering
@@ -366,30 +440,30 @@ Oct+ & \\
 \end{tabular}
 \end{table}
 \section{Interface Guide}
-\label{sec-17}
+\label{sec-18}
 \begin{itemize}
 \item Give text instructions on how to use the Interface, and what are the corresponded operations by press specific keys.
 \item Like list the above table in the Interface Guide text area.
 \end{itemize}
 \section{References}
-\label{sec-18}
+\label{sec-19}
 \subsection{For circle QPushButton}
-\label{sec-18-1}
+\label{sec-19-1}
 \begin{itemize}
 \item \url{http://stackoverflow.com/questions/12734319/change-rectangular-qt-button-to-round}
 \end{itemize}
 \subsection{Draw circle separate}
-\label{sec-18-2}
+\label{sec-19-2}
 \begin{itemize}
 \item \url{https://coderalbert.wordpress.com/2014/03/16/creating-circle-in-linux-using-qt-creator/}
 \end{itemize}
 \subsection{For Rectangle Arc}
-\label{sec-18-3}
+\label{sec-19-3}
 \begin{itemize}
 \item \url{http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget}
 \end{itemize}
 \subsection{PaintEvent Triangle}
-\label{sec-18-4}
+\label{sec-19-4}
 \begin{itemize}
 \item \url{http://stackoverflow.com/questions/20416789/how-to-add-a-small-triangle-at-one-of-the-corners-of-qwidget}
 \item \url{http://stackoverflow.com/questions/3894737/qt4-how-to-draw-inside-a-widget}
@@ -397,61 +471,61 @@ Oct+ & \\
 \item \url{http://stackoverflow.com/questions/7968269/basic-qt-gui-qpushbutton-for-drawing-a-line}
 \end{itemize}
 \subsection{QPushButton::drawButton(QPainter *painter);}
-\label{sec-18-5}
+\label{sec-19-5}
 \begin{itemize}
 \item \url{https://www.tbi.univie.ac.at/~pmg/tutorials/QT/html/qpushbutton.html}
 \end{itemize}
 \subsection{QGraphicsSene QGraphicsProxy\ldots{}}
-\label{sec-18-6}
+\label{sec-19-6}
 \begin{itemize}
 \item \url{http://qt-project.org/forums/viewthread/4020}
 \end{itemize}
 \subsection{QPushButton raised enabled}
-\label{sec-18-7}
+\label{sec-19-7}
 \begin{itemize}
 \item \url{http://www.qtcentre.org/threads/42852-QStyledItemDelegate-paint-QPushButton-with-stylesheet}
 \end{itemize}
 \subsection{QPushButton two icons}
-\label{sec-18-8}
+\label{sec-19-8}
 \begin{itemize}
 \item \url{http://www.qtcentre.org/threads/39445-How-to-add-two-icons-images-to-the-same-QPushButton}
 \end{itemize}
 \subsection{QPainter}
-\label{sec-18-9}
+\label{sec-19-9}
 \begin{itemize}
 \item \url{http://qt-project.org/forums/viewthread/23628}
 \end{itemize}
 \subsection{QGridLayout ScrollArea}
-\label{sec-18-10}
+\label{sec-19-10}
 \begin{itemize}
 \item \url{http://qt-project.org/forums/viewthread/20843}
 \item \url{http://qt-project.org/forums/viewthread/20924/}
 \end{itemize}
 \subsection{Linux Midi}
-\label{sec-18-11}
+\label{sec-19-11}
 \begin{itemize}
 \item \url{https://ccrma.stanford.edu/~craig/articles/linuxmidi/input/section1.html}
 \item \url{https://ccrma.stanford.edu/~craig/articles/linuxmidi/}
 \end{itemize}
 \subsection{Open device}
-\label{sec-18-12}
+\label{sec-19-12}
 \begin{itemize}
 \item \url{http://pubs.opengroup.org/onlinepubs/009695399/functions/open.html}
 \end{itemize}
 \subsection{Qt QIODevice}
-\label{sec-18-13}
+\label{sec-19-13}
 \begin{itemize}
 \item \url{http://doc.qt.digia.com/qq/qq12-iodevice.html}
 \item \url{http://stackoverflow.com/questions/14821792/what-does-file-openqiodevicereadonly-mean}
 \end{itemize}
 \subsection{Qt Debugging}
-\label{sec-18-14}
+\label{sec-19-14}
 \begin{itemize}
 \item \url{https://bbs.archlinux.org/viewtopic.php?id=174523}
 \item \url{http://www.qtcentre.org/threads/53549-connect}()-terminates-the-program
 \end{itemize}
 \subsection{pulseaudio linux mint}
-\label{sec-18-15}
+\label{sec-19-15}
 \begin{itemize}
 \item \url{http://community.linuxmint.com/software/view/pulseaudio}
 \lstset{language=c++,label= ,caption= ,numbers=none}
@@ -467,22 +541,22 @@ unable to open ftdi (xbee) device: -3 (device not found)
 \end{lstlisting}
 \end{itemize}
 \subsection{QSound example}
-\label{sec-18-16}
+\label{sec-19-16}
 \begin{itemize}
 \item \url{http://doc.qt.digia.com/3.3/sound-example.html}
 \end{itemize}
 \subsection{QSound QSoundEffect(pulseaudio): Error Decoding course}
-\label{sec-18-17}
+\label{sec-19-17}
 \begin{itemize}
 \item \url{https://together.jolla.com/question/53394/qsoundeffectpulseaudio-error-decoding-sourc/}
 \end{itemize}
 \subsection{QTimer}
-\label{sec-18-18}
+\label{sec-19-18}
 \begin{itemize}
 \item \url{http://qt-project.org/forums/viewthread/27190}
 \end{itemize}
 \subsection{Triangle}
-\label{sec-18-19}
+\label{sec-19-19}
 \begin{itemize}
 \item \url{http://en.wikibooks.org/wiki/Qt/Qt_Quick_Overview}
 \item \url{http://qt-project.org/forums/viewthread/25624}
@@ -491,13 +565,13 @@ unable to open ftdi (xbee) device: -3 (device not found)
 \item \url{http://qt-project.org/doc/qt-4.8/painting-painterpaths-window-cpp.htm}
 \end{itemize}
 \subsection{play loops}
-\label{sec-18-20}
+\label{sec-19-20}
 \begin{itemize}
 \item \url{http://stackoverflow.com/questions/16751778/qt-qsound-looping}
 \item \url{http://forum.codecall.net/topic/71902-qt-c-play-sound-on-key-press-stops-working-after-a-few-seconds/}
 \end{itemize}
 \subsection{Phonon}
-\label{sec-18-21}
+\label{sec-19-21}
 \begin{itemize}
 \item \url{http://tuxradar.com/content/how-it-works-linux-audio-explained}
 \item \url{http://bbs.qter.org/forum.php?mod=viewthread&tid=784}
@@ -505,9 +579,10 @@ unable to open ftdi (xbee) device: -3 (device not found)
 \item \url{http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html}
 \item \url{http://www.360doc.com/content/12/1110/17/6828497_247047662.shtml}
 \item \url{http://max.book118.com/html/2014/0117/5589932.shtm}
+\item \url{http://doc.qt.digia.com/4.6/phonon-qmusicplayer.html}
 \end{itemize}
 \subsection{QThread}
-\label{sec-18-22}
+\label{sec-19-22}
 \begin{itemize}
 \item \url{http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml}
 \item \url{http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml}
@@ -519,12 +594,12 @@ unable to open ftdi (xbee) device: -3 (device not found)
 \item use \textbf{moveToThread()} to change the affinity. explain example \url{http://stackoverflow.com/questions/15034255/launch-phonon-player-in-a-different-thread}
 \item \url{http://stackoverflow.com/questions/4093159/what-is-the-correct-way-to-implement-a-qthread-example-please}
 \item \url{http://gotoanswer.com/?q=Qt+Signals+and+slots+in+a+QThread}
-\item 
-\item 
+\item ´®¿ÚÍ¨Ñ¶ \url{http://mobile.51cto.com/symbian-270754.htm}
+\item \url{http://www.xuebuyuan.com/973565.html}
 \item 
 \end{itemize}
 \subsection{midi read/write separate}
-\label{sec-18-23}
+\label{sec-19-23}
 \begin{itemize}
 \item \url{http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html}
 \item seems to be something relative \url{https://github.com/mixedinkey-opensource/MIKMIDI}

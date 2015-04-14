@@ -2,6 +2,64 @@
 #+latex_header: \lstset{language=c++,numbers=left,numberstyle=\tiny,basicstyle=\ttfamily\small,tabsize=4,frame=none,escapeinside=``,extendedchars=false,keywordstyle=\color{blue!70},commentstyle=\color{red!55!green!55!blue!55!},rulesepcolor=\color{red!20!green!20!blue!20!}}
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
+
+* update 4/14/2015
+** updates
+- Tested the Phonon mediaObject audioOutput process flow is working properly, and the not able to play after having added mediaSource from a thread is caused by the thread, which means it is rather a thread-signal-slot combining/connection problem, rather than Phonon mediaObject audioOutput process flow one;
+- At this point, I still don't have any clear feather idea to solve this problem yet, but together with the idea I presented to the advisor last week, there are several aspect I can try to work on:
+  - 1. Try to understand Qt signal-slot connection mechanism deeper and better, the fifth parameter of QObject::connect() has several different types, Qt::QueuedConnection, direct, auto, and implicit sharing;
+  - 2. Need to understand through code implementation the most important concepts of "thread safe" and "re-entrant", together with thread-signal-slot implicit sharing mechanism, where could be possibly wrong or potentially affect my current implementation?
+  - 3. After above two steps, I believe I would NOT be blinded-trying any more, start to pack Phonon media-related into one thread as I had thought about it before last week's review;
+  - 4. And for step 2, one major area that I have not really look into and tried is about eventloop, how to control minor events, especially when multiple threads, QueuedConnection type. This could be a minor aspect of 2.
+  - 5. One more trial could conduct on "Serial Communications", not sure if I have translated it correctly. Just like I have "borrowed" some codes from internet about Phonon and made me be able to focus on this dammit thread hell, maybe I could learn from some examples, like how they design and implement when they need audit a port, read from and write to somewhere, one linux example was found in http://mobile.51cto.com/symbian-270754.htm, will try to copy/paste/test locally and digest and apply if it's helpful.
+- That's all the things I have so far, since I have barely made any progress and it is really something interesting, I will work on them this Friday and Saturday, and will update this repository when it's convenient for me for version control among different trials. 
+** other
+- This morning, I was 10 minutes late, when I set up my computer in CSAC and wrote to the advisor, it was 10:12am already; And it happened that the advisor didn't reply email and didn't show up in his office as well; 
+- For last week's meeting, the advisor wrote email that he will be slightly late, but when he show up in CSAC, it was later than 10:40am already, and that's reason I forgot to update the repository before the review;
+- For this spring semester, besides check my codes for details when he wanted, I don't remember if the advisor has offered any constructive suggestions except having asked to open() and close() device each time to see if it could be responsive from different threads on 3/24/2015, while we haven't meet many times neither yet....
+*** Meeting_4/7/2015
+(me~) ((me~)@uxxxx.edu)
+Sent:	Tuesday, April 07, 2015 9:25 AM
+To:	
+(advisor) (advisor@uxxxx.edu)
+Hi Dr. Advisor, 
+
+I am in CSAC. When you have your meeting done, or when you are ready, please find me in CSAC.
+
+See you soon~!
+
+Thanks,
+(me~)
+*** Re: Meeting_4/7/2015
+(advisor) (advisor@uxxxx.edu)
+You replied on 4/7/2015 10:40 AM.
+Sent:	Tuesday, April 07, 2015 9:56 AM
+To:	
+(me~) ((me~)@uxxxx.edu)
+Hi (me~) - 
+
+Will be there shortly.
+
+- advisor
+*** Re: Meeting_4/7/2015
+(me~) ((me~)@uxxxx.edu)
+You replied on 4/14/2015 10:12 AM.
+Sent:	Tuesday, April 07, 2015 10:40 AM
+To:	
+(advisor) (advisor@uxxxx.edu)
+Sure see you soon.
+*** Meeting_4/14/2015
+(me~) ((me~)@uxxxx.edu)
+Sent:	Tuesday, April 14, 2015 10:12 AM
+To:	
+(advisor) (advisor@uxxxx.edu)
+Dr. Advisor, 
+
+Sorry I was slightly late today. I am in CSAC now and all set up now. When you are ready, please come and find me sitting in previous sit there. 
+
+Thanks,
+(me~)
+
 * updates 4/7/2015
 ** updates
 - Googled and reviewed and understood the process flow how Phonon works in Linux environment, but the Phonon MediaObject->play() failed to work properly with separated checking port thread. 
@@ -13,6 +71,7 @@
   - Hope I can get some help from the advisor as well. The advisor would help look into Qt Creator documents, and I need to google more and implement and test all the limited ideas that I have so far....
 ** other
 - Last week's meeting was cancelled by me because of sickness. It was 3/27 evening when the temperature got extremely low 62F and I hadn't paid any attention to the temperature, and I easily caught cold, got headache and running nose for all these days....
+
 * update 3/24/2015, 
 - This week's meeting was cancelled, struggling all my way out for "*H1B sponsorship before 4/1/2015*"......
 * Update 3/10/2015, updates include
@@ -303,6 +362,7 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html
 - http://www.360doc.com/content/12/1110/17/6828497_247047662.shtml
 - http://max.book118.com/html/2014/0117/5589932.shtm
+- http://doc.qt.digia.com/4.6/phonon-qmusicplayer.html
 ** QThread
 - http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml
 - http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml
@@ -314,8 +374,8 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - use *moveToThread()* to change the affinity. explain example http://stackoverflow.com/questions/15034255/launch-phonon-player-in-a-different-thread
 - http://stackoverflow.com/questions/4093159/what-is-the-correct-way-to-implement-a-qthread-example-please
 - http://gotoanswer.com/?q=Qt+Signals+and+slots+in+a+QThread
-- 
-- 
+- ´®¿ÚÍ¨Ñ¶ http://mobile.51cto.com/symbian-270754.htm
+- http://www.xuebuyuan.com/973565.html
 - 
 ** midi read/write separate
 - http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html

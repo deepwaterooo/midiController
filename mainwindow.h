@@ -34,7 +34,6 @@ class MainWindow : public QMainWindow {
     QMap<int, QPushButton*> map;
     QMap<int, QString> mKeySong;
     
-    //QSocketNotifier *midi;
     playThread *pthread;
     ReadBuffThread *tRead;
     QString songName;
@@ -72,11 +71,8 @@ class MainWindow : public QMainWindow {
     void setColor(QPushButton *pbtn, QColor color);
     void playSong(QString s);
     void idol(int);
-    //void tableClicked(int row, int column);
  
     public slots:
-        //void oneKeyClicked();
-        //void handleData();
         void readFromDevice();
         void stopPlayingSong();
         
