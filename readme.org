@@ -3,6 +3,9 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 4/17/2015
+- Just understand main thread, and sub-thread signals-slot relationships slightly better by implementing necessary examples
+- Will still need to work on my codes tomorrow
 * update 4/14/2015
 ** updates
 - Tested the Phonon mediaObject audioOutput process flow is working properly, and the not able to play after having added mediaSource from a thread is caused by the thread, which means it is rather a thread-signal-slot combining/connection problem, rather than Phonon mediaObject audioOutput process flow one;
@@ -376,7 +379,10 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://gotoanswer.com/?q=Qt+Signals+and+slots+in+a+QThread
 - ´®¿ÚÍ¨Ñ¶ http://mobile.51cto.com/symbian-270754.htm
 - http://www.xuebuyuan.com/973565.html
-- 
+- http://mobile.51cto.com/symbian-268690.htm
+- http://mobile.51cto.com/symbian-268690_1.htm
+- http://mobile.51cto.com/symbian-268360.htm
+
 ** midi read/write separate
 - http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html
 - seems to be something relative https://github.com/mixedinkey-opensource/MIKMIDI
