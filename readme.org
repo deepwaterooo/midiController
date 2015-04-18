@@ -5,6 +5,7 @@
 
 * update 4/17/2015
 - Just understand main thread, and sub-thread signals-slot relationships slightly better by implementing necessary examples
+- want to google and read more docs before my trial of coding....
 - Will still need to work on my codes tomorrow
 * update 4/14/2015
 ** updates
