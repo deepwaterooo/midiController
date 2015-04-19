@@ -3,10 +3,15 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 4/18/2015
+- Separated checking midi port & corresponding slot function executing in another thread successfully, but mainwindow got blocked from showing up on time, need to find a way to solve this;
+- Still need to work on the slot function for playing audio source files
+
 * update 4/17/2015
 - Just understand main thread, and sub-thread signals-slot relationships slightly better by implementing necessary examples
 - want to google and read more docs before my trial of coding....
 - Will still need to work on my codes tomorrow
+
 * update 4/14/2015
 ** updates
 - Tested the Phonon mediaObject audioOutput process flow is working properly, and the not able to play after having added mediaSource from a thread is caused by the thread, which means it is rather a thread-signal-slot combining/connection problem, rather than Phonon mediaObject audioOutput process flow one;
@@ -366,7 +371,7 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://qt-project.org/doc/qt-4.8/phonon-qmusicplayer.html
 - http://www.360doc.com/content/12/1110/17/6828497_247047662.shtml
 - http://max.book118.com/html/2014/0117/5589932.shtm
-- http://doc.qt.digia.com/4.6/phonon-qmusicplayer.html
+- phonon classsic example: http://doc.qt.digia.com/4.6/phonon-qmusicplayer.html
 ** QThread
 - http://www.360doc.com/content/12/0218/20/6828497_187676466.shtml
 - http://www.360doc.com/content/12/1106/14/7899729_246182251.shtml
@@ -383,6 +388,11 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://mobile.51cto.com/symbian-268690.htm
 - http://mobile.51cto.com/symbian-268690_1.htm
 - http://mobile.51cto.com/symbian-268360.htm
+- http://stackoverflow.com/questions/15034255/launch-phonon-player-in-a-different-thread
+- 
+- 
+- 
+- 
 
 ** midi read/write separate
 - http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html
@@ -392,6 +402,3 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - 
 - 
 - 
-- 
-
-

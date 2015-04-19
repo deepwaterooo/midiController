@@ -21,21 +21,19 @@
 
 #include "myDoubleSpinBox.h"
 #include "renderarea.h"
-#include "playThread.h"
 #include "db.h"
-#include "ReadBuffThread.h"
+//#include "Player.h"
 
 #define MIDI_DEVICE "/dev/snd/midiC1D0"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
     QWidget *centralWidget;
- private:
+    //private:
+ public:
     QMap<int, QPushButton*> map;
     QMap<int, QString> mKeySong;
     
-    playThread *pthread;
-    ReadBuffThread *tRead;
     QString songName;
     unsigned char inbytes[6];
     enum { NumGridRows = 12, NumButtons = 6 };
@@ -69,12 +67,12 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
     void setHeight(QPlainTextEdit *edit, int nRows);
     void setColor(QPushButton *pbtn, QColor color);
-    void playSong(QString s);
+    //void playSong(QString s);
     void idol(int);
  
     public slots:
         void readFromDevice();
-        void stopPlayingSong();
+        //void stopPlayingSong();
         
         // Phonon:
         void addFiles();

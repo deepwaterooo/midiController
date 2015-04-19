@@ -68,9 +68,8 @@
 #include <QThread>
 
 #include "mainwindow.h"
-#include "playThread.h"
 #include "db.h"
-#include "ReadBuffThread.h"
+//#include "Player.h"
 
 void MainWindow::setColor(QPushButton *pbtn, QColor color) {
     int r,g,b;
@@ -488,32 +487,24 @@ MainWindow::MainWindow(QWidget *parent)
     // this step proves that the playAction not responsive is caused by thread instead of any Phonon step (it removed all thread part, and is responding as expected.)
     //connect(topKeys[13], SIGNAL(clicked()), this, SLOT(addFiles()));   
 
-    tRead = new ReadBuffThread(this);
-    tRead->set(buff);
-    // The problem is here: not mediaObject process flow, but thread-signal-slot connection problems
-    connect(tRead, SIGNAL(valueRead()), this, SLOT(readFromDevice()));   // signal and slot are connected, but combining Phonon mediaObject, somewhere connection failed
-    connect(tRead, SIGNAL(valueRead()), mediaObject, SLOT(play()));      // this play() slot, or any play-related (except addFileAction) failed, like mediaObject->play(), playAction->activate(QAction::Trigger);
-    tRead->start();
-    qDebug() << "sources size: " << sources.size();
-
     /*
-    // NOT working
-    tRead = new ReadBuffThread();  // I think I got the wrong direction, phonon stuff into separate QObject descendant instead of this one ?!!
-    QThread* th = new QThread();
-    connect(th, SIGNAL(finished()), tRead, SLOT(deleteLater()));
-    // trigger the thread first
-    // don't know how to start the moveToThread() Qthread
-    //connect(topKeys[13], SIGNAL(clicked()), tRead, SLOT(valueRead()));
-    connect(tRead, SIGNAL(readValue()), this, SLOT(readFromDevice()));
-    tRead->moveToThread(th);
-    //th->start();
-    //th->run();    // cannot cal run(), protected
+    Dummy dummy;
+    Player player;
+    Qthread thread;
+    player.moveToThread(thread);
+    connect(dummy, SIGNAL(readUpdate()), player, SLOT(play())); // problem here
+
+    qDebug() << "main thread: " << QThread::currentThreadId();
+    Player* player = new Player(this);
+    player->start();
     */
+    
     // for rectangle "Bend" key connection
     QList<RenderArea*>::iterator it = renderAreas.begin();
 }
 
 void MainWindow::readFromDevice() {
+    /*
     unsigned char* tmp = tRead->data; 
     for (int i = 0; i < 6; i++) {
         qDebug() << "tmp[i]: " << tmp[i];
@@ -534,60 +525,18 @@ void MainWindow::readFromDevice() {
             //qDebug() << "sources.at(0): " << metaInformationResolver->currentSource().fileName();  
             mediaObject->setCurrentSource(metaInformationResolver->currentSource()); // totalTime() in milliseconds
         }
-
-        /*
-        connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
-        connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(stateChanged(Phonon::State,Phonon::State)));
-        connect(metaInformationResolver, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(metaStateChanged(Phonon::State,Phonon::State)));
-        connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)), this, SLOT(sourceChanged(Phonon::MediaSource)));
-        connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
-        connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
-        connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
-        connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
-        connect(addFilesAction, SIGNAL(triggered()), this, SLOT(addFiles()));
-        connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-        connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-        connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-        */
-        /*
-        //mediaObject->play();   // if the problem is here ? 1 or 2 //, add one more connection
-        connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
-        playAction->activate(QAction::Trigger);
-        playAction->setDisabled(true);
-        */
-        //tableClicked(0, 0);
-        //mediaObject->state() = Phonon::PlayingState;
-        /*
-        bool wasPlaying = mediaObject->state() == Phonon::PlayingState;
-        if (!wasPlaying)
-            mediaObject->play();
-        */
         // try light LED on: correspond to stateChange
         
         qDebug() << "got here before paint color";
         idol(1);  // need to change this one to sth else
         setColor(map[inbytes[1]], QColor(255, 255, 255));
     }
+*/
 }
-
+/*
 void MainWindow::stopPlayingSong() {
     pthread->playStop();
     setColor(map[inbytes[1]], QColor(255, 255, 255));
-    /*
-    // write note off, better separate into a WRONLY thread, now is not responsive
-    int fd;          
-    char* device = (char*)("/dev/snd/midiC1D0");
-    fd = open(device, O_WRONLY, 0);
-    if (fd == -1) {
-    qDebug("Error: cannot open \n");
-    exit(1);
-    }
-    unsigned char tmp[3];
-    tmp[0] = 0x80;
-    tmp[1] = inbytes[1];
-    tmp[2] = 127;
-    write(fd, tmp, sizeof(tmp));
-    */
 }
 
 void MainWindow::playSong(QString s) {
@@ -601,7 +550,7 @@ void MainWindow::playSong(QString s) {
     //connect(pthread, &playThread::finished, pthread, &playThread::deleteLater);   // still causing crash, but why?
     pthread->start();
 }
-
+*/
 void MainWindow::idol(int x) {
     QEventLoop loop;
     QTimer::singleShot(15000, &loop, SLOT(quit()));// need change method here 
