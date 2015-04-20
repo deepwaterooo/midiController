@@ -28,9 +28,14 @@ int main(int argc, char *argv[]) {
     // and other signals; note that methods that are signals already can be conected witout wrappers:
     //QObject::connect( mainThreadObj, SIGNAL(playerPlay()), &player.mediaObject, SLOT(play()) );
 
+    QThread another;     // somewhere got wrong ~!!
+    dummy.moveToThread(&another);
+    another.start();
+
     QObject::connect(&dummy, SIGNAL(readSig()), &player, SLOT(slot_thread()));
     player.moveToThread(&thread);
     thread.start();
+
     dummy.emitSig();
 
     return a.exec();

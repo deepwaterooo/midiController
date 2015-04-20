@@ -3,6 +3,9 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 4/19/2015
+- Understand main UI got frozen because checking midi port is time-consuming (count from 0 to 100, 2, whatever~!), spent limited time simply tried to apply same threading method on this Dummy class, but failed, I will need to think about it.
+- Still lots of work to do, slot functiona about phonon player, and midi read/write, and potentially more as well to make it responsive. Will put more effort on this project for the following several weeks.
 * update 4/18/2015
 - Separated checking midi port & corresponding slot function executing in another thread successfully, but mainwindow got blocked from showing up on time, need to find a way to solve this;
 - Still need to work on the slot function for playing audio source files

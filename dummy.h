@@ -16,8 +16,7 @@
 class Dummy : public QObject {
     Q_OBJECT
  public:
-    Dummy(QObject *parent = 0)
-        : QObject(parent) {
+    Dummy() {
         buff = new dArr(data, 6);
         lit = false;
     }
@@ -35,6 +34,7 @@ class Dummy : public QObject {
     
     public slots:
         void emitSig () {
+            qDebug() << " from Dummy: " << QThread::currentThreadId();
             int fd;          
             char* device = (char*)("/dev/snd/midiC1D0");
             int cnt = 0;
