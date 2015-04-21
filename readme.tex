@@ -1,4 +1,4 @@
-% Created 2015-04-21 Tue 11:27
+% Created 2015-04-21 Tue 12:04
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -50,7 +50,9 @@
 \subsection{other}
 \label{sec-1-2}
 \begin{itemize}
-\item Need to schedule a time this week ask the advisor to help review "Study Plan", so that I can apply for graduation and get graduated as planed.
+\item Review suggestions: After I explained that reading from and write to midi port are designed to be two separated threads (together with either from phonon or timer for LED on time, then write LED off), and supposedly should have QMutex atomic access control, the advisor suggested to open() and close() the device once only (it should be in main program then) and declare the fd = open(DEVICE, O$_{\text{RDWR}}$\ldots{}.) to be global;
+\item Need to schedule a time this week ask the advisor to help review "Study Plan", so that I can apply for graduation and get graduated as planed. There was process flow error, and I will need to contact office of registar before I ask for advisor's approvement. Will go to the office afterwards and try to make it work today, get advisor's approvement latest by this Friday.
+\item updated late cause I forgot there were two large files more than 100MB, which commits was failed before review.
 \end{itemize}
 
 \section{update 4/19/2015}

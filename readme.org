@@ -11,7 +11,9 @@
   - Phonon player part try to make play/pause/stop actions responsive first, other stuff, like music table to show music names, previous/next song names are not as important now;
   - Though for Phonon the music table interface update need some work as well. the text book has QxxxTableItem class, and update interface example for references after I get main issues done.
 ** other
-- Need to schedule a time this week ask the advisor to help review "Study Plan", so that I can apply for graduation and get graduated as planed. 
+- Review suggestions: After I explained that reading from and write to midi port are designed to be two separated threads (together with either from phonon or timer for LED on time, then write LED off), and supposedly should have QMutex atomic access control, the advisor suggested to open() and close() the device once only (it should be in main program then) and declare the fd = open(DEVICE, O_RDWR....) to be global; 
+- Need to schedule a time this week ask the advisor to help review "Study Plan", so that I can apply for graduation and get graduated as planed. There was process flow error, and I will need to contact office of registar before I ask for advisor's approvement. Will go to the office afterwards and try to make it work today, get advisor's approvement latest by this Friday. 
+- updated late cause I forgot there were two large files more than 100MB, which commits was failed before review. 
 
 * update 4/19/2015
 - Understand main UI got frozen because checking midi port is time-consuming (count from 0 to 100, 2, whatever~!), spent limited time simply tried to apply same threading method on this Dummy class, but failed, I will need to think about it.
