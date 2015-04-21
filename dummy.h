@@ -39,7 +39,9 @@ class Dummy : public QObject {
             char* device = (char*)("/dev/snd/midiC1D0");
             int cnt = 0;
             while (cnt < 2) {
-                fd = open(device, O_RDWR, 0); 
+                fd = open(device, O_RDWR, 0);   // try to make this file descriptor global so that it will be accessible from both reading & writing threads;
+                // in the middle, QMutex for atomic section control to protect data
+                
                 if (fd == -1) {
                     qDebug("Error: cannot open \n");
                     exit(1);
@@ -70,7 +72,7 @@ class Dummy : public QObject {
                 }
 
                 emit readSig();
-                close(fd);
+                close(fd);      // open & close only once
                 sleep(5);
                 cnt++;
             } // while

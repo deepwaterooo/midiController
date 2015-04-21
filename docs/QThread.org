@@ -902,6 +902,121 @@ void QObject::activate_signal( QConnectionList *clist, QUObject *o )   {
 } 
 #+END_SRC
 
+* 正确使用Qt多线程
+  Reference: http://my.oschina.net/u/200628/blog/187865
+** QThread的常见特性
+- run()是线程的入口，就像main()对于应用程序的作用。QThread中对run()的默认实现调用了exec()，从而创建一个QEventLoop对象，由其处理该线程事件队列（每一个线程都有一个属于自己的事件队列）中的事件。简单用代码描述如下：
+  #+BEGIN_SRC java
+int QThread::exec() {
+    //...
+    QEventLoop eventLoop;
+    int returnCode = eventLoop.exec();
+    //...
+    return returnCode;
+}
+
+int QEventLoop::exec(ProcessEventsFlags flags) {
+    //...
+    while (!d->exit) {
+        while (!posted_event_queue_is_empty) {
+            process_next_posted_event();
+        }
+    }
+    //...
+}
+  #+END_SRC
+- 由此可见，exec()在其内部不断做着循环遍历事件队列的工作，调用QThread的quit()或exit()方法使停止工作，尽量不要使用terminate()，该方法过于粗暴，造成资源不能释放，甚至互斥锁还处于加锁状态。
+** 旧的使用方式
+- 
+  #+BEGIN_SRC java
+#include "QThread"
+#include "QMutexLocker"
+#include "QMutex"
+
+class Thread : public QThread {
+    Q_OBJECT
+public:
+    Thread();
+    void stop();
+private:
+    bool m_stopFlag;
+    QMutex mutex;
+protected:
+    void run();
+};
+
+Thread::Thread() {
+    m_stopFlag = false;
+}
+  
+void Thread::stop() {
+    QMutexLocker locker(&mutex);
+    m_stopFlag = true;
+}
+  
+void Thread::run() {
+    while (1) {
+        {
+            QMutexLocker locker(&mutex);
+            if(m_stopFlag)
+                break;
+        }
+        qDebug() << "This is in thread[" << currentThreadId() << "]." << (int)currentThread();
+        sleep(2);
+    }
+    m_stopFlag = false;
+}
+  #+END_SRC
+- 这是qt4.6及之前的使用方法，这种方式本没有什么错误，可以处理我们的绝大多数需求。下面的调用可以看出Thread对象本身工作在主线程下，即使调用的t.stop()方法，它也是工作在主线程下，只有run()范围内的代码工作在次线程中。
+
+  #+BEGIN_SRC java
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+    qDebug() << "From main thread: " << QThread::currentThreadId();
+    Thread t;
+    QObject::connect(&t, SIGNAL(finished()), &a, SLOT(quit()));
+    t.start();
+    return a.exec();
+}
+  #+END_SRC
+** 推荐的使用方式
+- 
+   #+BEGIN_SRC java
+#include <QtCore>
+
+class Worker : public QObject {
+    Q_OBJECT
+private slots:
+    void onTimeout() {
+        qDebug() << "Worker::onTimeout get called from?: " << QThread::currentThreadId();
+    }
+};
+  
+//#include "main.moc"
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+    qDebug() << "From main thread: " << QThread::currentThreadId();
+    QThread t;
+    QTimer timer;
+    Worker worker;
+    QObject::connect(&timer, SIGNAL(timeout()), &worker, SLOT(onTimeout()));
+    timer.start(1000);
+    worker.moveToThread(&t);
+    t.start();
+    return a.exec();
+}
+   #+END_SRC
+- 这是Qt4.7及以后版本推荐的工作方式。其主要特点就是利用Qt的事件驱动特性，将需要在次线程中处理的业务放在独立的模块（类）中，由主线程创建完该对象后，将其移交给指定的线程，且可以将多个类似的对象移交给同一个线程。在这个例子中，信号由主线程的QTimer对象发出，之后Qt会将关联的事件放到worker所属线程的事件队列。由于队列连接的作用，在不同线程间连接信号和槽是很安全的。
+** GUI界面假死的处理
+- 在GUI程序中，主线程也叫GUI线程，因为它是唯一被允许执行GUI相关操作的线程。对于一些耗时的操作，如果放在主线程中，就是出现界面无法响应的问题。这种问题的解决一种方式是，把这些耗时操作放到次线程中，还有一种比较简单的方法：在处理耗时操作中频繁调用QApplication::processEvents()。这个函数告诉Qt去处理那些还没有被处理的各类事件，然后再把控制权返还给调用者。
+
+  #+BEGIN_SRC java
+QElapsedTimer et;
+et.start();
+while(et.elapsed()<300)
+    QCoreApplication::processEvents();
+  #+END_SRC
+
 * QT中实现Thread与GUI主线程连通方法
 http://mobile.51cto.com/symbian-270684.htm
 ** 

@@ -28,15 +28,18 @@ int main(int argc, char *argv[]) {
     // and other signals; note that methods that are signals already can be conected witout wrappers:
     //QObject::connect( mainThreadObj, SIGNAL(playerPlay()), &player.mediaObject, SLOT(play()) );
 
+    /*
     QThread another;     // somewhere got wrong ~!!
     dummy.moveToThread(&another);
     another.start();
-
+    */
     QObject::connect(&dummy, SIGNAL(readSig()), &player, SLOT(slot_thread()));
     player.moveToThread(&thread);
     thread.start();
 
     dummy.emitSig();
 
+    // open fd here, wait threads finish or manually terminate the threads;
+    // then fd close(), so open() close() only once, read/write threads & QMutex in the middle.
     return a.exec();
 }
