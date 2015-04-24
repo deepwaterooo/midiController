@@ -4,20 +4,11 @@
 #+author: deepwaterooo
 
 * update 4/24/2015, git practise
-- on 4/7/2015's update, I was supposed to manually resolve conflicts, but I was not aware the problem enough to pay attention to it, ended up by having made three commits; (the readme.org 
-<<<<<<< HEAD
- * updates 4/7/2015
- ** updates
- - Googled and reviewed and understood the process flow how Phonon works in Linux environment, but the Phonon MediaObject->play() failed to work properly with separated checking port thread. 
- @@ -15,8 +13,6 @@
-   - Hope I can get some help from the advisor as well. The advisor would help look into Qt Creator documents, and I need to google more and implement and test all the limited ideas that I have so far....
- ** other
- - Last week's meeting was cancelled by me because of sickness. It was 3/27 evening when the temperature got extremely low 62F and I hadn't paid any attention to the temperature, and I easily caught cold, got headache and running nose for all these days....
-=======
->>>>>>> de86dcebfc0ae10a296bd8ae531f3ac16798abb3
-)
-- And last week Tuesday's update I had been blocked by some time becuase of a >100MB pdf file, could use git rm --cached filename;
-- Added a dev branch. After having spent couple of hours on it, git branches are well-designed easily-understood theories, 
+- on 4/7/2015 update, I was supposed to manually resolve conflicts, but I was not aware the problem enough to pay attention to it, ended up by having made three commits; (the readme.org file)
+- And last week Tuesday update I had been blocked by some time becuase of a >100MB pdf file, could use git rm --cached filename;
+- After having spent couple of hours on git docs, began to understand that git branches are well-designed theories, add/delete branches, switch merge/rebase branches, fast-forward, solve conflicts, cherry-pick, set tags, merge/devide commits, etc. 
+- Pay careful attention to branch rebase. Do NOT rebase branch after having pushed the necessary updates into remote repository already! Otherwise, it will confuse the whole team who share the repository/project.
+- Added a dev branch for long-term development propose, will add topic or hotfix branches later on when necessary for temporatory bug fix. Try to maintain branches in a professional habit and manner. 
 
 * update 4/21/2015, Tuesday
 ** updates
