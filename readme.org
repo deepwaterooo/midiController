@@ -3,6 +3,13 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 4/24/2015, git practise
+- on 4/7/2015 update, I was supposed to manually resolve conflicts, but I was not aware the problem enough to pay attention to it, ended up by having made three commits; (the readme.org file)
+- And last week Tuesday update I had been blocked by some time becuase of a >100MB pdf file, could use git rm --cached filename;
+- After having spent couple of hours on git docs, began to understand that git branches are well-designed theories, add/delete branches, switch merge/rebase branches, fast-forward, solve conflicts, cherry-pick, set tags, merge/devide commits, etc. 
+- Pay careful attention to branch rebase. Do NOT rebase branch after having pushed the necessary updates into remote repository already! Otherwise, it will confuse the whole team who share the repository/project.
+- Added a dev branch for long-term development propose, will add topic or hotfix branches later on when necessary for temporatory bug fix. Try to maintain branches in a professional habit and manner. 
+
 * update 4/21/2015, Tuesday
 ** updates
 - Pretty much all the updates during the past week are included in previous couple of updates, will write advisor review later after meeting though. 
