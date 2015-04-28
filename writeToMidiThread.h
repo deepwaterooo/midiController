@@ -15,10 +15,10 @@ extern char* device;
 extern int fd;
 extern unsigned char notedata[6];
 
-class WritetoMidiThread : public QObject {
+class WriteToMidiThread : public QObject {
     Q_OBJECT
  public:
-    WritetoMidiThread() {
+    WriteToMidiThread() {
     }
  public:
     public slots:

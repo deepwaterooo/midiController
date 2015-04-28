@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     QThread thread;
 
     ReadFromMidiThread readthread;
-    //WriteToMidiThread writethread;
+    WriteToMidiThread writethread;
     // QMutex, QReadWriteLock ? think about it
     
     Player player;

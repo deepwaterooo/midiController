@@ -1,4 +1,4 @@
-% Created 2015-04-28 Tue 10:20
+% Created 2015-04-28 Tue 13:40
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -1236,7 +1236,8 @@ class MyClass {
 \subsection{QReadWriteLock}
 \label{sec-6-2}
 \begin{itemize}
-\item \lstset{language=java,label= ,caption= ,numbers=none}
+\item this one is not working, try some other\ldots{}.
+\lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #include <QApplication>
 #include <QPushButton>
@@ -1282,8 +1283,28 @@ int main(int argc, char *argv[]) {
     return app.exec();
 }
 \end{lstlisting}
+\item codes parts
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+QReadWriteLock lock;
+void ReaderThread::run() {
+    // ...
+    lock.lockForRead();
+    read_file();
+    lock.unlock();
+    //...
+}
+void WriterThread::run() {
+    // ...
+    lock.lockForWrite();
+    write_file();
+    lock.unlock();
+    // ...
+}
+\end{lstlisting}
 \end{itemize}
-\subsection{Consumer Producer}
+
+\subsection{Consumer Producer: QWaitCondition}
 \label{sec-6-3}
 \begin{itemize}
 \item consumer.h
@@ -1409,10 +1430,79 @@ int main(int argc, char *argv[]) {
 }
 \end{lstlisting}
 \end{itemize}
-\subsection{Mandelbrotset}
+
+\subsection{Consumer Producer: QSemaphore}
 \label{sec-6-4}
 \begin{itemize}
+\item producer
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+const int DataSize = 100000;
+const int BufferSize = 8192;
+char buffer[BufferSize];
+
+QSemaphore freeBytes(BufferSize);
+QSemaphore usedBytes;
+
+class Producer : public QThread {
+public:
+    void run() {
+        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+        for (int i = 0; i < DataSize; ++i) {
+            freeBytes.acquire();
+            buffer[i % BufferSize] = "zero"[(int)qrand() % 4];
+            usedBytes.release();
+        }
+    }
+};
+\end{lstlisting}
+\item consumer
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include "producer.h"
+
+class Consumer : public QThread {
+public:
+    void run() {
+        for (int i = 0; i < DataSize; ++i) {
+            usedBytes.acquire();
+            fprintf(stderr, "%c", buffer[i % BufferSize]);
+            freeBytes.release();
+        }
+        fprintf(stderr, "\n");
+    }
+};
+\end{lstlisting}
+\item main.cpp
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+extern const int DataSize;
+extern const int BufferSize;
+extern char buffer[BufferSize];
+
+QWaitCondition bufferNotEmpty;
+QWaitCondition bufferNotFull;
+QMutex mutex;
+int numUsedBytes = 0;
+
+int main(int argc, char *argv[]) {
+    QCoreApplication app(argc, argv);
+    Producer producer;
+    Consumer consumer;
+    producer.start();
+    consumer.start();
+    producer.wait();
+    consumer.wait();
+    return 0;
+}
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Mandelbrotset}
+\label{sec-6-5}
+\begin{itemize}
 \item renderthread.h
+
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #ifndef RENDERTHREAD_H
@@ -1451,6 +1541,7 @@ class RenderThread : public QThread {
 #endif
 \end{lstlisting}
 \item renderthread.cpp
+
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #include <QtGui>
@@ -1580,6 +1671,7 @@ RenderThread::~RenderThread() {
 }
 \end{lstlisting}
 \item Mandelbrotwidget.h
+
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #ifndef MANDELBROTWIDGET_H
@@ -1619,6 +1711,7 @@ class MandelbrotWidget : public QWidget {
 #endif
 \end{lstlisting}
 \item Mandelbrotwidget.cpp
+
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #include <QtGui>
@@ -1763,6 +1856,7 @@ void MandelbrotWidget::scroll(int deltaX, int deltaY) {
     thread.render(centerX, centerY, curScale, size());
 }
 \end{lstlisting}
+
 \item main.cpp
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}

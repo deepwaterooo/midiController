@@ -1037,7 +1037,7 @@ class MyClass {
 };
   #+END_SRC
 ** QReadWriteLock
-- 
+- this one is not working, try some other....
   #+BEGIN_SRC java
 #include <QApplication>
 #include <QPushButton>
@@ -1083,7 +1083,26 @@ int main(int argc, char *argv[]) {
     return app.exec();
 }
   #+END_SRC
-** Consumer Producer
+- codes parts
+  #+BEGIN_SRC java
+QReadWriteLock lock;
+void ReaderThread::run() {
+    // ...
+    lock.lockForRead();
+    read_file();
+    lock.unlock();
+    //...
+}
+void WriterThread::run() {
+    // ...
+    lock.lockForWrite();
+    write_file();
+    lock.unlock();
+    // ...
+}
+  #+END_SRC
+
+** Consumer Producer: QWaitCondition
 - consumer.h
   #+BEGIN_SRC java
 #ifndef CONSUER_H
@@ -1203,8 +1222,71 @@ int main(int argc, char *argv[]) {
     return 0;
 }
   #+END_SRC
+
+** Consumer Producer: QSemaphore
+- producer
+  #+BEGIN_SRC java
+const int DataSize = 100000;
+const int BufferSize = 8192;
+char buffer[BufferSize];
+
+QSemaphore freeBytes(BufferSize);
+QSemaphore usedBytes;
+
+class Producer : public QThread {
+public:
+    void run() {
+        qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+        for (int i = 0; i < DataSize; ++i) {
+            freeBytes.acquire();
+            buffer[i % BufferSize] = "zero"[(int)qrand() % 4];
+            usedBytes.release();
+        }
+    }
+};
+  #+END_SRC
+- consumer
+  #+BEGIN_SRC java
+#include "producer.h"
+
+class Consumer : public QThread {
+public:
+    void run() {
+        for (int i = 0; i < DataSize; ++i) {
+            usedBytes.acquire();
+            fprintf(stderr, "%c", buffer[i % BufferSize]);
+            freeBytes.release();
+        }
+        fprintf(stderr, "\n");
+    }
+};
+  #+END_SRC
+- main.cpp
+  #+BEGIN_SRC java
+extern const int DataSize;
+extern const int BufferSize;
+extern char buffer[BufferSize];
+
+QWaitCondition bufferNotEmpty;
+QWaitCondition bufferNotFull;
+QMutex mutex;
+int numUsedBytes = 0;
+
+int main(int argc, char *argv[]) {
+    QCoreApplication app(argc, argv);
+    Producer producer;
+    Consumer consumer;
+    producer.start();
+    consumer.start();
+    producer.wait();
+    consumer.wait();
+    return 0;
+}
+  #+END_SRC
+
 ** Mandelbrotset
 - renderthread.h
+
   #+BEGIN_SRC java
 #ifndef RENDERTHREAD_H
 #define RENDERTHREAD_H
@@ -1242,6 +1324,7 @@ class RenderThread : public QThread {
 #endif
   #+END_SRC
 - renderthread.cpp
+
   #+BEGIN_SRC java
 #include <QtGui>
 #include <math.h>
@@ -1370,6 +1453,7 @@ RenderThread::~RenderThread() {
 }
   #+END_SRC
 - Mandelbrotwidget.h
+
   #+BEGIN_SRC java
 #ifndef MANDELBROTWIDGET_H
 #define MANDELBROTWIDGET_H
@@ -1408,6 +1492,7 @@ class MandelbrotWidget : public QWidget {
 #endif
   #+END_SRC
 - Mandelbrotwidget.cpp
+
   #+BEGIN_SRC java
 #include <QtGui>
 #include <math.h>
@@ -1551,6 +1636,7 @@ void MandelbrotWidget::scroll(int deltaX, int deltaY) {
     thread.render(centerX, centerY, curScale, size());
 }
   #+END_SRC
+
 - main.cpp
   #+BEGIN_SRC java
 #include "mainwindow.h"
