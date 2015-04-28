@@ -3,6 +3,25 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 4/28/2015, Tuesday
+** updates
+- Didn't do much code at all, but rather implementing some examples that could help me a little bit. 
+  - QMutex, QReadWriteLock, consumer-producer problems seem straight forward to me now;
+  - The Mandelbrotset example I typed all the codes from some pic, made them to compile, but I have not got the expected GUI running resuluts yet. I will need to spend some time on it to digest the threads render/insertion/connection and events mechanism. 
+  - Potentially if possible, I will also need to look into custom designed events, and then postEvents using some other widgets.... 
+- The suggestions I got from the advisor last week, open() and close() the midi device only once, and then define 2 threads (read from & write to), set up threads communications. These ideas was digested by me already, but the parts I am still not into include:
+  - When I have mainwindow.h and mainwindow.cpp using widgets to design the layout, in the main program, when I need to access the individual widgets, like the bottom 15 QPushButtons, how would access these widgets so that I could paint them to different colors to indicate the corresponsive midi controller key is pushed, and playing some song? 
+- Works needs to do: 
+  - phonon play signals & slots;
+  - Threads communications;
+- Potential work I am still interested:
+  - I used Qt 5.3 before, but then changed back to 4.8.x for phonon use propose only. Together with Fall 2014 semester *cs480 Senior Design* GUI implementation, I have always been using the old style designs; And I have NOT look into the Qt UIC designer, Qt Quick etc slightly new designed methods. But I am still interested in these parts of knowledge. 
+  - When this project the most basic implementations are done, I would like to reinstall my Qt and try these new methods once, and to compare both methods to see what I would feel trying the new methods out (before my cs480 Senior Design previous teammates get graduated....:).... 
+** Other
+- Finished my *Change of Study Plan form*, added 30 credits for a M.S. Computer Science, waiting for major advisor to approve it so that I could graduate as planned.
+- Today when the advisor approved it, submit my application for graduation in Summer (graduate by 8/7/2015, from the I-20) by 4/30/2015.
+- Discuss summer project plan with advisor if possible.
+ 
 * update 4/24/2015, git practise
 - on 4/7/2015 update, I was supposed to manually resolve conflicts, but I was not aware the problem enough to pay attention to it, ended up by having made three commits; (the readme.org file)
 - And last week Tuesday update I had been blocked by some time becuase of a >100MB pdf file, could use git rm --cached filename;

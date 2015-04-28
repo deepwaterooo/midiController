@@ -1,4 +1,4 @@
-% Created 2015-04-21 Tue 01:31
+% Created 2015-04-28 Tue 10:20
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -86,7 +86,7 @@ public slots:
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 bool QObject::connect ( const QObject * sender, const char * signal,  
-			const QObject * receiver, const char * member ) [static]
+                        const QObject * receiver, const char * member ) [static]
 \end{lstlisting}
 
 \item 这个函数的作用就是将发射者sender对象中的信号signal与接收者receiver中的member槽函数联系起来。当指定信号signal时必须使用QT的宏SIGNAL()，当指定槽函数时必须使用宏SLOT()。如果发射者与接收者属于同一个对象的话，那么在connect调用中接收者参数可以省略。
@@ -117,7 +117,7 @@ MyWidget::MyWidget() {
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 bool QObject::disconnect ( const QObject * sender, const char * signal,  
-			   const Object * receiver, const char * member ) [static]
+                           const Object * receiver, const char * member ) [static]
 \end{lstlisting}
 
 \item 这个函数断开发射者中的信号与接收者中的槽函数之间的关联。
@@ -168,7 +168,8 @@ myObject->disconnect(　myReceiver )
 \end{itemize}
 \subsection{examples}
 \label{sec-1-6}
-\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{itemize}
+\item \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 //tsignal.h  
 class TsignalApp : public QMainWindow {  
@@ -182,7 +183,7 @@ signals:
     void mySignal(int x);  
     //声明信号mySignalParam(int, int)  
     void mySignalParam(int x, int y);  
-
+ 
     //槽声明区  
 public slots:  
     //声明槽函数mySlot()  
@@ -192,7 +193,7 @@ public slots:
     //声明槽函数mySignalParam (int，int)  
     void mySignalParam(int x, int y);  
 };
-
+ 
 //tsignal.cpp  
 TsignalApp::TsignalApp()   {  
     //将信号mySignal()与槽mySlot()相关联  
@@ -202,17 +203,17 @@ TsignalApp::TsignalApp()   {
     //将信号mySignalParam(int, int)与槽mySlotParam(int, int)相关联  
     connect(this, SIGNAL(mySignalParam(int, int)), SLOT(mySlotParam(int, int)));  
 }  
-
+ 
 // 定义槽函数mySlot()  
 void TsignalApp::mySlot()   {  
     QMessageBox::about(this, "Tsignal",  "This is a signal/slot sample without parameter.");  
 }  
-
+ 
 // 定义槽函数mySlot(int)  
 void TsignalApp::mySlot(int x)   {  
     QMessageBox::about(this, "Tsignal",  "This is a signal/slot sample with one parameter.");  
 }  
-
+ 
 // 定义槽函数mySlotParam(int, int)  
 void TsignalApp::mySlotParam(int x, int y)   {  
     char s[256];  
@@ -228,6 +229,7 @@ void TsignalApp::slotFileNew()   {
     emit mySignalParam(5, 100);  
 }
 \end{lstlisting}
+\end{itemize}
 \subsection{应注意的问题}
 \label{sec-1-7}
 \begin{itemize}
@@ -259,7 +261,7 @@ class SomeClass : public QObject {
     Q_OBJECT  
 public slots:  
     SomeClass( QObject *parent, const char *name )  
-	: QObject( parent, name ) {}　// 在槽声明区内声明构造函数不合语法  
+        : QObject( parent, name ) {}　// 在槽声明区内声明构造函数不合语法  
 };
 \end{lstlisting}
 \end{itemize}
@@ -327,13 +329,13 @@ class A {
     Q_OBJECT  
 public:  
     class B {  
-	public slots:　 // 在嵌套类中声明槽不合语法  
-	    void b();  
+    public slots:　 // 在嵌套类中声明槽不合语法  
+    void b();  
     };  
 signals:  
     class B {  
-	    // 在信号区内声明嵌套类不合语法  
-	    void b();  
+        // 在信号区内声明嵌套类不合语法  
+        void b();  
     }:  
 };
 \end{lstlisting}
@@ -397,7 +399,6 @@ signals: //信号定义区
 \label{sec-2-5}
 \begin{itemize}
 \item Qt为它的许多值类型使用了所谓的隐含共享(implicit sharing)来优化性能。原理比较简单，共享类包含一个指向共享数据块的指针，这个数据块中包含了真正原数据与一个引用计数。把深拷贝转化为一个浅拷贝，从而提高了性能。这种机制在幕后发生作用，程序员不需要关心它。如果深入点看，假如对象需要对数据进行修改，而引用计数大于1，那么它应该先detach()。以使得它修改不会对别的共享者产生影响，既然修改后的数据与原来的那份数据不同了，因此不可能再共享了，于是它先执行深拷贝，把数据取回来，再在这份数据上进行修改。例如：
-\end{itemize}
 
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
@@ -407,11 +408,10 @@ void QPen::setStyle(Qt::PenStyle style){
 }  
 void QPen::detach(){   
     if (d->ref != 1) {  
-	 ...             // perform a deep copy  
+         ...             // perform a deep copy  
      }  
 }
 \end{lstlisting}
-\begin{itemize}
 \item 一般认为，隐含共享与多线程不太和谐，因为有引用计数的存在。对引用计数进行保护的方法之一是使用mutex,但它很慢，Qt早期版本没有提供一个满意的解决方案。从4.0开始，隐含共享类可以安全地跨线程拷贝，如同别的值类型一样。它们是 \textbf{完全可重入} 的。隐含共享真的是"implicit"。它使用汇编语言实现了原子性引用计数操作，这比用mutex快多了。
 \item 假如你在多个线程中同进访问相同对象，你也需要用mutex来串行化访问顺序,就如同其他可重入对象那样。总的来讲，隐含共享真的给”隐含“掉了，在多线程程序中，你可以把它们看成是一般的，非共享的，可重入的类型，这种做法是安全的。
 \end{itemize}
@@ -429,7 +429,7 @@ class Thread : public QThread {
     Q_OBJECT
 public:       
     Thread(QObject* parent = 0)
-	: QThread(parent) {
+        : QThread(parent) {
     }
 public slots:       
     void slot() { ... }
@@ -515,7 +515,7 @@ public:
     Dummy(){}
 public slots:
     void emitsig() {
-	emit sig();       
+        emit sig();       
     }
 signals:
     void sig();   
@@ -525,20 +525,20 @@ class Thread : public QThread {
     Q_OBJECT
 public:       
     Thread(QObject* parent = 0)
-	: QThread(parent) {
-	//moveToThread(this);
+        : QThread(parent) {
+        //moveToThread(this);
     }   
 public slots:
     void slot_main () {           
-	qDebug() << "from thread slot_main:" << currentThreadId();       
+        qDebug() << "from thread slot_main:" << currentThreadId();       
     }
 protected:
     void run() {           
-	qDebug() << "thread thread:" << currentThreadId();           
-	exec();       
+        qDebug() << "thread thread:" << currentThreadId();           
+        exec();       
     }   
 };
-
+    
 //#include "main.moc"
 int main(int argc, char *argv[]) {       
     QCoreApplication a(argc, argv);       
@@ -603,10 +603,10 @@ class Dummy : public QObject {
     Q_OBJECT
 public:
     Dummy(QObject* parent = 0)
-	: QObject(parent) {}   
+        : QObject(parent) {}   
 public slots:
     void emitsig() {        
-	emit sig();    
+        emit sig();    
     }
 signals:
     void sig();
@@ -616,22 +616,22 @@ class Thread : public QThread {
     Q_OBJECT
 public:      
     Thread(QObject* parent = 0)
-	: QThread(parent) {
-	//moveToThread(this);
+        : QThread(parent) {
+        //moveToThread(this);
     }   
 public slots:
     void slot_thread() {           
-	qDebug() << "from thread slot_thread:"  << currentThreadId();
+        qDebug() << "from thread slot_thread:"  << currentThreadId();
     }   
 signals:
     void sig();
 protected:
     void run() {           
-	qDebug() << "thread thread:" << currentThreadId();          
-	Dummy dummy;           
-	connect(&dummy, SIGNAL(sig()), this, SLOT(slot_thread()));          
-	dummy.emitsig();
-	exec();       
+        qDebug() << "thread thread:" << currentThreadId();          
+        Dummy dummy;           
+        connect(&dummy, SIGNAL(sig()), this, SLOT(slot_thread()));          
+        dummy.emitsig();
+        exec();       
     }   
 };    
 
@@ -687,10 +687,10 @@ class Dummy : public QObject {
     Q_OBJECT   
 public:
     Dummy(QObject* parent = 0)
-	: QObject(parent) {}   
+        : QObject(parent) {}   
 public slots:
     void emitsig() {
-	emit sig();       
+        emit sig();       
     }
 signals:
     void sig();
@@ -702,7 +702,7 @@ public:
     Object(){}
 public slots:
     void slot() {    
-	qDebug() << "from thread slot:"  << QThread::currentThreadId();       
+        qDebug() << "from thread slot:"  << QThread::currentThreadId();       
     }   
 };    
 
@@ -745,7 +745,8 @@ from thread slot: 139964642481920
 关于元对象的类：下面介绍有两种
 \subsubsection{QMetaObject类}
 \label{sec-4-1-1}
-\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{itemize}
+\item \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 /*******************生成元对象需要的输入参数*****************/  
 // 类名  
@@ -794,6 +795,7 @@ int signalOffset() const;
 static QMetaObject *metaObject( const char *class_name );  
 static bool hasMetaObject( const char *class_name );
 \end{lstlisting}
+\end{itemize}
 \subsubsection{QMetaData类}
 \label{sec-4-1-2}
 \lstset{language=java,label= ,caption= ,numbers=none}
@@ -820,22 +822,22 @@ struct QMetaData {
 // 连接  
 // 参数(发送对象，信号，接收对象，处理信号的信号/槽)
 static bool connect(const QObject *sender, const char *signal,  
-				    const QObject *receiver, const char *member );  
+                    const QObject *receiver, const char *member );  
 bool connect(const QObject *sender, const char *signal,  
-		     const char *member ) const;
+             const char *member ) const;
 
 static bool disconnect(const QObject *sender, const char *signal,  
-					const QObject *receiver, const char *member);  
+                       const QObject *receiver, const char *member);  
 bool disconnect(const char *signal = 0,  
-				const QObject *receiver = 0, const char *member = 0 );  
+                const QObject *receiver = 0, const char *member = 0 );  
 bool disconnect(const QObject *receiver, const char *member = 0 );
 
 // 连接的内部实现  
 // (发送对象，信号的索引，接收对象，处理信号的类型，处理信号信号/槽的索引)    
 static void connectInternal(const QObject *sender, int signal_index,  
-						 const QObject *receiver, int membcode, int member_index );  
+                            const QObject *receiver, int membcode, int member_index );  
 static bool disconnectInternal(const QObject *sender, int signal_index,  
-						 const QObject *receiver, int membcode, int member_index );
+                               const QObject *receiver, int membcode, int member_index );
 \end{lstlisting}
 \item 信号与槽连接的实现原理：
 \label{sec-4-2-1-2}
@@ -843,30 +845,30 @@ static bool disconnectInternal(const QObject *sender, int signal_index,
 \begin{lstlisting}
 // 一阶段  
 bool QObject::connect(const QObject *sender,   // 发送对象        
-		      const char *signal,      // 信号  
-		      const QObject *receiver, // 接收对象  
-		      const char *member       // 槽  
-		      ) { 
-     // 检查发送对象，信号，接收对象，槽不为null  
+                      const char *signal,      // 信号  
+                      const QObject *receiver, // 接收对象  
+                      const char *member       // 槽  
+                      ) { 
+    // 检查发送对象，信号，接收对象，槽不为null  
     if ( sender == 0 || receiver == 0 || signal == 0 || member == 0 ) {        
-	    return false;  
+        return false;  
     }
-
+    
     // 获取发送对象的元对象  
     QMetaObject *smeta = sender->metaObject();  
     // 检查信号  
     if ( !check_signal_macro( sender, signal, "connect", "bind" ) )  
-	    return false;     
+        return false;     
     // 获取信号的索引  
     int signal_index = smeta->findSignal( signal, true );  
     if ( signal_index < 0 ) {                // normalize and retry  
-	    nw_signal = qt_rmWS( signal-1 ); // remove whitespace  
-	    signal = nw_signal.data()+1;         // skip member type code  
-	    signal_index = smeta->findSignal( signal, true );  
+        nw_signal = qt_rmWS( signal-1 ); // remove whitespace  
+        signal = nw_signal.data()+1;         // skip member type code  
+        signal_index = smeta->findSignal( signal, true );  
     }  
     // 如果信号不存在，则退出  
     if ( signal_index < 0  ) {                    // no such signal  
-	    return false;  
+        return false;  
     }  
 
     // 获取信号的元数据对象  
@@ -885,41 +887,41 @@ bool QObject::connect(const QObject *sender,   // 发送对象
 
     switch ( membcode ) {                // get receiver member  
     case QSLOT_CODE:// 如果是槽  
-	    // 获取槽索引  
-	    member_index = rmeta->findSlot( member, true );  
-	    if ( member_index < 0 ) {            // normalize and retry  
-		    nw_member = qt_rmWS(member);     // remove whitespace  
-		    member = nw_member;  
-		    member_index = rmeta->findSlot( member, true );  
-	    }  
-	    break;  
+        // 获取槽索引  
+        member_index = rmeta->findSlot( member, true );  
+        if ( member_index < 0 ) {            // normalize and retry  
+            nw_member = qt_rmWS(member);     // remove whitespace  
+            member = nw_member;  
+            member_index = rmeta->findSlot( member, true );  
+        }  
+        break;  
     case QSIGNAL_CODE:// 如果是信号  
-	    // 获取信号索引  
-	    member_index = rmeta->findSignal( member, true );  
-	    if ( member_index < 0 ) {           // normalize and retry  
-		    nw_member = qt_rmWS(member);     // remove whitespace  
-		    member = nw_member;  
-		    member_index = rmeta->findSignal( member, true );  
-	    }  
-	    break;  
+        // 获取信号索引  
+        member_index = rmeta->findSignal( member, true );  
+        if ( member_index < 0 ) {           // normalize and retry  
+            nw_member = qt_rmWS(member);     // remove whitespace  
+            member = nw_member;  
+            member_index = rmeta->findSignal( member, true );  
+        }  
+        break;  
     }  
     // 如果接收对象不存在相应的信号或槽，则退出  
     if ( member_index < 0  ) {  
-	    return false;  
+        return false;  
     }  
     // 检查连接的参数(发送的信号，接收对象，处理信号的槽或信号)  
     if ( !s->checkConnectArgs(signal,receiver,member) ) {  
-	    return false;  
+        return false;  
     } else {  
-	// 获取处理信号的元数据对象  
-	    const QMetaData *rm = membcode == QSLOT_CODE ?  
-		rmeta->slot( member_index, true ) :  
-		rmeta->signal( member_index, true );  
-	    if ( rm ) {            
-		    // 建立连接  
-		    // (发送信号的对象，信号的索引，接收信号的对象，处理信号的类型，处理信号的索引)  
-		    connectInternal( sender, signal_index, receiver, membcode, member_index );  
-	    }  
+        // 获取处理信号的元数据对象  
+        const QMetaData *rm = membcode == QSLOT_CODE ?  
+            rmeta->slot( member_index, true ) :  
+            rmeta->signal( member_index, true );  
+        if ( rm ) {            
+            // 建立连接  
+            // (发送信号的对象，信号的索引，接收信号的对象，处理信号的类型，处理信号的索引)  
+            connectInternal( sender, signal_index, receiver, membcode, member_index );  
+        }  
     }  
     return true;  
 }  
@@ -928,34 +930,34 @@ bool QObject::connect(const QObject *sender,   // 发送对象
 // 建立连接  
 // (发送信号的对象，信号的索引，接收信号的对象，处理信号的类型，处理信号的索引)  
 void QObject::connectInternal( const QObject *sender, int signal_index,   
-			       const QObject *receiver, int membcode, int member_index )   {  
+                               const QObject *receiver, int membcode, int member_index )   {  
     // 发送信号的对象  
     QObject *s = (QObject*)sender;  
     // 接收信号的对象  
     QObject *r = (QObject*)receiver;  
     // 如果发送对象的连接查询表为null，则建立  
     if ( !s->connections ) {                // create connections lookup table  
-	    s->connections = new QSignalVec( signal_index+1 );  
-	    Q_CHECK_PTR( s->connections );  
-	    s->connections->setAutoDelete( true );  
+        s->connections = new QSignalVec( signal_index+1 );  
+        Q_CHECK_PTR( s->connections );  
+        s->connections->setAutoDelete( true );  
     }  
     // 获取发送对象的相应信号的连接列表  
-     QConnectionList *clist = s->connections->at( signal_index );  
+    QConnectionList *clist = s->connections->at( signal_index );  
     if ( !clist ) {                         // create receiver list  
-	    clist = new QConnectionList;  
-	    Q_CHECK_PTR( clist );  
-	    clist->setAutoDelete( true );  
-	    s->connections->insert( signal_index, clist );  
+        clist = new QConnectionList;  
+        Q_CHECK_PTR( clist );  
+        clist->setAutoDelete( true );  
+        s->connections->insert( signal_index, clist );  
     }  
     QMetaObject *rrmeta = r->metaObject();  
     const QMetaData *rm = 0;  
     switch ( membcode ) {                // get receiver member  
     case QSLOT_CODE:  
-	    rm = rmeta->slot( member_index, true );  
-	    break;  
+        rm = rmeta->slot( member_index, true );  
+        break;  
     case QSIGNAL_CODE:  
-	    rm = rmeta->signal( member_index, true );  
-	    break;  
+        rm = rmeta->signal( member_index, true );  
+        break;  
     }  
     // 建立连接  
     QConnection *c = new QConnection( r, member_index, rm ? rm->name : "qt_invoke", membcode );  
@@ -964,50 +966,50 @@ void QObject::connectInternal( const QObject *sender, int signal_index,
     clist->append( c );  
     // 判断接收对象的发送对象列表是否为null  
     if ( !r->senderObjects ) {               // create list of senders 
-	    // 建立接收对象的发送对象列表  
-	    r->senderObjects = new QSenderObjectList;  
+        // 建立接收对象的发送对象列表  
+        r->senderObjects = new QSenderObjectList;  
     }  
     // 把发送对象添加到发送对象列表中  
     r->senderObjects->append( s );           // add sender to list  
 }
 \end{lstlisting}
+
 \item 信号发生时激活的操作函数。 激活slot的方法
 \label{sec-4-2-1-3}
 \lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 // 接口：
 void QObject::activate_signal( int signal ) {  
-    #ifndef QT_NO_PRELIMINARY_SIGNAL_SPY  
+#ifndef QT_NO_PRELIMINARY_SIGNAL_SPY  
     if ( qt_preliminary_signal_spy ) {  
-	    //信号没有被阻塞  
-	    //信号>=0  
-	    //连接列表不为空，或者信号对应的连接存在  
-	    if ( !signalsBlocked() && signal >= 0 &&  
-		     ( !connections || !connections->at( signal ) ) ) {  
-		    //  
-		    QUObject o[1];  
-		    qt_spy_signal( this, signal, o );  
-		    return;  
-	    }  
+    //信号没有被阻塞  
+    //信号>=0  
+    //连接列表不为空，或者信号对应的连接存在  
+    if ( !signalsBlocked() && signal >= 0 &&  
+        (!connections || !connections->at( signal )) ) {  
+        QUObject o[1];  
+        qt_spy_signal( this, signal, o );  
+        return;  
     }  
-    #endif  
+}  
+#endif  
     if ( !connections || signalsBlocked() || signal < 0 )  
-	    return;  
+        return;  
     //获取信号对应的连接列表  
     QConnectionList *clist = connections->at( signal );  
     if ( !clist )  
-	    return;  
+        return;  
     QUObject o[1];  
     //  
     activate_signal( clist, o );  
 }  
-
+ 
 void QObject::activate_signal( QConnectionList *clist, QUObject *o )   {  
     if ( !clist )  
-	    return;  
+        return;  
 #ifndef QT_NO_PRELIMINARY_SIGNAL_SPY  
     if ( qt_preliminary_signal_spy )  
-	    qt_spy_signal( this, connections->findRef( clist), o );  
+        qt_spy_signal( this, connections->findRef( clist), o );  
 #endif  
     QObject *object;  
     //发送对象列表  
@@ -1017,62 +1019,62 @@ void QObject::activate_signal( QConnectionList *clist, QUObject *o )   {
     //连接  
     QConnection *c;  
     if ( clist->count() == 1 ) { // save iterator  
-	    //获取连接  
-	    c = clist->first();  
-	    //  
-	    object = c->object();  
-	    //获取发送对象列表  
-	    sol = object->senderObjects;  
-	    if ( sol ) {  
-		//获取旧的发送对象  
-		oldSender = sol->currentSender;  
-		//  
-		sol->ref();  
-		//设置新的发送对象  
-		sol->currentSender = this;  
-	    }  
-	    if ( c->memberType() == QSIGNAL_CODE )//如果是信号，则发送出去  
-		    object->qt_emit( c->member(), o );  
-	    else  
-		    object->qt_invoke( c->member(), o );//如果是槽，则执行  
-	    //       
-	    if ( sol ) {  
-		    //设置恢复为旧的发送对象  
-		    sol->currentSender = oldSender;  
-		    if ( sol->deref() )  
-			    delete sol;  
-	    }  
+        //获取连接  
+        c = clist->first();  
+        //  
+        object = c->object();  
+        //获取发送对象列表  
+        sol = object->senderObjects;  
+        if ( sol ) {  
+            //获取旧的发送对象  
+            oldSender = sol->currentSender;  
+            //  
+            sol->ref();  
+            //设置新的发送对象  
+            sol->currentSender = this;  
+        }  
+        if ( c->memberType() == QSIGNAL_CODE )//如果是信号，则发送出去  
+            object->qt_emit( c->member(), o );  
+        else  
+            object->qt_invoke( c->member(), o );//如果是槽，则执行  
+        //       
+        if ( sol ) {  
+            //设置恢复为旧的发送对象  
+            sol->currentSender = oldSender;  
+            if ( sol->deref() )  
+                delete sol;  
+        }  
     } else {  
-	    QConnection *cd = 0;  
-	    QConnectionListIt it(*clist);  
-	    while ( (c=it.current()) ) {  
-		    ++it;  
-		    if ( c == cd )  
-			    continue;  
-		    ccd = c;   
-		   object = c->object();  
-		    //操作前设置当前发送对象  
-		    sol = object->senderObjects;  
-		    if ( sol ) {  
-			    oldSender = sol->currentSender;  
-			    sol->ref();  
-			    sol->currentSender = this;  
-		    }  
-		    //如果是信号，则发送出去  
-		    if ( c->memberType() == QSIGNAL_CODE ){  
-			    object->qt_emit( c->member(), o );  
-		    }  
-		    //如果是槽，则执行  
-		    else {  
-			    object->qt_invoke( c->member(), o );  
-		    }  
-		    //操作后恢复当前发送对象  
-		    if (sol ) {  
-			    sol->currentSender = oldSender;  
-			    if ( sol->deref() )  
-				    delete sol;  
-		    }  
-	    } // while  
+        QConnection *cd = 0;  
+        QConnectionListIt it(*clist);  
+        while ( (c=it.current()) ) {  
+            ++it;  
+            if ( c == cd )  
+                continue;  
+            ccd = c;   
+            object = c->object();  
+            //操作前设置当前发送对象  
+            sol = object->senderObjects;  
+            if ( sol ) {  
+                oldSender = sol->currentSender;  
+                sol->ref();  
+                sol->currentSender = this;  
+            }  
+            //如果是信号，则发送出去  
+            if ( c->memberType() == QSIGNAL_CODE ){  
+                object->qt_emit( c->member(), o );  
+            }  
+            //如果是槽，则执行  
+            else {  
+                object->qt_invoke( c->member(), o );  
+            }  
+            //操作后恢复当前发送对象  
+            if (sol ) {  
+                sol->currentSender = oldSender;  
+                if ( sol->deref() )  
+                    delete sol;  
+            }  
+        } // while  
     }  
 }
 \end{lstlisting}
@@ -1098,9 +1100,9 @@ int QThread::exec() {
 int QEventLoop::exec(ProcessEventsFlags flags) {
     //...
     while (!d->exit) {
-	while (!posted_event_queue_is_empty) {
-	    process_next_posted_event();
-	}
+        while (!posted_event_queue_is_empty) {
+            process_next_posted_event();
+        }
     }
     //...
 }
@@ -1109,8 +1111,7 @@ int QEventLoop::exec(ProcessEventsFlags flags) {
 \end{itemize}
 \subsection{旧的使用方式}
 \label{sec-5-2}
-\begin{itemize}
-\item \lstset{language=java,label= ,caption= ,numbers=none}
+\lstset{language=java,label= ,caption= ,numbers=none}
 \begin{lstlisting}
 #include "QThread"
 #include "QMutexLocker"
@@ -1131,25 +1132,26 @@ protected:
 Thread::Thread() {
     m_stopFlag = false;
 }
-
+  
 void Thread::stop() {
     QMutexLocker locker(&mutex);
     m_stopFlag = true;
 }
-
+  
 void Thread::run() {
     while (1) {
-	{
-	    QMutexLocker locker(&mutex);
-	    if(m_stopFlag)
-		break;
-	}
-	qDebug() << "This is in thread[" << currentThreadId() << "]." << (int)currentThread();
-	sleep(2);
+        {
+            QMutexLocker locker(&mutex);
+            if(m_stopFlag)
+                break;
+        }
+        qDebug() << "This is in thread[" << currentThreadId() << "]." << (int)currentThread();
+        sleep(2);
     }
     m_stopFlag = false;
 }
 \end{lstlisting}
+\begin{itemize}
 \item 这是qt4.6及之前的使用方法，这种方式本没有什么错误，可以处理我们的绝大多数需求。下面的调用可以看出Thread对象本身工作在主线程下，即使调用的t.stop()方法，它也是工作在主线程下，只有run()范围内的代码工作在次线程中。
 
 \lstset{language=java,label= ,caption= ,numbers=none}
@@ -1175,10 +1177,10 @@ class Worker : public QObject {
     Q_OBJECT
 private slots:
     void onTimeout() {
-	qDebug() << "Worker::onTimeout get called from?: " << QThread::currentThreadId();
+        qDebug() << "Worker::onTimeout get called from?: " << QThread::currentThreadId();
     }
 };
-
+  
 //#include "main.moc"
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -1209,14 +1211,582 @@ while(et.elapsed()<300)
 \end{lstlisting}
 \end{itemize}
 
-\section{QT中实现Thread与GUI主线程连通方法}
+\section{QThread related Examples}
 \label{sec-6}
+\subsection{QMutex}
+\label{sec-6-1}
+\begin{itemize}
+\item \lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+class MyClass {
+ public:
+    void doStuff(int c) {
+        mutex.lock();
+        a = c;
+        b = c * 2;
+        mutex.unlock();
+    }
+ private:
+    QMutex mutex;
+    int a;
+    int b;
+};
+\end{lstlisting}
+\end{itemize}
+\subsection{QReadWriteLock}
+\label{sec-6-2}
+\begin{itemize}
+\item \lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QApplication>
+#include <QPushButton>
+#include <QWaitCondition>
+
+QWaitCondition mycond;
+
+class Worker : public QPushButton, public QThread {
+    Q_OBJECT
+ public:
+    Worker(QWidget *parent = 0, const char *name = 0)
+        : QPushButton(parent, name) {
+        setText("start working");
+        //connect(this, SIGNAL(clicked()), SLOT(slotClicked()));
+        QThread.start();
+    }
+    public slots:
+        void slotClicked() {
+            mycond.wakeOne();
+        }
+ protected:
+        void run() {
+            while (TRUE) {
+                qApp->lock();
+                setCaption("waiting");
+                qApp->unlock();
+
+                mycond.wait();
+
+                qApp->lock();
+                setCaption("working!");
+                qApp->unlock();
+                do_complicated_thing();
+            }
+        }
+};
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    Worker firstworker(0, "worker");
+    app.setMainWidget(&worker);
+    worker.show();
+    return app.exec();
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{Consumer Producer}
+\label{sec-6-3}
+\begin{itemize}
+\item consumer.h
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef CONSUER_H
+#define CONSUER_H
+
+#include <QObject>
+#include <QThread>
+#include <QTime>
+#include <stdio.h>
+#include <QWaitCondition>
+#include <QMutex>
+#include "producer.h"
+
+extern const int DataSize;
+extern const int BufferSize;
+
+extern char buffer[BufferSize];
+extern QWaitCondition bufferNotEmpty;
+extern QWaitCondition bufferNotFull;
+extern QMutex mutex;
+extern int numUsedBytes;
+
+class Consumer : public QThread {
+    Q_OBJECT
+ public:
+    void run() {
+        for (int i = 0; i < DataSize; ++i) {
+            mutex.lock();
+            if (numUsedBytes == 0)
+                bufferNotEmpty.wait(&mutex);
+            mutex.unlock();
+
+            fprintf(stderr, "%c", buffer[i % BufferSize]);
+
+            mutex.lock();
+            --numUsedBytes;
+            bufferNotFull.wakeAll();
+            mutex.unlock();
+        }
+        fprintf(stderr, "\n");
+    }
+
+    virtual ~Consumer() {};
+};
+
+#endif
+\end{lstlisting}
+\item producer.h
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef PRODUCER_H
+#define PRODUCER_H
+
+#include <QObject>
+#include <QThread>
+#include <QTime>
+#include <QWaitCondition>
+#include <QMutex>
+
+const int DataSize = 1000;
+const int BufferSize = 200;
+
+extern char buffer[BufferSize];
+extern QWaitCondition bufferNotEmpty;
+extern QWaitCondition bufferNotFull;
+extern QMutex mutex;
+extern int numUsedBytes;
+
+class Producer : public QThread {
+    Q_OBJECT
+ public:
+    void run() {
+        qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+        for (int i = 0; i < DataSize; ++i) {
+            mutex.lock();
+            if (numUsedBytes == BufferSize)
+                bufferNotFull.wait(&mutex);
+            mutex.unlock();
+
+            buffer[i % BufferSize] = "aeiu"[(int)qrand() % 4];
+
+            mutex.lock();
+            ++numUsedBytes;
+            bufferNotEmpty.wakeAll();
+            mutex.unlock();
+        }
+    }
+    virtual ~Producer() {};
+};
+
+#endif
+\end{lstlisting}
+\item main.cpp
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QtCore>
+#include <stdio.h>
+#include "mainwindow.h"
+#include "producer.h"
+#include "consumer.h"
+
+extern const int DataSize;
+extern const int BufferSize;
+
+char buffer[BufferSize];
+QWaitCondition bufferNotEmpty;
+QWaitCondition bufferNotFull;
+QMutex mutex;
+int numUsedBytes = 0;
+
+int main(int argc, char *argv[]) {
+    QCoreApplication app(argc, argv);
+    Producer producer;
+    Consumer consumer;
+    producer.start();
+    consumer.start();
+    producer.wait();
+    consumer.wait();
+    return 0;
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{Mandelbrotset}
+\label{sec-6-4}
+\begin{itemize}
+\item renderthread.h
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef RENDERTHREAD_H
+#define RENDERTHREAD_H
+
+#include <QMutex>
+#include <QSize>
+#include <QThread>
+#include <QWaitCondition>
+#include <QImage>
+
+class RenderThread : public QThread {
+    Q_OBJECT
+ public:
+    RenderThread(QObject *parent = 0);
+    ~RenderThread();
+    void render(double centerX, double centerY, double scaleFactor, QSize resultSize);
+ signals:
+    void renderedImage(const QImage &image, double scaleFactor);
+ protected:
+    void run();
+ private:
+    uint rgbFromWaveLength(double wave);
+    QMutex mutex;
+    QWaitCondition condition;
+    double centerX;
+    double centerY;
+    double scaleFactor;
+    QSize resultSize;
+    bool restart;
+    bool abort;
+    enum {ColormapSize = 512};
+    uint colormap[ColormapSize];
+};
+
+#endif
+\end{lstlisting}
+\item renderthread.cpp
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QtGui>
+#include <math.h>
+#include "renderthread.h"
+
+RenderThread::RenderThread(QObject *parent)
+    : QThread(parent) {
+    restart = false;
+    abort = false;
+    for (int i = 0; i < ColormapSize; i++)
+        colormap[i] = rgbFromWaveLength(380.0 + (i * 400.0 / ColormapSize));
+}
+
+void RenderThread::render(double centerX, double centerY, double scaleFactor, QSize resultSize) {
+    QMutexLocker locker(&mutex);
+    this->centerX = centerX;
+    this->centerY = centerY;
+    this->scaleFactor = scaleFactor;
+    this->resultSize = resultSize;
+    if (!isRunning()) {
+        start(LowPriority);
+    } else {
+        restart = true;
+        condition.wakeOne();
+    }
+}
+
+void RenderThread::run() {
+    forever {
+        mutex.lock();
+        QSize resultSize = this->resultSize;
+        double scaleFactor = this->scaleFactor;
+        double centerX = this->centerX;
+        double centerY = this->centerY;
+        mutex.unlock();
+        int halfWidth = resultSize.width() / 2;
+        int halfHeight = resultSize.height() / 2;
+        QImage image(resultSize, QImage::Format_RGB32);
+        const int NumPasses = 8;
+        int pass = 0;
+        while (pass < NumPasses) {
+            const int MaxIterations = (1 << (2 * pass + 6)) + 32;
+            const int Limit = 4;
+            bool allBlack = true;
+            for (int y = -halfHeight; y < halfHeight; y++) {
+                if (restart) break;
+                if (abort) return;
+                uint *scanLine = reinterpret_cast<uint*>(image.scanLine(y + halfHeight));
+                double ay = centerY + (y * scaleFactor);
+                for (int x = -halfWidth; x < halfWidth; x++) {
+                    double ax = centerX + (x * scaleFactor);
+                    double a1 = ax;
+                    double b1 = ay;
+                    int numIterations = 0;
+                    do {
+                        ++numIterations;
+                        double a2 = (a1 * a1) - (b1 * b1) + ax;
+                        double b2 = (2 * a1 * b1) + ay;
+                        if ((a2 * a2) + (b1 * b1) > Limit) break;
+                    } while (numIterations < MaxIterations);
+                    if (numIterations < MaxIterations) {
+                        *scanLine++ = colormap[numIterations % ColormapSize];
+                        allBlack = false;
+                    } else {
+                        *scanLine++ = qRgb(0, 0, 0);
+                    }
+                }
+            }
+            if (allBlack && pass == 0) {
+                pass = 4;
+            } else {
+                if (!restart)
+                    emit renderedImage(image, scaleFactor);
+                ++pass;
+            }
+        }
+        mutex.lock();
+        if (!restart) {
+            condition.wait(&mutex);
+        }
+        restart = false;
+        mutex.unlock();
+    }
+}
+
+uint RenderThread::rgbFromWaveLength(double wave) {
+    double r = 0.0;
+    double g = 0.0;
+    double b = 0.0;
+    if (wave >= 380.0 && wave <= 440.0) {
+        r = -1.0 * (wave - 440.0) / (440.0 - 380.0);
+        b = 1.0;
+    } else if (wave >= 440.0 && wave <= 490.0) {
+        g = (wave - 440.0) / (490.0 - 440.0);
+        b = 1.0;
+    } else if (wave >= 490.0 && wave <= 510.0) {
+        g = 1.0;
+        b = -1.0 * (wave - 510.0) / (510.0 - 490.0);
+    } else if (wave >= 510.0 && wave <= 580.0) {
+        r = (wave - 510.0) / (580.0 - 510.0);
+        g = 1.0;
+    } else if (wave >= 580.0 && wave <= 645.0) {
+        r = 1.0;
+        g = -1.0 * (wave - 645.0) / (645.0 - 580.0);
+    } else if (wave >= 645.0 && wave <= 780.0) {
+        r = 1.0;
+    }
+    double s = 1.0;
+    if (wave > 700.0) {
+        s = 0.3 + 0.7 * (780.0 - wave) / (780.0 - 700.0);
+    } else {
+        s = 0.3 + 0.7 * (wave - 380.0) / (420.0 - 380.0);
+    }
+    r = pow(r * s, 0.8);
+    g = pow(g * s, 0.8);
+    b = pow(b * s, 0.8);
+    return qRgb(int(r * 255), int(g * 255), int(b * 255));
+}
+
+RenderThread::~RenderThread() {
+    mutex.lock();
+    abort = true;
+    condition.wakeOne();
+    mutex.unlock();
+    wait();
+}
+\end{lstlisting}
+\item Mandelbrotwidget.h
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef MANDELBROTWIDGET_H
+#define MANDELBROTWIDGET_H
+
+#include <QPixmap>
+#include <QWidget>
+#include "renderthread.h"
+
+class MandelbrotWidget : public QWidget {
+    Q_OBJECT
+ public:
+    MandelbrotWidget(QWidget *parent = 0);
+ protected:
+    void paintEvent(QPaintEvent event);
+    void resizeEvent(QResizeEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    void wheelEvent(QWheelEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    private slots:
+        void updatePixmap(const QImage &image, double scaleFactor);
+ private:
+        void zoom(double zoomFactor);
+        void scroll(int deltaX, int deltaY);
+        RenderThread thread;
+        QPixmap pixmap;
+        QPoint pixmapOffset;
+        QPoint lastDragPos;
+        double centerX;
+        double centerY;
+        double pixmapScale;
+        double curScale;
+};
+
+#endif
+\end{lstlisting}
+\item Mandelbrotwidget.cpp
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QtGui>
+#include <math.h>
+#include "mandelbrotwidget.h"
+
+const double DefaultCenterX = -0.637011f;
+const double DefaultCenterY = -0.0395159f;
+const double DefaultScale = 0.00403897f;
+const double ZoomInFactor = 0.8f;
+const double ZoomOutFactor = 1 / ZoomInFactor;
+const int ScrollStep = 20;
+
+MandelbrotWidget::MandelbrotWidget(QWidget *parent)
+    : QWidget(parent) {
+    centerX = DefaultCenterX;
+    centerY = DefaultCenterY;
+    pixmapScale = DefaultScale;
+    curScale = DefaultScale;
+    qRegisterMetaType<QImage>("QImage");
+    connect(&thread, SIGNAL(renderedImage(const QImage &, double)),
+            this, SLOT(updatePixmap(const QImage &, double)));
+    setWindowTitle(tr("Mandelbrot"));
+    setCursor(Qt::CrossCursor);
+    resize(550, 400);
+}
+
+void MandelbrotWidget::paintEvent(QPaintEvent event) {
+    QPainter painter(this);
+    painter.fillRect(rect(), Qt::black);
+    if (pixmap.isNull()) {
+        painter.setPen(Qt::white);
+        painter.drawText(rect(), Qt::AlignCenter,
+                         tr("Rendering initial image, please wait..."));
+        return;
+    }
+    if (curScale == pixmapScale) {
+        painter.drawPixmap(pixmapOffset, pixmap);
+    } else {
+        double scaleFactor = pixmapScale / curScale;
+        int newWidth = int(pixmap.width() * scaleFactor);
+        int newHeight = int(pixmap.height() * scaleFactor);
+        int newX = pixmapOffset.x() + (pixmap.width() - newWidth) / 2;
+        int newY = pixmapOffset.y() + (pixmap.height() - newHeight) / 2;
+        painter.save();
+        painter.translate(newX, newY);
+        painter.scale(scaleFactor, scaleFactor);
+        QRectF exposed = painter.matrix().inverted().mapRect(rect().adjusted(-1, -1, 1, 1));
+        painter.drawPixmap(exposed, pixmap, exposed);
+        painter.restore();
+    }
+    QString text = tr("Use mouse wheel or the '+' and '-' keys to zoom."
+                      "Press and hold left mouse button to scroll.");
+    QFontMetrics metrics = painter.fontMetrics();
+    int textWidth = metrics.width(text);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(0, 0, 0, 127));
+    painter.drawRect((width() - textWidth) / 2 - 5, 0, textWidth + 10, metrics.lineSpacing() + 5);
+    painter.setPen(Qt::white);
+    painter.drawText((width() - textWidth) / 2, metrics.leading() + metrics.ascent(), text);
+}
+
+void MandelbrotWidget::resizeEvent(QResizeEvent *event) {
+    thread.render(centerX, centerY, curScale, size());
+}
+
+void MandelbrotWidget::keyPressEvent(QKeyEvent *event) {
+    switch (event->key()) {
+    case Qt::Key_Plus:
+        zoom(ZoomInFactor);
+        break;
+    case Qt::Key_Minus:
+        zoom(ZoomOutFactor);
+        break;
+    case Qt::Key_Left:
+        scroll(-ScrollStep, 0);
+        break;
+    case Qt::Key_Right:
+        scroll(+ScrollStep, 0);
+        break;
+    case Qt::Key_Down:
+        scroll(0, -ScrollStep);
+        break;
+    case Qt::Key_Up:
+        scroll(0, +ScrollStep);
+        break;
+    default:
+        QWidget::keyPressEvent(event);
+    }
+}
+
+void MandelbrotWidget::wheelEvent(QWheelEvent *event) {
+    int numDegrees = event->delta() / 8;
+    double numSteps = numDegrees / 15.0f;
+    zoom(pow(ZoomInFactor, numSteps));
+}
+
+void MandelbrotWidget::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        lastDragPos = event->pos();
+    }
+}
+
+void MandelbrotWidget::mouseMoveEvent(QMouseEvent *event) {
+    if (event->buttons() & Qt::LeftButton) {
+        pixmapOffset += event->pos() - lastDragPos;
+        lastDragPos = event->pos();
+        update();
+    }
+}
+
+void MandelbrotWidget::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        pixmapOffset += event->pos() - lastDragPos;
+        lastDragPos = QPoint();
+        int deltaX = (width() - pixmap.width()) / 2 - pixmapOffset.x();
+        int deltaY = (height() - pixmap.height()) / 2 - pixmapOffset.y();
+        scroll(deltaX, deltaY);
+    }
+}
+
+void MandelbrotWidget::updatePixmap(const QImage &image, double scaleFactor) {
+    if (!lastDragPos.isNull()) 
+        return;
+    pixmap = QPixmap::fromImage(image);
+    pixmapOffset = QPoint();
+    lastDragPos = QPoint();
+    pixmapScale = scaleFactor;
+    update();
+}
+
+void MandelbrotWidget::zoom(double zoomFactor) {
+    curScale *= zoomFactor;
+    update();
+    thread.render(centerX, centerY, curScale, size());
+}
+
+void MandelbrotWidget::scroll(int deltaX, int deltaY) {
+    centerX += deltaX * curScale;
+    centerY += deltaY * curScale;
+    update();
+    thread.render(centerX, centerY, curScale, size());
+}
+\end{lstlisting}
+\item main.cpp
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include "mainwindow.h"
+#include <QApplication>
+#include "mandelbrotwidget.h"
+
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+    MandelbrotWidget widget;
+    widget.show();
+    return a.exec();
+}
+\end{lstlisting}
+\end{itemize}
+
+\section{QT中实现Thread与GUI主线程连通方法}
+\label{sec-7}
 \url{http://mobile.51cto.com/symbian-270684.htm}
 \subsection{}
-\label{sec-6-1}
+\label{sec-7-1}
 
 \section{Other Reference}
-\label{sec-7}
+\label{sec-8}
 \begin{itemize}
 \item 了解 Qt 多线程编程 新手必学(1)
 \end{itemize}
