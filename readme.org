@@ -11,12 +11,14 @@
   - Potentially if possible, I will also need to look into custom designed events, and then postEvents using some other widgets.... 
 - The suggestions I got from the advisor last week, open() and close() the midi device only once, and then define 2 threads (read from & write to), set up threads communications. These ideas was digested by me already, but the parts I am still not into include:
   - When I have mainwindow.h and mainwindow.cpp using widgets to design the layout, in the main program, when I need to access the individual widgets, like the bottom 15 QPushButtons, how would access these widgets so that I could paint them to different colors to indicate the corresponsive midi controller key is pushed, and playing some song? 
+    - When the advisor suggested that I could always declared the data global just like I would define file descriptor to be global and protect the global using mutex, I complained that if I pack the top & bottom 15 keys into one thread, and pack the bottom configuration area into another thread, then in my GUI for mainwindow.h and mainwindow.cpp, how could I combine them again into a complete gui?....When the advisor hint a little bit more, suddenly I realize that the *global data structures* (like arrays, whatever~) I used can be served as bridge between "front-end" GUI and "back-end" threads....now the project truns out to be straight-forward to me now....
 - Works needs to do: 
   - phonon play signals & slots;
   - Threads communications;
 - Potential work I am still interested:
   - I used Qt 5.3 before, but then changed back to 4.8.x for phonon use propose only. Together with Fall 2014 semester *cs480 Senior Design* GUI implementation, I have always been using the old style designs; And I have NOT look into the Qt UIC designer, Qt Quick etc slightly new designed methods. But I am still interested in these parts of knowledge. 
   - When this project the most basic implementations are done, I would like to reinstall my Qt and try these new methods once, and to compare both methods to see what I would feel trying the new methods out (before my cs480 Senior Design previous teammates get graduated....:).... 
+    - The advisor agreed and reminded me it would means more work ofr me, but I look forward to see what I would feel when I *really* applied *fashionable* methods, like xml Qt Quick....
 ** Other
 - Finished my *Change of Study Plan form*, added 30 credits for a M.S. Computer Science, waiting for major advisor to approve it so that I could graduate as planned.
 - Today when the advisor approved it, submit my application for graduation in Summer (graduate by 8/7/2015, from the I-20) by 4/30/2015.

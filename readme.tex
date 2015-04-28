@@ -1,4 +1,4 @@
-% Created 2015-04-28 Tue 10:47
+% Created 2015-04-28 Tue 11:16
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -47,7 +47,10 @@
 \end{itemize}
 \item The suggestions I got from the advisor last week, open() and close() the midi device only once, and then define 2 threads (read from \& write to), set up threads communications. These ideas was digested by me already, but the parts I am still not into include:
 \begin{itemize}
-\item When I have mainwindow.h and mainwindow.cpp using widgets to design the layout, in the main program, when I need to access the individual widgets, like the bottom 15 QPushButtons, how would access these widgets so that I could paint them to different colors to indicate the corresponsive midi controller key is pushed, and playing some song?
+\item When I have mainwindow.h and mainwindow.cpp using widgets to design the layout, in the main program, when I need to access the individual widgets, like the bottom 15 QPushButtons, how would access these widgets so that I could paint them to different colors to indicate the corresponsive midi controller key is pushed, and playing some song? 
+\begin{itemize}
+\item When the advisor suggested that I could always declared the data global just like I would define file descriptor to be global and protect the global using mutex, I complained that if I pack the top \& bottom 15 keys into one thread, and pack the bottom configuration area into another thread, then in my GUI for mainwindow.h and mainwindow.cpp, how could I combine them again into a complete gui?\ldots{}.When the advisor hint a little bit more, suddenly I realize that the \textbf{global data structures} (like arrays, whatever\textasciitilde{}) I used can be served as bridge between "front-end" GUI and "back-end" threads\ldots{}.now the project truns out to be straight-forward to me now\ldots{}.
+\end{itemize}
 \end{itemize}
 \item Works needs to do: 
 \begin{itemize}
@@ -57,7 +60,10 @@
 \item Potential work I am still interested:
 \begin{itemize}
 \item I used Qt 5.3 before, but then changed back to 4.8.x for phonon use propose only. Together with Fall 2014 semester \textbf{cs480 Senior Design} GUI implementation, I have always been using the old style designs; And I have NOT look into the Qt UIC designer, Qt Quick etc slightly new designed methods. But I am still interested in these parts of knowledge.
-\item When this project the most basic implementations are done, I would like to reinstall my Qt and try these new methods once, and to compare both methods to see what I would feel trying the new methods out (before my cs480 Senior Design previous teammates get graduated\ldots{}.:)\ldots{}.
+\item When this project the most basic implementations are done, I would like to reinstall my Qt and try these new methods once, and to compare both methods to see what I would feel trying the new methods out (before my cs480 Senior Design previous teammates get graduated\ldots{}.:)\ldots{}. 
+\begin{itemize}
+\item The advisor agreed and reminded me it would means more work ofr me, but I look forward to see what I would feel when I \textbf{really} applied \textbf{fashionable} methods, like xml Qt Quick\ldots{}.
+\end{itemize}
 \end{itemize}
 \end{itemize}
 \subsection{Other}
