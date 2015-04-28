@@ -14,7 +14,6 @@ class QAction;
 class QTableWidget;
 class QLCDNumber;
 
-
 class Player : public QObject {
     Q_OBJECT
  public:
@@ -41,7 +40,6 @@ class Player : public QObject {
     QTableWidget *musicTable;
 
     Player();
-    //Dummy* dummy;
     unsigned char inbytes[6];
     QSize sizeHint() const {
         return QSize(500, 300);

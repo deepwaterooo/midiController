@@ -1,18 +1,23 @@
 #include <QApplication>
-#include <QPushButton>
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QGraphicsRectItem>
-#include <QGraphicsProxyWidget>
 #include <QtGui>
 #include <QObject>
 
 #include "mainwindow.h"
-#include "dummy.h"
+#include "readFromMidiThread.h"
+#include "writeToMidiThread.h"
+
 #include "Player.h"
 
-int main(int argc, char *argv[]) {
+// global data
 
+char* device = (char*)("/dev/snd/midiC1D0");
+int fd = open(device, O_RDWR, 0);    // what if read fail, error handling debugging system?
+unsigned char notedata[6] = {0};
+
+int top[10]; // 1 2 4 5 6; 8 9 11 12 13
+int btm[15]; // 0 ~ 14
+
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(true);
     MainWindow w;
@@ -20,26 +25,19 @@ int main(int argc, char *argv[]) {
 
     qDebug() << "main thread: " << QThread::currentThreadId();
     QThread thread;
-    Dummy dummy;
+
+    ReadFromMidiThread readthread;
+    //WriteToMidiThread writethread;
+    // QMutex, QReadWriteLock ? think about it
+    
     Player player;
 
-    //QObject::connect(thread, SIGNAL(finished()), player, SLOT(deleteLater()));
-    //QObject::connect( mainThreadObj, SIGNAL(setPlayerSource (const MediaSource &)), &player, SLOT(setPlayerSource (const MediaSource &)));
-    // and other signals; note that methods that are signals already can be conected witout wrappers:
-    //QObject::connect( mainThreadObj, SIGNAL(playerPlay()), &player.mediaObject, SLOT(play()) );
-
-    /*
-    QThread another;     // somewhere got wrong ~!!
-    dummy.moveToThread(&another);
-    another.start();
-    */
-    QObject::connect(&dummy, SIGNAL(readSig()), &player, SLOT(slot_thread()));
+    QObject::connect(&readthread, SIGNAL(readSig()), &player, SLOT(slot_thread()));
     player.moveToThread(&thread);
     thread.start();
 
-    dummy.emitSig();
+    readthread.emitSig();
 
-    // open fd here, wait threads finish or manually terminate the threads;
-    // then fd close(), so open() close() only once, read/write threads & QMutex in the middle.
+    close(fd); // could this implements open() & close() once ?
     return a.exec();
 }

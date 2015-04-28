@@ -21,10 +21,10 @@
 
 #include "myDoubleSpinBox.h"
 #include "renderarea.h"
-#include "db.h"
 //#include "Player.h"
 
-#define MIDI_DEVICE "/dev/snd/midiC1D0"
+extern int top[10]; // 1 2 4 5 6; 8 9 11 12 13
+extern int btm[15]; // 0 ~ 14
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

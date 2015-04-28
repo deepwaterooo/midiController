@@ -21,8 +21,10 @@
     - The advisor agreed and reminded me it would means more work ofr me, but I look forward to see what I would feel when I *really* applied *fashionable* methods, like xml Qt Quick....
 ** Other
 - Finished my *Change of Study Plan form*, added 30 credits for a M.S. Computer Science, waiting for major advisor to approve it so that I could graduate as planned.
+  - I made those changes before 2:00pm yesterday, and the emails were sent out at around 14:15, the advisor would need some time to process his emails, and he agreed that once he gets it approved, I would be able to apply for graduation in Aug, 2015.
 - Today when the advisor approved it, submit my application for graduation in Summer (graduate by 8/7/2015, from the I-20) by 4/30/2015.
 - Discuss summer project plan with advisor if possible.
+  - The advisor has his followed meeting, so I have NOT been able to do that yet. But I will try to finish the project as musch as possible during this week, and hope to be able to discuss it during coming week's meeting.  
  
 * update 4/24/2015, git practise
 - on 4/7/2015 update, I was supposed to manually resolve conflicts, but I was not aware the problem enough to pay attention to it, ended up by having made three commits; (the readme.org file)

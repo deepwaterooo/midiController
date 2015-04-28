@@ -68,7 +68,6 @@
 #include <QThread>
 
 #include "mainwindow.h"
-#include "db.h"
 //#include "Player.h"
 
 void MainWindow::setColor(QPushButton *pbtn, QColor color) {
@@ -482,7 +481,7 @@ MainWindow::MainWindow(QWidget *parent)
     // not a GOOD one, but a start
     // I am NOT quite sure why this doesn't work, but it seems it could be feasible if I separate the whole phonon player stuff into a separate QObject descendant, and then moveToThread(...) ...., try this method!
     for (int i = 0; i < 6; i++) inbytes[i] = 0;
-    dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
+    //dArr *buff = new dArr(inbytes, 6);  // copied to buff->buff
 
     // this step proves that the playAction not responsive is caused by thread instead of any Phonon step (it removed all thread part, and is responding as expected.)
     //connect(topKeys[13], SIGNAL(clicked()), this, SLOT(addFiles()));   
