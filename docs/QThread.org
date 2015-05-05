@@ -1638,6 +1638,7 @@ void MandelbrotWidget::scroll(int deltaX, int deltaY) {
   #+END_SRC
 
 - main.cpp
+
   #+BEGIN_SRC java
 #include "mainwindow.h"
 #include <QApplication>
@@ -1651,9 +1652,233 @@ int main(int argc, char *argv[]) {
 }
   #+END_SRC
 
+* Linux下 QT 实现串口通讯小实例
+http://mobile.51cto.com/symbian-270754.htm
+- thread.h
+
+  #+BEGIN_SRC java
+class Thread : public QThread {     
+    Q_OBJECT     
+public:     
+    Thread();     
+    char buf[128];     
+    volatile bool stopped;     
+    volatile bool write_rs;     
+    volatile bool read_rs;     
+protected:     
+    virtual void run();     
+};     
+  #+END_SRC
+- thread.cpp
+
+  #+BEGIN_SRC java
+#include "thread.h"     
+#include <sys/types.h>     
+#include <sys/stat.h>     
+#include <fcntl.h>     
+#include <termios.h>    //串口用到的     
+#include <stdio.h>     
+#include <stdlib.h>     
+#include <unistd.h>     
+#include <strings.h>     
+
+#define BAUDRATE B9600     
+#define RS_DEVICE "/dev/ttyS0"       //串口0     
+
+//#define RS_DEVICE "/dev/ttySAC1"       //串口1     
+
+Thread::Thread() {}                                                 //析构     
+
+void Thread::run() {         //这就是线程的具体工作了     
+    int fd, c = 0, res;     
+    struct termios oldtio, newtio;     //termios结构是用来保存波特率、字符大小等     
+
+    printf("start...\n");     
+    fd = open(RS_DEVICE, O_RDWR|O_NOCTTY);     //以读写方式打开串口。不控制TTY     
+    if (fd < 0) {         
+        perror("Got fd < 0 error here");     
+        exit(1);                             //失败退出     
+    }
+    
+    printf("Open...\n");     
+    tcgetattr(fd, &oldtio);             //保存当前设置到oldtio     
+    bzero(&newtio, sizeof(newtio));     //清除newtio结构，并重新对它的成员设置如下    
+    newtio.c_cflag = BAUDRATE|CS8|CLOCAL|CREAD;  //9600、8位、忽略DCD信号、启用接收装置     
+    newtio.c_iflag |= IGNPAR;                    //忽略奇偶     
+    newtio.c_oflag = 0;     
+    newtio.c_lflag = 0;     
+    newtio.c_cc[VMIN] = 0;     
+    newtio.c_cc[VTIME] = 100;                   //在规定时间(VTIME)内读取(VMIN)个字符;     
+    tcflush(fd, TCIFLUSH);                    //清除所有队列在串口的输入与输出；     
+    tcsetattr(fd, TCSANOW, &newtio);           //把我们的设置写入termios
+    
+    while (stopped) {     // stopped 为 0 时将退出线程     
+        if (write_rs) {   // write_rs 为 1 时把字符串从串口中输出     
+            write_rs = 0;     
+            write(fd, "QtEmbedded-4.5.1", 16);  //向串口中写入字符，通过串口调试助手可看到QtEmbedded-4.5.1这个字符     
+        }     
+        if (read_rs) {                          //read_rs 为 1 时读取，并存在buf     
+            read_rs = 0;     
+            res = read(fd, buf, 10);     //读取串口的数据到buf     
+            buf[res] = 0;     
+            emit finished();                      //读完后发一个信号     
+        }     
+    }     
+
+    printf("Close...\n");     
+    tcsetattr(fd, TCSANOW, &oldtio);      //重新设置回原来的     
+    close(fd);     
+    quit();     
+}  
+  #+END_SRC
+- mainwindow.h
+
+  #+BEGIN_SRC java
+#include "ui_mainwindow.h"    //奇怪?这个头文件从哪里来的？呵呵,刚才用designer做的mainwindow.ui文件，经过make后会生成这个头文件，     
+#include "thread.h"           //把我们前面定义的线程包含进来     
+
+class MainWindow : public QMainWindow, public Ui::MainWindow {  //多继承     
+    Q_OBJECT     
+public:     
+    MainWindow(QWidget *parent=0);     
+public slots:     
+    void writeThread();     
+    void readThread();     
+    void closeThread();     
+    void display();    
+private:     
+    Thread *yy;     
+};     
+  #+END_SRC
+- mainwindow.cpp
+
+  #+BEGIN_SRC java
+MainWindow::MainWindow(QWidget *parent)     
+    :QMainWindow(parent) {     
+    setupUi(this);     
+    yy = new Thread;     
+    yy->start();          //启动线程     
+    yy->stopped=1;        //初始化变量     
+    yy->write_rs=0;     
+    yy->read_rs=0;     
+    connect(writeButton, SIGNAL(clicked()), this, SLOT(writeThread()));      //信号与槽     
+    connect(readButton, SIGNAL(clicked()), this, SLOT(readThread()));     
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(closeThread()));     
+    connect(yy, SIGNAL(finished()), this, SLOT(display()));      //前面线程读完了不是发一个信号么，这个信号就是发到这个槽     
+}
+
+void MainWindow::display() {     
+    dis_label->setText(yy->buf);     //读到的在dis_label显示，dis_label就是我们前面designer放的标签，显示buf中的内容     
+}     
+
+void MainWindow::writeThread() {  //前面线程都是根据stopped、write_rs、read_rs的状态来工作的^_^      
+    yy->write_rs = 1;     
+}    
+
+void MainWindow::readThread() {     
+    yy->read_rs = 1;     
+}     
+
+void MainWindow::closeThread() {     
+    yy->stopped = 0;     
+}  
+  #+END_SRC
+- main.cpp
+
+  #+BEGIN_SRC java
+int main(int argc,char *argv[]) {     
+    QApplication app(argc,argv);     
+    MainWindow mw;     
+    mw.show();     
+    return app.exec();     
+} 
+  #+END_SRC
+
+* volatile
+  http://hedengcheng.com/?p=725
+
+  volatile: (The stopped variable is declared) volatile because it is accessed from different threads and we want to be sure that it is freshly read every time it is needed. If we ommitted the volatile keyword, the compiler might optimized access to the variable, possibly leading to incorrect results. 
+** Volatile：易变的
+*** 测试用例一：非Volatile变量
+   [[../pic/v1.jpg]]
+  - b = a + 1;这条语句，对应的汇编指令是：lea ecx, [eax + 1]。由于变量a，在前一条语句a = fn(c)执行时，被缓存在了寄存器eax中，因此b = a + 1；语句，可以直接使用仍旧在寄存器eax中的a，来进行计算，对应的也就是汇编：[eax + 1]。
+*** 测试用例二：Volatile变量
+  [[../pic/v2.jpg]]
+  - 与测试用例一唯一的不同之处，是变量a被设置为volatile属性，一个小小的变化，带来的是汇编代码上很大的变化。a = fn(c)执行后，寄存器ecx中的a，被写回内存：mov dword ptr [esp+0Ch], ecx。然后，在执行b = a + 1；语句时，变量a有重新被从内存中读取出来：mov eax, dword ptr [esp + 0Ch]，而不再直接使用寄存器ecx中的内容。
+*** 结论
+  - 易变性。所谓的易变性，在汇编层面反映出来，就是两条语句，下一条语句不会直接使用上一条语句对应的volatile变量的寄存器内容，而是重新从内存中读取。
+** Volatile：不可优化的
+*** 测试用例三：非Volatile变量
+   [[../pic/v3.jpg]]
+  -在这个用例中，非volatile变量a，b，c全部被编译器优化掉了 (optimize out)，因为编译器通过分析，发觉a，b，c三个变量是无用的，可以进行常量替换。最后的汇编代码相当简介，高效率。
+*** 测试用例四：Volatile变量
+   [[../pic/v4.jpg]]
+  -测试用例四，与测试用例三类似，不同之处在于，a，b，c三个变量，都是volatile变量。这个区别，反映到汇编语言中，就是三个变量仍旧存在，需要将三个变量从内存读入到寄存器之中，然后再调用printf()函数。
+*** 结论
+  - “不可优化”特性。volatile告诉编译器，不要对我这个变量进行各种激进的优化，甚至将变量直接消除，保证程序员写在代码中的指令，一定会被执行。相对于前面提到的第一个特性：”易变”性，”不可优化”特性可能知晓的人会相对少一些。但是，相对于下面提到的C/C++ Volatile的第三个特性，无论是”易变”性，还是”不可优化”性，都是Volatile关键词非常流行的概念。
+** Volatile：顺序性
+  - C/C++ Volatile关键词前面提到的两个特性，让Volatile经常被解读为一个为多线程而生的关键词：一个全局变量，会被多线程同时访问/修改，那么线程内部，就不能假设此变量的不变性，并且基于此假设，来做一些程序设计。当然，这样的假设，本身并没有什么问题，多线程编程，并发访问/修改的全局变量，通常都会建议加上Volatile关键词修饰，来防止C/C++编译器进行不必要的优化。但是，很多时候，C/C++ Volatile关键词，在多线程环境下，会被赋予更多的功能，从而导致问题的出现。
+  - 回到本文背景部分我的那篇微博，我的这位朋友，正好犯了一个这样的问题。其对C/C++ Volatile关键词的使用，可以抽象为下面的伪代码：
+
+   [[../pic/v5.jpg]]
+  - 这段伪代码，声明另一个Volatile的flag变量。一个线程(Thread1)在完成一些操作后，会修改这个变量。而另外一个线程(Thread2)，则不断读取这个flag变量，由于flag变量被声明了volatile属性，因此编译器在编译时，并不会每次都从寄存器中读取此变量，同时也不会通过各种激进的优化，直接将if (flag == true)改写为if (false == true)。只要flag变量在Thread1中被修改，Thread2中就会读取到这个变化，进入if条件判断，然后进入if内部进行处理。在if条件的内部，由于flag == true，那么假设Thread1中的something操作一定已经完成了，在基于这个假设的基础上，继续进行下面的other things操作。
+  - 通过将flag变量声明为volatile属性，很好的利用了本文前面提到的C/C++ Volatile的两个特性：”易变”性；”不可优化”性。按理说，这是一个对于volatile关键词的很好应用，而且看到这里的朋友，也可以去检查检查自己的代码，我相信肯定会有这样的使用存在。
+  - 但是，这个多线程下看似对于C/C++ Volatile关键词完美的应用，实际上却是有大问题的。问题的关键，就在于前面标红的文字：由于flag = true，那么假设Thread1中的something操作一定已经完成了。flag == true，为什么能够推断出Thread1中的something一定完成了？其实既然我把这作为一个错误的用例，答案是一目了然的：这个推断不能成立，你不能假设看到flag == true后，flag = true;这条语句前面的something一定已经执行完成了。这就引出了C/C++ Volatile关键词的第三个特性：顺序性。
+  - 同样，为了说明C/C++ Volatile关键词的”顺序性”特征，下面给出三个简单的用例 (注：与上面的测试用例不同，下面的三个用例，基于的是Linux系统，使用的是”GCC: (Debian 4.3.2-1.1) 4.3.2″)：
+*** 测试用例五：非Volatile变量
+   [[../pic/v6.jpg]]
+  - 一个简单的示例，全局变量A，B均为非volatile变量。通过gcc O2优化进行编译，你可以惊奇的发现，A，B两个变量的赋值顺序被调换了！！！在对应的汇编代码中，B = 0语句先被执行，然后才是A = B + 1语句被执行。
+  - 在这里，我先简单的介绍一下C/C++编译器最基本优化原理：保证一段程序的输出，在优化前后无变化。将此原理应用到上面，可以发现，虽然gcc优化了A，B变量的赋值顺序，但是foo()函数的执行结果，优化前后没有发生任何变化，仍旧是A = 1；B = 0。因此这么做是可行的。
+*** 测试用例六：一个Volatile变量
+   [[../pic/v7.jpg]]
+  - 此测试，相对于测试用例五，最大的区别在于，变量B被声明为volatile变量。通过查看对应的汇编代码，B仍旧被提前到A之前赋值，Volatile变量B，并未阻止编译器优化的发生，编译后仍旧发生了乱序现象。
+  - 如此看来，C/C++ Volatile变量，与非Volatile变量之间的操作，是可能被编译器交换顺序的。
+  - 通过此用例，已经能够很好的说明，本章节前面，通过flag == true，来假设something一定完成是不成立的。在多线程下，如此使用volatile，会产生很严重的问题。但是，这不是终点，请继续看下面的测试用例七。
+*** 测试用例七：两个Volatile变量
+   [[../pic/v8.jpg]]
+  - 同时将A，B两个变量都声明为volatile变量，再来看看对应的汇编。奇迹发生了，A，B赋值乱序的现象消失。此时的汇编代码，与用户代码顺序高度一直，先赋值变量A，然后赋值变量B。
+  - 如此看来，C/C++ Volatile变量间的操作，是不会被编译器交换顺序的。
+*** happens-before
+  - 通过测试用例六，可以总结出：C/C++ Volatile变量与非Volatile变量间的操作顺序，有可能被编译器交换。因此，上面多线程操作的伪代码，在实际运行的过程中，就有可能变成下面的顺序：
+
+   [[../pic/v9.jpg]]
+
+  - 由于Thread1中的代码执行顺序发生变化，flag = true被提前到something之前进行，那么整个Thread2的假设全部失效。由于something未执行，但是Thread2进入了if代码段，整个多线程代码逻辑出现问题，导致多线程完全错误。
+  - 细心的读者看到这里，可能要提问，根据测试用例七，C/C++ Volatile变量间，编译器是能够保证不交换顺序的，那么能不能将something中所有的变量全部设置为volatile呢？这样就阻止了编译器的乱序优化，从而也就保证了这个多线程程序的正确性。
+  - 针对此问题，很不幸，仍旧不行。将所有的变量都设置为volatile，首先能够阻止编译器的乱序优化，这一点是可以肯定的。但是，别忘了，编译器编译出来的代码，最终是要通过CPU来执行的。目前，市场上有各种不同体系架构的CPU产品，CPU本身为了提高代码运行的效率，也会对代码的执行顺序进行调整，这就是所谓的CPU Memory Model (CPU内存模型)。关于CPU的内存模型，可以参考这些资料：Memory Ordering From Wiki；Memory Barriers Are Like Source Control Operations From Jeff Preshing；CPU Cache and Memory Ordering From 何登成。下面，是截取自Wiki上的一幅图，列举了不同CPU架构，可能存在的指令乱序。
+
+   [[../pic/v10.jpg]]
+
+  - 从图中可以看到，X86体系(X86，AMD64)，也就是我们目前使用最广的CPU，也会存在指令乱序执行的行为：StoreLoad乱序，读操作可以提前到写操作之前进行。
+  - 因此，回到上面的例子，哪怕将所有的变量全部都声明为volatile，哪怕杜绝了编译器的乱序优化，但是针对生成的汇编代码，CPU有可能仍旧会乱序执行指令，导致程序依赖的逻辑出错，volatile对此无能为力。
+  - 其实，针对这个多线程的应用，真正正确的做法，是构建一个happens-before语义。关于happens-before语义的定义，可参考文章：The Happens-Before Relation。下面，用图的形式，来展示happens-before语义：
+
+   [[../pic/v11.jpg]]
+
+  - 如图所示，所谓的happens-before语义，就是保证Thread1代码块中的所有代码，一定在Thread2代码块的第一条代码之前完成。当然，构建这样的语义有很多方法，我们常用的Mutex、Spinlock、RWLock，都能保证这个语义 (关于happens-before语义的构建，以及为什么锁能保证happens-before语义，以后专门写一篇文章进行讨论)。但是，C/C++ Volatile关键词不能保证这个语义，也就意味着C/C++ Volatile关键词，在多线程环境下，如果使用的不够细心，就会产生如同我这里提到的错误。
+*** 小结
+  - C/C++ Volatile关键词的第三个特性：”顺序性”，能够保证Volatile变量间的顺序性，编译器不会进行乱序优化。Volatile变量与非Volatile变量的顺序，编译器不保证顺序，可能会进行乱序优化。同时，C/C++ Volatile关键词，并不能用于构建happens-before语义，因此在进行多线程程序设计时，要小心使用volatile，不要掉入volatile变量的使用陷阱之中。
+** Volatile：Java增强
+- 在介绍了C/C++ Volatile关键词之后，再简单介绍一下Java的Volatile。与C/C++的Volatile关键词类似，Java的Volatile也有这三个特性，但最大的不同在于：第三个特性，”顺序性”，Java的Volatile有很极大的增强，Java Volatile变量的操作，附带了Acquire与Release语义。所谓的Acquire与Release语义，可参考文章：Acquire and Release Semantics。(这一点，后续有必要的话，可以写一篇文章专门讨论)。Java Volatile所支持的Acquire、Release语义，如下：
+- 对于Java Volatile变量的写操作，带有Release语义，所有Volatile变量写操作之前的针对其他任何变量的读写操作，都不会被编译器、CPU优化后，乱序到Volatile变量的写操作之后执行。
+- 对于Java Volatile变量的读操作，带有Acquire语义，所有Volatile变量读操作之后的针对其他任何变量的读写操作，都不会被编译器、CPU优化后，乱序到Volatile变量的读操作之前进行。
+- 通过Java Volatile的Acquire、Release语义，对比C/C++ Volatile，可以看出，Java Volatile对于编译器、CPU的乱序优化，限制的更加严格了。Java Volatile变量与非Volatile变量的一些乱序操作，也同样被禁止。
+- 由于Java Volatile支持Acquire、Release语义，因此Java Volatile，能够用来构建happens-before语义。也就是说，前面提到的C/C++ Volatile在多线程下错误的使用场景，在Java语言下，恰好就是正确的。如下图所示：
+
+   [[../pic/v12.jpg]]
+** Volatile的起源
+- C/C++的Volatile关键词，有三个特性：易变性；不可优化性；顺序性。那么，为什么Volatile被设计成这样呢？要回答这个问题，就需要从Volatile关键词的产生说起。(注：这一小节的内容，参考自C++ and the Perils of Double-Checked Locking论文的第10章节：volatile：A Brief History。这是一篇顶顶好的论文，值得多次阅读，强烈推荐！)
+- Volatile关键词，最早出现于19世纪70年代，被用于处理memory-mapeed I/O (MMIO)带来的问题。在引入MMIO之后，一块内存地址，既有可能是真正的内存，也有可能被映射到一个I/O端口。相对的，读写一个内存地址，既有可能操作内存，也有可能读写的是一个I/O设备。MMIO为什么需要引入Volatile关键词？考虑如下的一个代码片段：
+
+   [[../pic/v13.png]]
+
+- 在此代码片段中，指针p既有可能指向一个内存地址，也有可能指向一个I/O设备。如果指针p指向的是I/O设备，那么(1)，(2)中的a，b，就会接收到I/O设备的连续两个字节。但是，p也有可能指向内存，此时，编译器的优化策略，就可能会判断出a，b同时从同一内存地址读取数据，在做完(1)之后，直接将a赋值给b。对于I/O设备，需要防止编译器做这个优化，不能假设指针b指向的内容不变——易变性。
+- 同样，代码(3)，(4)也有类似的问题，编译器发现将a，b同时赋值给指针p是无意义的，因此可能会优化代码(3)中的赋值操作，仅仅保留代码(4)。对于I/O设备，需要防止编译器将写操作给彻底优化消失了——”不可优化”性。
+- 对于I/O设备，编译器不能随意交互指令的顺序，因为顺序一变，写入I/O设备的内容也就发生变化了——”顺序性”。
+- 基于MMIO的这三个需求，设计出来的C/C++ Volatile关键词，所含有的特性，也就是本文前面分析的三个特性：易变性；不可优化性；顺序性。
+
 * QT中实现Thread与GUI主线程连通方法
 http://mobile.51cto.com/symbian-270684.htm
-** 
 
 * Other Reference
 - 了解 Qt 多线程编程 新手必学(1)
@@ -1680,3 +1905,18 @@ http://mobile.51cto.com/symbian-267846.htm
 http://mobile.51cto.com/symbian-270754.htm
 - Linux 虚拟串口及 Qt 串口通信实例
 http://mobile.51cto.com/symbian-270768.htm
+- TTY 驱动
+http://oss.org.cn/kernel-book/ldd3/ch18.html
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 

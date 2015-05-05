@@ -3,6 +3,17 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/5/2015, Tuesday
+** updates
+- About the phonon playing, debugged and found out that my problem was only because I failed to point the correct complete path for .wav files, instead of only Song name without path.
+- Combined ReadFromMidi and WriteToMidi into one thread, and use "*volatile*".
+- Could paint the QPushButtons on and off from GUI responsively; Lighted midi LED on but afterwards failed, won't be difficult to solve. 
+** Other
+- My "*Change of Study Plan Form*" was sent out to the advisor through university email system more than one week ago, and I am still waiting for the advisor's approve. Check with him what's going on. 
+- Discuss Summer pan with the advisor today. 
+- Continued with the project up to this point, my feeling was complicated, felt so sorry for the years I have spent here. will write them into words and update them after the review. 
+- Saw the advisor in main office, should be here shortly. 
+
 * update 4/28/2015, Tuesday
 ** updates
 - Didn't do much code at all, but rather implementing some examples that could help me a little bit. 
