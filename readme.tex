@@ -1,4 +1,4 @@
-% Created 2015-05-05 Tue 10:14
+% Created 2015-05-05 Tue 11:44
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -43,13 +43,40 @@
 \item Combined ReadFromMidi and WriteToMidi into one thread, and use "\textbf{volatile}".
 \item Could paint the QPushButtons on and off from GUI responsively; Lighted midi LED on but afterwards failed, won't be difficult to solve.
 \end{itemize}
-\subsection{Other}
+\subsection{Detailed Requirements}
 \label{sec-1-2}
 \begin{itemize}
-\item My "\textbf{Change of Study Plan Form}" was sent out to the advisor through university email system more than one week ago, and I am still waiting for the advisor's approve. Check with him what's going on.
-\item Discuss Summer pan with the advisor today.
+\item \textbf{Bottom configuration set up}, "all the GUI design has no problem, and keeps the same" (according to the advisor), but implement it so that the use could reconfigure the combining between midi command keys and the song it will play. The detail would be load the default or lasted saved configurations when software initialize from one separate file, and save all the used made configurations before close the software (so always keep one configuration file).
+\item \textbf{Menu bar:} remove the menu bar as well discussed before. Don't need it;
+\item \textbf{Midi Layout:} midi layout looks fine, and keep the same untouched;
+\item \textbf{Music Table:} The advisor's basic rule keeps the same, "\textbf{the more information that better.}" So he want to keep the seekslider, LCD tiem ticks, volumeSlider, play/pause/stop action buttons, but remove the last two (first/last?), which were useless, and remove the musicTable from the GUI layout as well, becuase the currently playing song can be know from the QPushButton painted with color and the song name the QPushButton corresponded to from the bottom configuration part.
+\end{itemize}
+
+\subsection{Other}
+\label{sec-1-3}
+\begin{itemize}
+\item My "\textbf{Change of Study Plan Form}" was sent out to the advisor through university email system more than one week ago, and I am still waiting for the advisor's approve. Check with him what's going on. 
+\begin{itemize}
+\item The advisor simply said that he justed didn't have time to look into it, will look into it during the next couple of days.
+\item Suggested me submit my application for graduation at the same time.
+\end{itemize}
+
+\item Discuss Summer pan with the advisor today. 
+\begin{itemize}
+\item I will leave for CA Silleycon Valley next weekend (about ten days later), and I will still seek internship for professional practise and at the same time earn some money.
+\item So I would want to finish and wrap up the whole project by next Friday.
+\item The advisor said he has two tests during final week, so we planed to meet on \textbf{Monday 10:00am - 11:00am} next week targeted for project review (so that I would only worried about minor left parts during coming summer, when I should focus on my internship tasks.)
+\end{itemize}
+
 \item Continued with the project up to this point, my feeling was complicated, felt so sorry for the years I have spent here. will write them into words and update them after the review.
-\item Saw the advisor in main office, should be here shortly.
+
+\item Saw the advisor in main office, should be here shortly. 
+\begin{itemize}
+\item The advisor showed up in CSAC at around 10:14am, but talked to somebody else until 10:20; the review lasts 24 minutes up to 10:44am. I declared it was a review, but rather check the performance and set up all the detailed requirements, which was listed above. It have a quarter of an hour left before the advisor's next meeting if he had any, I asked the advisor if he wants to check the code, he said no.
+\end{itemize}
+\item A snapshot of current GUI:
+
+\includegraphics[width=.9\linewidth]{./pic/Screenshot_from_2015-05-04_13:42:14.png}
 \end{itemize}
 
 \section{update 4/28/2015, Tuesday}
