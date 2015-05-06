@@ -463,16 +463,16 @@ unable to open ftdi (xbee) device: -3 (device not found)
 - http://mobile.51cto.com/symbian-268690_1.htm
 - http://mobile.51cto.com/symbian-268360.htm
 - http://stackoverflow.com/questions/15034255/launch-phonon-player-in-a-different-thread
-- 
-- 
-- 
-- 
-
 ** midi read/write separate
 - http://www.alsa-project.org/alsa-doc/alsa-lib/rawmidi.html
 - seems to be something relative https://github.com/mixedinkey-opensource/MIKMIDI
 - https://github.com/vishnubob/python-midi
-- 
-- 
-- 
-- 
+** volatile
+- http://www.infoq.com/cn/articles/ftf-java-volatile
+- http://www.blogjava.net/sunzhong/articles/295916.html
+- http://www.iteye.com/topic/109150
+- http://blog.csdn.net/zhaoyu_android4311/article/details/8363892
+- http://www.programgo.com/article/24803476877/
+- http://wenjun.org/c/952.html
+- http://www.xuebuyuan.com/1530042.html
+- http://rock3.info/blog/2013/11/24/linux-c%E4%B8%AD%E8%B0%83%E7%94%A8%E6%B1%87%E7%BC%96%E7%94%A8%E6%B3%95/
