@@ -7,7 +7,6 @@
 #include "thread.h"     
 
 #define DEVICE "/dev/snd/midiC1D0"                            
-//char* device = (char*)("/dev/snd/midiC1D0");
 
 Thread::Thread() {}         
 

@@ -67,9 +67,9 @@
 #include <phonon> 
 #include <QThread>
 #include <QStyleFactory>
+#include <QSignalMapper>
 
 #include "mainwindow.h"
-//#include "Player.h"
 
 void MainWindow::setColor(QPushButton *pbtn, QColor color) {
     int r,g,b;
@@ -212,7 +212,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(addFilesAction, SIGNAL(triggered()), this, SLOT(addFiles()));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+    //connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     
     // setupMenus
@@ -370,8 +370,6 @@ MainWindow::MainWindow(QWidget *parent)
     topleft->addLayout(hbox6);
     
     QLabel *label[33];
-    QPlainTextEdit *edit[33];
-    QPushButton *brow[33];
     for (int i = 0; i < 33; ++i) label[i] = new QLabel;
     label[0]->setText(tr("     0"));
     label[1]->setText(tr("     1"));
@@ -440,9 +438,7 @@ MainWindow::MainWindow(QWidget *parent)
         grid->addWidget(edit[i], i, 1);
         grid->addWidget(brow[i], i, 2);
     }
-    edit[7]->setFont(QFont ("Courier", 10));
-    setHeight(edit[7], 2);
-    edit[7]->insertPlainText("Surfinusa.wav");
+    
     // Make the scroll step the same width as the fixed widgets in the grid
     //grid->verticalScrollBar()->setSingleStep(contentsWidget->height() / 33);
     vbox->addWidget(scrollArea);
@@ -473,13 +469,50 @@ MainWindow::MainWindow(QWidget *parent)
     map[66] = topKeys[11];
     map[68] = topKeys[12];
     map[70] = topKeys[13];
-    mKeySong[55] = QString("TheHeavyclip.wav");      // 4 5 6 7 8 9
-    mKeySong[57] = QString("Surfin' U.S.A..wav");
-    mKeySong[59] = QString("05 Grand Experiment.wav");
-    mKeySong[60] = QString("Pharrell_Walliams_-_Happy.wav");
-    mKeySong[62] = QString("Karnintro.wav");
-    mKeySong[64] = QString("Karn Evil 9_1st Impression-Part 2 copy.wav");
 
+    // parse and load the default configuratin from the defaultConfig.txt file
+    MyFile file;
+    file.readFromFile();  // load default configuration
+
+    // load song-key bounding into lower part edit texts
+    for (int i = 0; i < 33; ++i) {
+        edit[i]->setFont(QFont ("Courier", 8));
+        setHeight(edit[i], 1);
+    }
+    for (int i = 25; i < 33; ++i) 
+        edit[i]->insertPlainText("Not Available yet....");
+    int key;
+    foreach (key, mKeySong.keys()) 
+        switch (key) {
+        case 48: edit[0]->insertPlainText(mKeySong[key]); break;
+        case 50: edit[1]->insertPlainText(mKeySong[key]); break;
+        case 52: edit[2]->insertPlainText(mKeySong[key]); break;
+        case 53: edit[3]->insertPlainText(mKeySong[key]); break;
+        case 55: edit[4]->insertPlainText(mKeySong[key]); break;
+        case 57: edit[5]->insertPlainText(mKeySong[key]); break;
+        case 59: edit[6]->insertPlainText(mKeySong[key]); break;
+        case 60: edit[7]->insertPlainText(mKeySong[key]); break;
+        case 62: edit[8]->insertPlainText(mKeySong[key]); break;
+        case 64: edit[9]->insertPlainText(mKeySong[key]); break;
+        case 65: edit[10]->insertPlainText(mKeySong[key]); break;
+        case 67: edit[11]->insertPlainText(mKeySong[key]); break;
+        case 69: edit[12]->insertPlainText(mKeySong[key]); break;
+        case 71: edit[13]->insertPlainText(mKeySong[key]); break;
+        case 72: edit[14]->insertPlainText(mKeySong[key]); break;
+        case 49: edit[15]->insertPlainText(mKeySong[key]); break;
+        case 51: edit[16]->insertPlainText(mKeySong[key]); break;
+        case 54: edit[17]->insertPlainText(mKeySong[key]); break;
+        case 56: edit[18]->insertPlainText(mKeySong[key]); break;
+        case 58: edit[19]->insertPlainText(mKeySong[key]); break;
+        case 61: edit[20]->insertPlainText(mKeySong[key]); break;
+        case 63: edit[21]->insertPlainText(mKeySong[key]); break;
+        case 66: edit[22]->insertPlainText(mKeySong[key]); break;
+        case 68: edit[23]->insertPlainText(mKeySong[key]); break;
+        case 70: edit[24]->insertPlainText(mKeySong[key]); break;
+        }
+    
+    //file.writeToFile(); // will overwrite default
+    
     yy = new Thread;
     yy->start();
     yy->stopped = 1;
@@ -491,13 +524,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     // for rectangle "Bend" key connection
     QList<RenderArea*>::iterator it = renderAreas.begin();
+
+    // brow[i] ~ edit[i] mapping for user configuration update
+    QSignalMapper *sigMap = new QSignalMapper(this);
+    for ( int i = 0; i < 33; ++i ) {
+        connect(brow[i], SIGNAL(clicked()), sigMap, SLOT(map()));
+        sigMap->setMapping( brow[i], i);
+    }
+    connect(sigMap, SIGNAL(mapped(int)), this, SLOT(changeBoundedSong(int)));
 }
 
 void MainWindow::readFromDevice() {
     if (notedata[0] == 144) { // need set to more detail
         int index = sources.size();
         if (notedata[2] > 0) {
-            Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + mKeySong[notedata[1]]);
+            qDebug() << "sone name: " << mKeySong[notedata[1]];
+            Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + QString(mKeySong[notedata[1]]));
             sources.append(source);
         }
         if (!sources.isEmpty()) {
@@ -526,6 +568,19 @@ void MainWindow::addFiles() {
     if (!sources.isEmpty()) {
         metaInformationResolver->setCurrentSource(sources.at(index));
         mediaObject->setCurrentSource(metaInformationResolver->currentSource());
+    }
+}
+
+void MainWindow::changeBoundedSong(int idx) {
+    fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "/home/jenny/480/qt/midiUI/res_wav/", tr("Wave files (*.wav);;All files (*.*)"));
+    edit[idx]->clear();
+
+    // need to trid file path padding before the songname /blah/blah/blah/blah/blah/blah
+    
+    edit[idx]->insertPlainText(fileName); 
+    // update mKeySong for corresponding updates
+    switch(idx) {
+    case 0: mKeySong[48] = fileName; break; // need some work here
     }
 }
 
@@ -637,11 +692,6 @@ void MainWindow::aboutToFinish() {
     if (sources.size() > index) {
         mediaObject->enqueue(sources.at(index));
     }
-}
-
-void MainWindow::about() {
-    QMessageBox::information(this, tr("About Music Player"), tr("The Music Player example shows how to use Phonon - the multimedia"
-                                                                " framework that comes with Qt - to create a simple music player."));
 }
 
 MainWindow::~MainWindow() {

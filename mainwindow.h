@@ -22,20 +22,20 @@
 #include "myDoubleSpinBox.h"
 #include "renderarea.h"
 #include "thread.h"
+#include "config.h"
 
 extern int top[10]; // 1 2 4 5 6; 8 9 11 12 13
 extern int btm[15]; // 0 ~ 14
 extern unsigned char notedata[6];
+extern QMap<int, QString> mKeySong;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
     QWidget *centralWidget;
-    //private:
 public:
     QMap<int, QPushButton*> map;
-    QMap<int, QString> mKeySong;
-    
-    QString songName;
+    //QString songName;
+    QString fileName;
     unsigned char inbytes[6];
     enum { NumGridRows = 12, NumButtons = 6 };
     QPushButton *buttons[NumButtons];
@@ -44,6 +44,8 @@ public:
     QPushButton* topKeys[15];
     QPushButton* bottomKeys[15];
     QList<RenderArea*> renderAreas;
+    QPlainTextEdit *edit[33];
+    QPushButton *brow[33];
 
     Phonon::SeekSlider *seekSlider;
     Phonon::MediaObject *mediaObject;
@@ -68,14 +70,14 @@ public:
     ~MainWindow();
     void setHeight(QPlainTextEdit *edit, int nRows);
     void setColor(QPushButton *pbtn, QColor color);
-    void idol(int);
+    void setEditText();
  
 public slots:
     void readFromDevice();
+    void changeBoundedSong(int);
     
     // Phonon:
     void addFiles();
-    void about();
     void stateChanged(Phonon::State newState, Phonon::State oldState);
     void tick(qint64 time);
     void sourceChanged(const Phonon::MediaSource &source);

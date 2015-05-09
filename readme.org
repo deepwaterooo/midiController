@@ -3,6 +3,12 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/8/2015
+- add a configure file for latest user configuration for key-song bindings.
+- add a QFile read/write utility class.
+- connected 33 "Browse" buttons with the 33 QPlainTextEdit editors through QSignalMapper, which I had applied similar connections one-by-one for Senior design for last semester!
+- will spend some hours continuously pack this project tonight.
+
 * update 5/5/2015, Tuesday
 ** updates
 - About the phonon playing, debugged and found out that my problem was only because I failed to point the correct complete path for .wav files, instead of only Song name without path.
