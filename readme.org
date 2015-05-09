@@ -5,9 +5,10 @@
 
 * update 5/8/2015
 - add a configure file for latest user configuration for key-song bindings.
-- add a QFile read/write utility class.
+- add a QFile read/write utility class. Default loading, user re-configuration, save to default are all fully functional for the bottom section now.
 - connected 33 "Browse" buttons with the 33 QPlainTextEdit editors through QSignalMapper, which I had applied similar connections one-by-one for Senior design for last semester!
-- will spend some hours continuously pack this project tonight.
+- Upper section Midi LED ON/OFF still needs focus and some work, will spend some hours continuously on it tomorrow.
+- Remove menubar and musicTable is the easiest thing to do, temporatorily keep them for debugging propose only.
 
 * update 5/5/2015, Tuesday
 ** updates

@@ -2,6 +2,7 @@
 #define THREAD_H     
 
 #include <QThread>     
+#include <QMutex>
 
 extern char* device;
 extern int fd;
@@ -14,9 +15,10 @@ public:
     volatile bool stopped; // stopped为0时将退出线程
     volatile bool writeMidi;     
     volatile bool readMidi;
-    //volatile bool isPlaying;
+    volatile bool isPlaying;
 private:
     unsigned char localBuff[6];
+    QMutex mutex;
 protected:     
     virtual void run();
 signals:

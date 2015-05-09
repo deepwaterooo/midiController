@@ -18,6 +18,7 @@
 #include <phonon/backendcapabilities.h>
 #include <QLCDNumber>
 #include <QTableWidget>
+#include <QMutex>
 
 #include "myDoubleSpinBox.h"
 #include "renderarea.h"
@@ -70,7 +71,6 @@ public:
     ~MainWindow();
     void setHeight(QPlainTextEdit *edit, int nRows);
     void setColor(QPushButton *pbtn, QColor color);
-    void setEditText();
  
 public slots:
     void readFromDevice();
@@ -85,7 +85,9 @@ public slots:
     void aboutToFinish();
     void tableClicked(int row, int column);
 private:
+    MyFile file;
     Thread *yy;
+    QMutex mutex;
 };
 
 #endif

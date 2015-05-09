@@ -1,4 +1,4 @@
-#include <QGraphicsProxyWidget>
+//#include <QGraphicsProxyWidget>
 #include <QObject>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -38,7 +38,6 @@
 #include <QComboBox>
 #include <QPixmap>
 #include <QMenuBar>
-#include <QPlainTextEdit>
 #include <QDir>
 #include <QFileDialog>
 #include <QFile>
@@ -192,45 +191,27 @@ MainWindow::MainWindow(QWidget *parent)
     stopAction = new QAction(style()->standardIcon(QStyle::SP_MediaStop), tr("Stop"), this);
     stopAction->setShortcut(tr("Ctrl+S"));
     stopAction->setDisabled(true);
-    nextAction = new QAction(style()->standardIcon(QStyle::SP_MediaSkipForward), tr("Next"), this);
-    nextAction->setShortcut(tr("Ctrl+N"));
-    previousAction = new QAction(style()->standardIcon(QStyle::SP_MediaSkipBackward), tr("Previous"), this);
-    previousAction->setShortcut(tr("Ctrl+R"));
-    nextAction->setDisabled(true);
-    previousAction->setDisabled(true);
     addFilesAction = new QAction(tr("Add &Files"), this);
     addFilesAction->setShortcut(tr("Ctrl+F"));
     exitAction = new QAction(tr("E&xit"), this);
     exitAction->setShortcuts(QKeySequence::Quit);
-    aboutAction = new QAction(tr("A&bout"), this);
-    aboutAction->setShortcut(tr("Ctrl+B"));
-    aboutQtAction = new QAction(tr("About &Qt"), this);
-    aboutQtAction->setShortcut(tr("Ctrl+Q"));
-    
     connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
     connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
     connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
     connect(addFilesAction, SIGNAL(triggered()), this, SLOT(addFiles()));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-    //connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     
     // setupMenus
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(addFilesAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
-    QMenu *aboutMenu = menuBar()->addMenu(tr("&Help"));
-    aboutMenu->addAction(aboutAction);
-    aboutMenu->addAction(aboutQtAction);
 
     // setupUi
     QToolBar *bar = new QToolBar;
     bar->addAction(playAction);
     bar->addAction(pauseAction);
     bar->addAction(stopAction);
-    bar->addAction(previousAction);
-    bar->addAction(nextAction);
     seekSlider = new Phonon::SeekSlider(this);
     seekSlider->setMediaObject(mediaObject);
     volumeSlider = new Phonon::VolumeSlider(this);
@@ -423,8 +404,8 @@ MainWindow::MainWindow(QWidget *parent)
     scrollArea->setWidget(contentsWidget);
     contentsWidget->setLayout(grid);
     contentsWidget->setMinimumSize(scrollArea->width(), scrollArea->height());
-    grid->setHorizontalSpacing(2);
-    grid->setVerticalSpacing(1);
+    grid->setHorizontalSpacing(5);
+    grid->setVerticalSpacing(0);
     
     for (int i = 0; i < 33; ++i) {
         label[i]->setFixedWidth(100);
@@ -432,7 +413,7 @@ MainWindow::MainWindow(QWidget *parent)
         edit[i] = new QPlainTextEdit;
         brow[i] = new QPushButton(QIcon(":/images/doc-open"), tr("&Browse"));
         edit[i]->setFont(QFont ("Courier", 8));
-        setHeight(edit[i], 2);
+        setHeight(edit[i], 4); 
         brow[i]->setFixedWidth(80);
         grid->addWidget(label[i], i, 0);
         grid->addWidget(edit[i], i, 1);
@@ -471,13 +452,11 @@ MainWindow::MainWindow(QWidget *parent)
     map[70] = topKeys[13];
 
     // parse and load the default configuratin from the defaultConfig.txt file
-    MyFile file;
     file.readFromFile();  // load default configuration
-
     // load song-key bounding into lower part edit texts
     for (int i = 0; i < 33; ++i) {
         edit[i]->setFont(QFont ("Courier", 8));
-        setHeight(edit[i], 1);
+        setHeight(edit[i], 4);
     }
     for (int i = 25; i < 33; ++i) 
         edit[i]->insertPlainText("Not Available yet....");
@@ -511,17 +490,16 @@ MainWindow::MainWindow(QWidget *parent)
         case 70: edit[24]->insertPlainText(mKeySong[key]); break;
         }
     
-    //file.writeToFile(); // will overwrite default
-    
     yy = new Thread;
     yy->start();
     yy->stopped = 1;
     yy->readMidi = 1;
     yy->writeMidi = 0;
-    //yy->isPlaying = 0;
+    yy->isPlaying = 0;
     connect(yy, SIGNAL(readUpdate()), this, SLOT(readFromDevice())); //
     //connect(yy, SIGNAL(finished()), this, SLOT(display()));      //前面线程读完了不是发一个信号么，这个信号就是发到这个槽     
 
+    
     // for rectangle "Bend" key connection
     QList<RenderArea*>::iterator it = renderAreas.begin();
 
@@ -529,7 +507,7 @@ MainWindow::MainWindow(QWidget *parent)
     QSignalMapper *sigMap = new QSignalMapper(this);
     for ( int i = 0; i < 33; ++i ) {
         connect(brow[i], SIGNAL(clicked()), sigMap, SLOT(map()));
-        sigMap->setMapping( brow[i], i);
+        sigMap->setMapping(brow[i], i);
     }
     connect(sigMap, SIGNAL(mapped(int)), this, SLOT(changeBoundedSong(int)));
 }
@@ -538,7 +516,6 @@ void MainWindow::readFromDevice() {
     if (notedata[0] == 144) { // need set to more detail
         int index = sources.size();
         if (notedata[2] > 0) {
-            qDebug() << "sone name: " << mKeySong[notedata[1]];
             Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + QString(mKeySong[notedata[1]]));
             sources.append(source);
         }
@@ -557,7 +534,6 @@ void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) {
 }
 
 void MainWindow::addFiles() {
-    // add filter, supports .wav, .mp3 & .wma file types
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"), QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if (files.isEmpty()) return;
     int index = sources.size();
@@ -574,13 +550,35 @@ void MainWindow::addFiles() {
 void MainWindow::changeBoundedSong(int idx) {
     fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "/home/jenny/480/qt/midiUI/res_wav/", tr("Wave files (*.wav);;All files (*.*)"));
     edit[idx]->clear();
-
-    // need to trid file path padding before the songname /blah/blah/blah/blah/blah/blah
-    
-    edit[idx]->insertPlainText(fileName); 
-    // update mKeySong for corresponding updates
-    switch(idx) {
-    case 0: mKeySong[48] = fileName; break; // need some work here
+    QStringList pieces = fileName.split( "/" );
+    QString songNameText = pieces.value( pieces.length() - 1);
+    edit[idx]->insertPlainText(songNameText); 
+    switch(idx) { 
+    case 0: mKeySong[48] = songNameText; break;
+    case 1: mKeySong[50] = songNameText; break;
+    case 2: mKeySong[52] = songNameText; break;
+    case 3: mKeySong[53] = songNameText; break;
+    case 4: mKeySong[55] = songNameText; break;
+    case 5: mKeySong[57] = songNameText; break;
+    case 6: mKeySong[59] = songNameText; break;
+    case 7: mKeySong[60] = songNameText; break;
+    case 8: mKeySong[62] = songNameText; break;
+    case 9: mKeySong[64] = songNameText; break;
+    case 10: mKeySong[65] = songNameText; break;
+    case 11: mKeySong[67] = songNameText; break;
+    case 12: mKeySong[69] = songNameText; break;
+    case 13: mKeySong[71] = songNameText; break;
+    case 14: mKeySong[72] = songNameText; break;
+    case 15: mKeySong[49] = songNameText; break;
+    case 16: mKeySong[51] = songNameText; break;
+    case 17: mKeySong[54] = songNameText; break;
+    case 18: mKeySong[56] = songNameText; break;
+    case 19: mKeySong[58] = songNameText; break;
+    case 20: mKeySong[61] = songNameText; break;
+    case 21: mKeySong[63] = songNameText; break;
+    case 22: mKeySong[66] = songNameText; break;
+    case 23: mKeySong[68] = songNameText; break;
+    case 24: mKeySong[70] = songNameText; break;
     }
 }
 
@@ -604,7 +602,15 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         pauseAction->setEnabled(false);
         timeLcd->display("00:00");
         setColor(map[notedata[1]], QColor(255, 255, 255));
-        //yy->readMidi = 1; 
+        yy->isPlaying = 0;
+
+        mutex.lock();
+        notedata[3] = notedata[0]; 
+        notedata[4] = notedata[1];
+        notedata[5] = 0;
+        mutex.unlock();
+
+        yy->writeMidi = 1;
         break;
     case Phonon::PausedState:
         pauseAction->setEnabled(false);
@@ -624,7 +630,7 @@ void MainWindow::tick(qint64 time) {
 }
 
 void MainWindow::tableClicked(int row, int /* column */) {
-    bool wasPlaying = mediaObject->state(); // == Phonon::PlayingState;
+    bool wasPlaying = mediaObject->state(); 
     mediaObject->stop();
     mediaObject->clearQueue();
     if (row >= sources.size()) return;
@@ -657,8 +663,7 @@ void MainWindow::metaStateChanged(Phonon::State newState, Phonon::State /* oldSt
         title = metaInformationResolver->currentSource().fileName();
 
     QTableWidgetItem *titleItem = new QTableWidgetItem(title);
-    //titleItem->setFlags(titleItem->flags() ^ Qt::ItemIsEditable);
-    titleItem->setFlags(titleItem->flags() | Qt::ItemIsEditable | Qt::ItemIsSelectable);
+    titleItem->setFlags(titleItem->flags() ^ Qt::ItemIsEditable);
     QTableWidgetItem *artistItem = new QTableWidgetItem(metaData.value("ARTIST"));
     artistItem->setFlags(artistItem->flags() ^ Qt::ItemIsEditable);
     QTableWidgetItem *albumItem = new QTableWidgetItem(metaData.value("ALBUM"));
@@ -695,4 +700,5 @@ void MainWindow::aboutToFinish() {
 }
 
 MainWindow::~MainWindow() {
+    file.writeToFile(); // will overwrite default
 }

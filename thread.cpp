@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <QDebug>
+#include <QMutex>
 
 #include "thread.h"     
 
@@ -19,47 +20,85 @@ void Thread::run() {
     }
     
     qDebug("Read...\n");
-    int bytes_read; 
-
-    while (stopped) { // stopped 为 0 时将退出线程     
-        //if (isPlaying | writeMidi) { // write == 1, write note on
-        if (writeMidi) { // write == 1, write note on
+    int bytes_read, bytes_write;
+    int cnt = 0;
+    bool isDifferent = false;
+    
+    while (stopped) { 
+        if (writeMidi) { // write LED Off
             writeMidi = 0;
-            for (int i = 3; i < 6; i++) 
-                notedata[i] = 0;
-            write(fd, notedata, sizeof(notedata));
-            emit readUpdate();
-            readMidi = 0;    // I added here
-        }
-        if (readMidi) { // read == 1, read into notedata
-            readMidi = 0;
-            bytes_read = read(fd, &notedata, sizeof(notedata));
-            while (bytes_read < 0) {
-                qDebug("Error reading %s\n", DEVICE);
-                bytes_read = read(fd, &notedata, sizeof(notedata));
+            
+            mutex.lock();
+            bytes_write = write(fd, notedata, sizeof(notedata));
+            while (bytes_write < 0) {
+                bytes_write = write(fd, notedata, sizeof(notedata));
             }
+            mutex.unlock();
+            
+            readMidi = 1; 
+        }
+
+        if (readMidi) { 
+            readMidi = 0;
+
+            mutex.lock();
+            bytes_read = read(fd, &notedata, sizeof(notedata));
+            while (bytes_read < 0) 
+                bytes_read = read(fd, &notedata, sizeof(notedata));
+            mutex.unlock();
+            
             for (int i = 0; i < 6; ++i) {
                 qDebug() << "notedata[" << i << "]: " << notedata[i];
-                if (notedata[i] != localBuff[i]) {
-                    // this isPlaying should be tricker
-                    //isPlaying = 1;
-                    writeMidi = 1;
+                if (cnt == 0 || (cnt > 0 && i < 2 && notedata[i] != localBuff[i])) {
+                    isDifferent = 1;
                     localBuff[i] = notedata[i];
                 }
-                /*
-                if (isPlaying) {
-                    for (int i = 3; i < 6; i++) 
-                        notedata[i] = 0;
-                    write(fd, notedata, sizeof(notedata));
-
-                    emit readUpdate();
+                if (i == 2 && notedata[i] > 0) {
+                    isDifferent = 0;
+                    isPlaying = 1;   
                 }
-                */
+            } 
+            cnt++;
+            if (isPlaying) { // write LED on
+                mutex.lock();
+                notedata[2] = 127;
+                for (int i = 3; i < 6; i++) 
+                    notedata[i] = 0;
+                bytes_write = write(fd, notedata, sizeof(notedata));
+                while (bytes_write < 0) {
+                    bytes_write = write(fd, notedata, sizeof(notedata));
+                }
+                mutex.unlock();
+
+                emit readUpdate();
+                sleep(5);
             }
+            isDifferent = 0;
         }
     }
     qDebug("Close...");
     close(fd);     
-    //sleep(5);
     quit();
 }  
+/*
+  notedata[ 0 ]:  144 
+  notedata[ 1 ]:  55 
+  notedata[ 2 ]:  49 
+  notedata[ 3 ]:  0 
+  notedata[ 4 ]:  0 
+  notedata[ 5 ]:  0
+  
+  notedata[ 0 ]:  144 
+  notedata[ 1 ]:  55 
+  notedata[ 2 ]:  0 
+  notedata[ 3 ]:  144 
+  notedata[ 4 ]:  55 
+  notedata[ 5 ]:  0 
+
+  notedata[ 0 ]:  144 
+  notedata[ 1 ]:  53  //.........
+  notedata[ 2 ]:  44   
+  notedata[ 3 ]:  144 
+  notedata[ 4 ]:  55  //.........
+  notedata[ 5 ]:  0 
+ */
