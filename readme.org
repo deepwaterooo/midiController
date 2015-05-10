@@ -3,6 +3,13 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/9/2015
+- look into error msgs:
+  - (midiUI:5544): Gtk-CRITICAL **: IA\textunderscore \textunderscore gtk\textunderscore widget\textunderscore get\textunderscore direction: assertion 'GTK\textunderscore IS\textunderscore WIDGET (widget)' failed
+    - QObjects constructed without parent are owned by Qt instead of PyQt, this error is probably a result of the destructor being called twice when exiting.
+    - Not completely fixed yet.
+  - GStreamer-CRITICAL **: gst\textunderscore pad\textunderscore link\textunderscore full: assertion 'GST\textunderscore IS\textunderscore PAD (sinkpad)' failed
+
 * update 5/8/2015
 - add a configure file for latest user configuration for key-song bindings.
 - add a QFile read/write utility class. Default loading, user re-configuration, save to default are all fully functional for the bottom section now.

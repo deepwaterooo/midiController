@@ -1,0 +1,70 @@
+start...
+
+Read...
+
+
+(midiUI:5544): Gtk-CRITICAL **: IA__gtk_widget_get_direction: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(midiUI:5544): Gtk-CRITICAL **: IA__gtk_widget_get_direction: assertion 'GTK_IS_WIDGET (widget)' failed
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  55 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  48 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  60 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  50 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+
+(midiUI:5544): Gtk-CRITICAL **: IA__gtk_widget_get_direction: assertion 'GTK_IS_WIDGET (widget)' failed
+
+(midiUI:5544): Gtk-CRITICAL **: IA__gtk_widget_get_direction: assertion 'GTK_IS_WIDGET (widget)' failed
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  60 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+
+(midiUI:5544): GStreamer-CRITICAL **: gst_pad_link_full: assertion 'GST_IS_PAD (sinkpad)' failed
+readMidi notedata[ 0 ]:  144 
+readMidi notedata[ 1 ]:  62 
+readMidi notedata[ 2 ]:  127 
+readMidi notedata[ 3 ]:  0 
+readMidi notedata[ 4 ]:  0 
+readMidi notedata[ 5 ]:  0 
+
+(midiUI:5544): GStreamer-CRITICAL **: gst_pad_link_full: assertion 'GST_IS_PAD (sinkpad)' failed
+Aborting aboutToFinish handling.
+
+(midiUI:6710): GStreamer-CRITICAL **: Failed to deactivate pad wavparse1:sink, very bad
+Press <RETURN> to close this window...
+
+
+for qc:
+
+Warning: No kit 'qt.53.gcc_64_kit' found. Continuing.
+SOFT ASSERT: "state() == InferiorStopRequested" in file /work/build/qtsdk/qt-creator/src/plugins/debugger/gdb/gdbengine.cpp, line 1454
+EngineRunRequested
+SOFT ASSERT: "state() == InferiorStopRequested" in file /work/build/qtsdk/qt-creator/src/plugins/debugger/debuggerengine.cpp, line 946
+Debugger::Internal::GdbTermEngine(0x5722c00, name = "GdbEngine") EngineRunRequested
+SOFT ASSERT: "state() == InferiorSetupRequested" in file /work/build/qtsdk/qt-creator/src/plugins/debugger/gdb/termgdbadapter.cpp, line 144
+InferiorStopOk
+SOFT ASSERT: "state() == EngineRunRequested" in file /work/build/qtsdk/qt-creator/src/plugins/debugger/debuggerengine.cpp, line 890
+Debugger::Internal::GdbTermEngine(0x5722c00, name = "GdbEngine") InferiorStopOk
+Warning: STUB EXITED EXPECTEDLY (no active run control)

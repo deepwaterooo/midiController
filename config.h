@@ -5,9 +5,10 @@
 
 extern QMap<int, QString> mKeySong;
 
-class MyFile {
+class MyFile : public QWidget {
 public:
-    MyFile() {}
+    MyFile()
+        : QWidget() {}
 
     static void process_line(const QString &line) {
         int idx = line.split(" ").at(0).toInt();

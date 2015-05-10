@@ -35,7 +35,6 @@ class MainWindow : public QMainWindow {
     QWidget *centralWidget;
 public:
     QMap<int, QPushButton*> map;
-    //QString songName;
     QString fileName;
     unsigned char inbytes[6];
     enum { NumGridRows = 12, NumButtons = 6 };
@@ -88,6 +87,7 @@ private:
     MyFile file;
     Thread *yy;
     QMutex mutex;
+    int keyData;
 };
 
 #endif

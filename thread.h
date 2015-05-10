@@ -6,19 +6,20 @@
 
 extern char* device;
 extern int fd;
-extern unsigned char notedata[6];
+//extern unsigned char notedata[6] = {SEQ_MIDIPUTC, 0, 0, 0, 0, 0};;
 
 class Thread : public QThread {     
     Q_OBJECT     
 public:     
     Thread();     
-    volatile bool stopped; // stopped为0时将退出线程
+    unsigned char notedata[6];
+    volatile bool stopped; 
     volatile bool writeMidi;     
     volatile bool readMidi;
     volatile bool isPlaying;
 private:
     unsigned char localBuff[6];
-    QMutex mutex;
+    //QMutex mutex;
 protected:     
     virtual void run();
 signals:

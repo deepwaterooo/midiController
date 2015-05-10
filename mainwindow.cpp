@@ -1,4 +1,3 @@
-//#include <QGraphicsProxyWidget>
 #include <QObject>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -61,7 +60,6 @@
 #include <unistd.h>
 #include <QDebug>
 #include <QSound>
-#include <QGraphicsScene>
 #include <QSocketNotifier>
 #include <phonon> 
 #include <QThread>
@@ -86,17 +84,17 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("MIDI Command Interface Main Window"));
 
     // for main window layout    
-    centralWidget = new QWidget();
+    centralWidget = new QWidget(this);
     this->setCentralWidget(centralWidget);
-    QVBoxLayout *vbox = new QVBoxLayout();   // for overall layout vbox
+    QVBoxLayout *vbox = new QVBoxLayout;   // for overall layout vbox
 
     // for midi keyboard layout hbox
     QHBoxLayout *hbox = new QHBoxLayout();   // for overall layout vbox
     QLabel* top[15];
     QLabel* bottom[15];
     for (int i = 0; i < 15; ++i) {        
-        top[i] = new QLabel;
-        topKeys[i] = new QPushButton();
+        top[i] = new QLabel(this);
+        topKeys[i] = new QPushButton(this);
         topKeys[i]->setFixedSize(50, 100);
     }
 
@@ -118,8 +116,8 @@ MainWindow::MainWindow(QWidget *parent)
     top[13]->setText(tr("Play"));
     top[14]->setText(tr(""));
     for (int i = 0; i < 15; ++i) {        
-        bottom[i] = new QLabel;
-        bottomKeys[i] = new QPushButton();
+        bottom[i] = new QLabel(this);
+        bottomKeys[i] = new QPushButton(this);
         bottomKeys[i]->setFixedSize(50, 100);
     }
     bottom[0]->setText(tr("     0"));
@@ -208,7 +206,7 @@ MainWindow::MainWindow(QWidget *parent)
     fileMenu->addAction(exitAction);
 
     // setupUi
-    QToolBar *bar = new QToolBar;
+    QToolBar *bar = new QToolBar(this);
     bar->addAction(playAction);
     bar->addAction(pauseAction);
     bar->addAction(stopAction);
@@ -217,11 +215,11 @@ MainWindow::MainWindow(QWidget *parent)
     volumeSlider = new Phonon::VolumeSlider(this);
     volumeSlider->setAudioOutput(audioOutput);
     volumeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    QLabel *volumeLabel = new QLabel;
+    QLabel *volumeLabel = new QLabel(this);
     volumeLabel->setPixmap(QPixmap("images/volume.png"));
-    QPalette palette;
+    QPalette palette;                                
     palette.setBrush(QPalette::Light, Qt::darkGray);
-    timeLcd = new QLCDNumber;
+    timeLcd = new QLCDNumber(this);
     timeLcd->setPalette(palette);
 
     // musicTable
@@ -234,7 +232,7 @@ MainWindow::MainWindow(QWidget *parent)
     musicTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     connect(musicTable, SIGNAL(cellPressed(int,int)), this, SLOT(tableClicked(int,int)));
 
-    QHBoxLayout *playbackLayout = new QHBoxLayout;
+    QHBoxLayout *playbackLayout = new QHBoxLayout();
     playbackLayout->addWidget(seekSlider);
     playbackLayout->addWidget(timeLcd);
     playbackLayout->addWidget(volumeLabel);
@@ -290,20 +288,17 @@ MainWindow::MainWindow(QWidget *parent)
     renderAreas.push_back(new RenderArea(triLftPath));
     renderAreas.push_back(new RenderArea(triRitPath));
     for (int i = 0; i < 3; ++i) {        
-        topB[i] = new QPushButton();
-        midB[i] = new QPushButton();
-        botB[i] = new QPushButton();
+        topB[i] = new QPushButton(this);
+        midB[i] = new QPushButton(this);
         topB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
         midB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
-        botB[i]->setStyleSheet("QPushButton{color:red;background-color:rgb(255,255,255)}");
         topB[i]->setFixedSize(30,30);
         midB[i]->setFixedSize(30,30);
-        botB[i]->setFixedSize(30,30);
         topB[i]->setMask(*region);
         midB[i]->setMask(*region);
-        topT[i] = new QLabel;
-        midT[i] = new QLabel;
-        botT[i] = new QLabel;
+        topT[i] = new QLabel(this);
+        midT[i] = new QLabel(this);
+        botT[i] = new QLabel(this);
     }
     topB[0]->setFlat(true); 
     topT[0]->setText("  Shift");
@@ -338,7 +333,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
     hbox5->setSpacing(0);
     QVBoxLayout *topleft = new QVBoxLayout();
-    QPushButton *space = new QPushButton();
+    QPushButton *space = new QPushButton(this);
     space->setFixedSize(150, 50);
     space->setFlat(true);
     hbox0->addWidget(space);
@@ -351,7 +346,7 @@ MainWindow::MainWindow(QWidget *parent)
     topleft->addLayout(hbox6);
     
     QLabel *label[33];
-    for (int i = 0; i < 33; ++i) label[i] = new QLabel;
+    for (int i = 0; i < 33; ++i) label[i] = new QLabel(this);
     label[0]->setText(tr("     0"));
     label[1]->setText(tr("     1"));
     label[2]->setText(tr("     2"));
@@ -397,7 +392,7 @@ MainWindow::MainWindow(QWidget *parent)
     vbox->addLayout(playbackLayout);
     
     // grid with a vertical scrollbar
-    QScrollArea * scrollArea = new QScrollArea();
+    QScrollArea * scrollArea = new QScrollArea(); 
     QWidget *contentsWidget = new QWidget(scrollArea);
     QGridLayout *grid = new QGridLayout(contentsWidget);
     scrollArea->setWidgetResizable(true);
@@ -410,7 +405,7 @@ MainWindow::MainWindow(QWidget *parent)
     for (int i = 0; i < 33; ++i) {
         label[i]->setFixedWidth(100);
         label[i]->setAlignment(Qt::AlignRight);
-        edit[i] = new QPlainTextEdit;
+        edit[i] = new QPlainTextEdit(this);
         brow[i] = new QPushButton(QIcon(":/images/doc-open"), tr("&Browse"));
         edit[i]->setFont(QFont ("Courier", 8));
         setHeight(edit[i], 4); 
@@ -513,18 +508,17 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::readFromDevice() {
-    if (notedata[0] == 144) { // need set to more detail
-        int index = sources.size();
-        if (notedata[2] > 0) {
-            Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + QString(mKeySong[notedata[1]]));
-            sources.append(source);
-        }
-        if (!sources.isEmpty()) {
-            metaInformationResolver->setCurrentSource(sources.at(index));
-            mediaObject->setCurrentSource(metaInformationResolver->currentSource()); 
-        }
-        mediaObject->play();
+    //if (notedata[0] == 144) { // need set to more detail
+    int index = sources.size();
+    keyData = yy->notedata[1];
+    Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + QString(mKeySong[keyData]));
+    sources.append(source);
+    if (!sources.isEmpty()) {
+        metaInformationResolver->setCurrentSource(sources.at(index));
+        mediaObject->setCurrentSource(metaInformationResolver->currentSource()); 
     }
+    mediaObject->play();
+    //}
 }
 
 void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) { 
@@ -594,22 +588,21 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         playAction->setEnabled(false);
         pauseAction->setEnabled(true);
         stopAction->setEnabled(true);
-        setColor(map[notedata[1]], QColor(255, 255, 0));
+        setColor(map[keyData], QColor(255, 255, 0));
         break;
     case Phonon::StoppedState:
         stopAction->setEnabled(false);
         playAction->setEnabled(true);
         pauseAction->setEnabled(false);
         timeLcd->display("00:00");
-        setColor(map[notedata[1]], QColor(255, 255, 255));
+        setColor(map[keyData], QColor(255, 255, 255));
         yy->isPlaying = 0;
-
-        mutex.lock();
-        notedata[3] = notedata[0]; 
-        notedata[4] = notedata[1];
-        notedata[5] = 0;
-        mutex.unlock();
-
+        /*
+        yy->notedata[3] = yy->notedata[0]; 
+        yy->notedata[4] = yy->notedata[1];
+        yy->notedata[5] = 0;
+        */
+        yy->notedata[0] = 128;
         yy->writeMidi = 1;
         break;
     case Phonon::PausedState:
@@ -700,5 +693,5 @@ void MainWindow::aboutToFinish() {
 }
 
 MainWindow::~MainWindow() {
-    file.writeToFile(); // will overwrite default
+    file.writeToFile(); 
 }

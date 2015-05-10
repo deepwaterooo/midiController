@@ -5,8 +5,6 @@
 #-------------------------------------------------
 
 QT       += core gui
-#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
-#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT       += phonon
 
 TARGET = midiUI
@@ -16,7 +14,7 @@ CONFIG += console
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     myDoubleSpinBox.cpp \
     renderarea.cpp \
     thread.cpp
@@ -33,4 +31,3 @@ RESOURCES += \
     res_pic/images.qrc
 
 QMAKE_CXXFLAGS += -O1
-#QMAKE_CXXFLAGS += -lpthread

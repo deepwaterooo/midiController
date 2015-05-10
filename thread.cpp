@@ -9,7 +9,8 @@
 
 #define DEVICE "/dev/snd/midiC1D0"                            
 
-Thread::Thread() {}         
+Thread::Thread()
+    : QThread() {}         
 
 void Thread::run() {        
     qDebug("start...\n");     
@@ -28,12 +29,12 @@ void Thread::run() {
         if (writeMidi) { // write LED Off
             writeMidi = 0;
             
-            mutex.lock();
+            //mutex.lock();
             bytes_write = write(fd, notedata, sizeof(notedata));
             while (bytes_write < 0) {
                 bytes_write = write(fd, notedata, sizeof(notedata));
             }
-            mutex.unlock();
+            //mutex.unlock();
             
             readMidi = 1; 
         }
@@ -41,14 +42,13 @@ void Thread::run() {
         if (readMidi) { 
             readMidi = 0;
 
-            mutex.lock();
+            //mutex.lock();
             bytes_read = read(fd, &notedata, sizeof(notedata));
             while (bytes_read < 0) 
                 bytes_read = read(fd, &notedata, sizeof(notedata));
-            mutex.unlock();
+            //mutex.unlock();
             
             for (int i = 0; i < 6; ++i) {
-                qDebug() << "notedata[" << i << "]: " << notedata[i];
                 if (cnt == 0 || (cnt > 0 && i < 2 && notedata[i] != localBuff[i])) {
                     isDifferent = 1;
                     localBuff[i] = notedata[i];
@@ -60,7 +60,9 @@ void Thread::run() {
             } 
             cnt++;
             if (isPlaying) { // write LED on
-                mutex.lock();
+
+                // write Note-ON LED-ON
+                //mutex.lock();
                 notedata[2] = 127;
                 for (int i = 3; i < 6; i++) 
                     notedata[i] = 0;
@@ -68,13 +70,15 @@ void Thread::run() {
                 while (bytes_write < 0) {
                     bytes_write = write(fd, notedata, sizeof(notedata));
                 }
-                mutex.unlock();
+                //mutex.unlock();
 
+                for (int i = 0; i < 6; ++i) 
+                    qDebug() << "readMidi notedata[" << i << "]: " << notedata[i];
                 emit readUpdate();
-                sleep(5);
             }
             isDifferent = 0;
         }
+        //sleep(5);
     }
     qDebug("Close...");
     close(fd);     

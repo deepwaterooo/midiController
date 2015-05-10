@@ -28,9 +28,9 @@ int main(int argc, char *argv[]) {
     // step 2: write the MIDI note on message as done in the prior example
     // the LED key 3C, 40 which is #60 & #64 NOTES-ON are on constantly
     packet[0] = 0x90;
-    write(fd, packet, sizeof(packet));
+    //write(fd, packet, sizeof(packet));
     packet[1] = 60;
-    write(fd, packet, sizeof(packet));
+    //write(fd, packet, sizeof(packet));
     packet[2] = 127;
     /*
     packet[3] = 0x90;
@@ -40,16 +40,16 @@ int main(int argc, char *argv[]) {
     packet[5] = 40;
     */
     packet[3] = 0;
-    write(fd, packet, sizeof(packet));
+    //write(fd, packet, sizeof(packet));
     packet[4] = 0;
-    write(fd, packet, sizeof(packet));
+    //write(fd, packet, sizeof(packet));
     packet[5] = 0;
     for (int i = 0; i < 6; ++i)
         printf("packet[%d]: %d\n", i, packet[i]);
     write(fd, packet, sizeof(packet));
 
     // sleep half second
-    sleep(20);
+    sleep(5);
     
     // the LED key 3C, 40 which is #60 & #64 NOTES-OFF are on constantly
     packet[0] = 0x80;
