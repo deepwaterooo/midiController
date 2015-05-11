@@ -510,7 +510,10 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::readFromDevice() {
     //if (notedata[0] == 144) { // need set to more detail
     int index = sources.size();
+    mutex.lock();
     keyData = yy->notedata[1];
+    mutex.unlock();
+    
     Phonon::MediaSource source(QString("/home/jenny/480/qt/midiUI/res_wav/") + QString(mKeySong[keyData]));
     sources.append(source);
     if (!sources.isEmpty()) {
@@ -597,12 +600,10 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         timeLcd->display("00:00");
         setColor(map[keyData], QColor(255, 255, 255));
         yy->isPlaying = 0;
-        /*
-        yy->notedata[3] = yy->notedata[0]; 
-        yy->notedata[4] = yy->notedata[1];
-        yy->notedata[5] = 0;
-        */
+        mutex.lock();
         yy->notedata[0] = 128;
+        mutex.unlock();
+        
         yy->writeMidi = 1;
         break;
     case Phonon::PausedState:

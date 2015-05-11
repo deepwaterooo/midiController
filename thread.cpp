@@ -42,11 +42,11 @@ void Thread::run() {
         if (readMidi) { 
             readMidi = 0;
 
-            //mutex.lock();
+            mutex.lock();
             bytes_read = read(fd, &notedata, sizeof(notedata));
             while (bytes_read < 0) 
                 bytes_read = read(fd, &notedata, sizeof(notedata));
-            //mutex.unlock();
+            mutex.unlock();
             
             for (int i = 0; i < 6; ++i) {
                 if (cnt == 0 || (cnt > 0 && i < 2 && notedata[i] != localBuff[i])) {
@@ -62,7 +62,7 @@ void Thread::run() {
             if (isPlaying) { // write LED on
 
                 // write Note-ON LED-ON
-                //mutex.lock();
+                mutex.lock();
                 notedata[2] = 127;
                 for (int i = 3; i < 6; i++) 
                     notedata[i] = 0;
@@ -70,7 +70,7 @@ void Thread::run() {
                 while (bytes_write < 0) {
                     bytes_write = write(fd, notedata, sizeof(notedata));
                 }
-                //mutex.unlock();
+                mutex.unlock();
 
                 for (int i = 0; i < 6; ++i) 
                     qDebug() << "readMidi notedata[" << i << "]: " << notedata[i];

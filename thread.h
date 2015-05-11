@@ -13,13 +13,14 @@ class Thread : public QThread {
 public:     
     Thread();     
     unsigned char notedata[6];
+    
     volatile bool stopped; 
     volatile bool writeMidi;     
     volatile bool readMidi;
     volatile bool isPlaying;
 private:
     unsigned char localBuff[6];
-    //QMutex mutex;
+    QMutex mutex;
 protected:     
     virtual void run();
 signals:

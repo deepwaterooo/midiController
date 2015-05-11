@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     write(fd, packet, sizeof(packet));
 
     // sleep half second
-    sleep(5);
+    sleep(20);
     
     // the LED key 3C, 40 which is #60 & #64 NOTES-OFF are on constantly
     packet[0] = 0x80;
