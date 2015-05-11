@@ -3,6 +3,18 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/11/2015, Monday
+- Realized that except that the thread checking midi port run() is running in a separate thread, all others are still within the GUI main thread
+  - The bottom layer user reconfiguration section has limited steps and executed fast, produce barely noticable block, doesn't affect by thread that much.
+  - But the phonon median player, I think if I could separate it into an independend thread, and then communicate with other thread, this multi-threads design should significantly improve the GUI responsiveness and user experience. 
+  - I needs high-level architecture design, but feels like the advisor barely offer help for me from this perspective. 
+  - Will discuss with the advisor today to see his ideas. 
+- Project handling related thinking
+  - This project has lasted too long already, but I have never be any person that tend to be late and delay, examples include I was top 2 student who successfully accomplished the Tic-Tac-Toe one-best-move-step lisp hw2 program (according to certain criterion) for CS210 (Programming Language) within my first month of new major study (*Sep, 2012*). The reasons that I am late now for this project includes: 
+    - Ever since RTOS (Real Time Operating System course), I began to realize that this advisor is NOT that into programming, as well as has some difficulty to explain concepts clear. And for courses after courses, as cs is a new major for me, I have suffered from this, and I had NEVER have enough confidence in the course instuctor, and my performance was significantly affected by this.
+    - From my side, as an international student, I also have difficulty in understanding concepts, and have slightly foreighn language related affects. 
+- set *mark* here, and I will continue to update later. 
+
 * update 5/9/2015
 - look into error msgs:
   - (midiUI:5544): Gtk-CRITICAL **: IA\textunderscore \textunderscore gtk\textunderscore widget\textunderscore get\textunderscore direction: assertion 'GTK\textunderscore IS\textunderscore WIDGET (widget)' failed
