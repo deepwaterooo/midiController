@@ -17,14 +17,16 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     myDoubleSpinBox.cpp \
     renderarea.cpp \
-    thread.cpp
+    thread.cpp \
+    player.cpp
 
 HEADERS  += mainwindow.h \
     myDoubleSpinBox.h \
     renderarea.h \
     ReadBuffThread.h \
     thread.h \
-    config.h
+    config.h \
+    player.h
 
 
 RESOURCES += \
