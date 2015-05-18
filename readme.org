@@ -3,6 +3,10 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/17/2015
+- It's NOT necessary to separate the player into a separate thread, because QWidget subfamilies are NOT thread safe, I will still keep the phonon-related functions in the mainwindow main GUI, just separate the checking midi port tasks into a separate thread.
+- checkout an old version of commits, and continue to remove the unnecessary menu bar, and musictable, together with fix the bugs....
+
 * update 5/15/2015
 - The advisor met his other student instead, meeting got rescheduled to be on coming Monday. 
 - I applied for graduation on time before 5/12/2015, right now I am still WAITING for department of Engineering to approve for my study plan. 
