@@ -17,18 +17,26 @@ int main(int argc, char *argv[]) {
     MainWindow w;
     w.show();
 
+    // trial 2: put threads here
     // yy
     // player
-
+    /*
     qDebug() << "main thread: " << QThread::currentThreadId();
     QThread thread;
 
-    yy = new Thread;
+    ReadFromMidiThread readthread;
+    WriteToMidiThread writethread;
+    
     Player player;
 
-    QObject::connect(yy, SIGNAL(readUpdate()), &player, SLOT(readFromDevice()));
+    QObject::connect(&readthread, SIGNAL(readSig()), &player, SLOT(slot_thread()));
     player.moveToThread(&thread);
     thread.start();
+
+    readthread.emitSig();
+
+    close(fd); // could this implements open() & close() once ?
+    */
     
     return a.exec();
 }
