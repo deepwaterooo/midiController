@@ -56,14 +56,7 @@ public:
     QAction *playAction;
     QAction *pauseAction;
     QAction *stopAction;
-    QAction *nextAction;
-    QAction *previousAction;
-    QAction *addFilesAction;
-    QAction *exitAction;
-    QAction *aboutAction;
-    QAction *aboutQtAction;
-    QLCDNumber *timeLcd;
-    QTableWidget *musicTable;
+    QLabel *timeLcd;
     
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -74,15 +67,12 @@ public:
 public slots:
     void readFromDevice();
     void changeBoundedSong(int);
-    
-    // Phonon:
-    void addFiles();
     void stateChanged(Phonon::State newState, Phonon::State oldState);
     void tick(qint64 time);
-    void sourceChanged(const Phonon::MediaSource &source);
     void metaStateChanged(Phonon::State newState, Phonon::State oldState);
     void aboutToFinish();
-    void tableClicked(int row, int column);
+    //void sourceChanged(const Phonon::MediaSource &source);
+    //void tableClicked(int row, int column);
 private:
     MyFile file;
     Thread *yy;

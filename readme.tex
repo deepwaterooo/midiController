@@ -1,4 +1,4 @@
-% Created 2015-05-18 Mon 00:02
+% Created 2015-05-18 Mon 01:15
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -39,8 +39,10 @@
 \begin{itemize}
 \item It's NOT necessary to separate the player into a separate thread, because QWidget subfamilies are NOT thread safe, I will still keep the phonon-related functions in the mainwindow main GUI, just separate the checking midi port tasks into a separate thread.
 \item checkout an old version of commits, and continue to remove the unnecessary menu bar, and musictable, together with fix the bugs\ldots{}.
+\item deleted some unnecessary codes to remove menubar \& musicTable;
+\item modified timeLcd to display total time as well, referring to advisor's rule that "the more information the better".
+\item may work on make upper-leffer corner buttons look slightly better than current now\ldots{}.
 \end{itemize}
-
 \section{update 5/15/2015}
 \label{sec-2}
 \begin{itemize}

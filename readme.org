@@ -6,7 +6,9 @@
 * update 5/17/2015
 - It's NOT necessary to separate the player into a separate thread, because QWidget subfamilies are NOT thread safe, I will still keep the phonon-related functions in the mainwindow main GUI, just separate the checking midi port tasks into a separate thread.
 - checkout an old version of commits, and continue to remove the unnecessary menu bar, and musictable, together with fix the bugs....
-
+- deleted some unnecessary codes to remove menubar & musicTable;
+- modified timeLcd to display total time as well, referring to advisor's rule that "the more information the better".
+- may work on make upper-leffer corner buttons look slightly better than current now....
 * update 5/15/2015
 - The advisor met his other student instead, meeting got rescheduled to be on coming Monday. 
 - I applied for graduation on time before 5/12/2015, right now I am still WAITING for department of Engineering to approve for my study plan. 

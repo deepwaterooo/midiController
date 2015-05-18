@@ -29,13 +29,13 @@ void Thread::run() {
         if (writeMidi) { // write LED Off
             writeMidi = 0;
             
-            //mutex.lock();
+            mutex.lock();
             bytes_write = write(fd, notedata, sizeof(notedata));
             while (bytes_write < 0) {
                 bytes_write = write(fd, notedata, sizeof(notedata));
             }
-            //mutex.unlock();
-            
+            mutex.unlock();
+
             readMidi = 1; 
         }
 
@@ -49,7 +49,7 @@ void Thread::run() {
             mutex.unlock();
             
             for (int i = 0; i < 6; ++i) {
-                if (cnt == 0 || (cnt > 0 && i < 2 && notedata[i] != localBuff[i])) {
+                if (cnt == 0 || (cnt > 0 && i < 2 && notedata[i] != localBuff[i] && notedata[0] != 128)) {
                     isDifferent = 1;
                     localBuff[i] = notedata[i];
                 }
@@ -63,7 +63,7 @@ void Thread::run() {
 
                 // write Note-ON LED-ON
                 mutex.lock();
-                notedata[2] = 127;
+                notedata[2] = 127;  
                 for (int i = 3; i < 6; i++) 
                     notedata[i] = 0;
                 bytes_write = write(fd, notedata, sizeof(notedata));
@@ -84,25 +84,3 @@ void Thread::run() {
     close(fd);     
     quit();
 }  
-/*
-  notedata[ 0 ]:  144 
-  notedata[ 1 ]:  55 
-  notedata[ 2 ]:  49 
-  notedata[ 3 ]:  0 
-  notedata[ 4 ]:  0 
-  notedata[ 5 ]:  0
-  
-  notedata[ 0 ]:  144 
-  notedata[ 1 ]:  55 
-  notedata[ 2 ]:  0 
-  notedata[ 3 ]:  144 
-  notedata[ 4 ]:  55 
-  notedata[ 5 ]:  0 
-
-  notedata[ 0 ]:  144 
-  notedata[ 1 ]:  53  //.........
-  notedata[ 2 ]:  44   
-  notedata[ 3 ]:  144 
-  notedata[ 4 ]:  55  //.........
-  notedata[ 5 ]:  0 
- */

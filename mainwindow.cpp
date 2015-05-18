@@ -173,7 +173,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mediaObject, SIGNAL(tick(qint64)), this, SLOT(tick(qint64)));
     connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(stateChanged(Phonon::State,Phonon::State)));
     connect(metaInformationResolver, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this, SLOT(metaStateChanged(Phonon::State,Phonon::State)));
-    // I think mark musciTable only
     connect(mediaObject, SIGNAL(currentSourceChanged(Phonon::MediaSource)), this, SLOT(sourceChanged(Phonon::MediaSource)));  // comment
     connect(mediaObject, SIGNAL(aboutToFinish()), this, SLOT(aboutToFinish()));
     
@@ -189,21 +188,9 @@ MainWindow::MainWindow(QWidget *parent)
     stopAction = new QAction(style()->standardIcon(QStyle::SP_MediaStop), tr("Stop"), this);
     stopAction->setShortcut(tr("Ctrl+S"));
     stopAction->setDisabled(true);
-    addFilesAction = new QAction(tr("Add &Files"), this);
-    addFilesAction->setShortcut(tr("Ctrl+F"));
-    exitAction = new QAction(tr("E&xit"), this);
-    exitAction->setShortcuts(QKeySequence::Quit);
     connect(playAction, SIGNAL(triggered()), mediaObject, SLOT(play()));
     connect(pauseAction, SIGNAL(triggered()), mediaObject, SLOT(pause()) );
     connect(stopAction, SIGNAL(triggered()), mediaObject, SLOT(stop()));
-    connect(addFilesAction, SIGNAL(triggered()), this, SLOT(addFiles()));
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-    
-    // setupMenus
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(addFilesAction);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAction);
 
     // setupUi
     QToolBar *bar = new QToolBar(this);
@@ -219,18 +206,8 @@ MainWindow::MainWindow(QWidget *parent)
     volumeLabel->setPixmap(QPixmap("images/volume.png"));
     QPalette palette;                                
     palette.setBrush(QPalette::Light, Qt::darkGray);
-    timeLcd = new QLCDNumber(this);
+    timeLcd = new QLabel(this);
     timeLcd->setPalette(palette);
-
-    // musicTable
-    QStringList headers;
-    headers << tr("Title") << tr("Artist") << tr("Album") << tr("Year");
-    musicTable = new QTableWidget(0, 4, this);
-    musicTable->horizontalHeader()->setStretchLastSection(true);
-    musicTable->setHorizontalHeaderLabels(headers);
-    musicTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    musicTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    connect(musicTable, SIGNAL(cellPressed(int,int)), this, SLOT(tableClicked(int,int)));
 
     QHBoxLayout *playbackLayout = new QHBoxLayout();
     playbackLayout->addWidget(seekSlider);
@@ -238,7 +215,7 @@ MainWindow::MainWindow(QWidget *parent)
     playbackLayout->addWidget(volumeLabel);
     playbackLayout->addWidget(volumeSlider);
     playbackLayout->addWidget(bar);
-    timeLcd->display("00:00");
+    timeLcd->setText("00:00/00:00");
 
     QVBoxLayout *vbox4 = new QVBoxLayout();
     vbox4->addLayout(topLabel);
@@ -388,7 +365,7 @@ MainWindow::MainWindow(QWidget *parent)
     vbox->addLayout(hboxMidi);   // vbox4 will be updated
 
     QHBoxLayout *hbox02 = new QHBoxLayout();
-    vbox->addWidget(musicTable);  // for test propose only
+    //vbox->addWidget(musicTable);  // for test propose only
     vbox->addLayout(playbackLayout);
     
     // grid with a vertical scrollbar
@@ -508,7 +485,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::readFromDevice() {
-    //if (notedata[0] == 144) { // need set to more detail
     int index = sources.size();
     mutex.lock();
     keyData = yy->notedata[1];
@@ -521,27 +497,12 @@ void MainWindow::readFromDevice() {
         mediaObject->setCurrentSource(metaInformationResolver->currentSource()); 
     }
     mediaObject->play();
-    //}
 }
 
 void MainWindow::setHeight(QPlainTextEdit *edit, int nRows) { 
     QFontMetrics m (edit -> font()) ;
     int RowHeight = m.lineSpacing() ;
     edit->setFixedHeight(nRows * RowHeight) ;
-}
-
-void MainWindow::addFiles() {
-    QStringList files = QFileDialog::getOpenFileNames(this, tr("Select Music Files"), QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    if (files.isEmpty()) return;
-    int index = sources.size();
-    foreach (QString string, files) {
-        Phonon::MediaSource source(string);
-        sources.append(source);
-    }
-    if (!sources.isEmpty()) {
-        metaInformationResolver->setCurrentSource(sources.at(index));
-        mediaObject->setCurrentSource(metaInformationResolver->currentSource());
-    }
 }
 
 void MainWindow::changeBoundedSong(int idx) {
@@ -597,9 +558,11 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         stopAction->setEnabled(false);
         playAction->setEnabled(true);
         pauseAction->setEnabled(false);
-        timeLcd->display("00:00");
+        //timeLcd->display("00:00");
+        timeLcd->setText("00:00/00:00");
         setColor(map[keyData], QColor(255, 255, 255));
         yy->isPlaying = 0;
+
         mutex.lock();
         yy->notedata[0] = 128;
         mutex.unlock();
@@ -620,10 +583,14 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
 
 void MainWindow::tick(qint64 time) {
     QTime displayTime(0, (time / 60000) % 60, (time / 1000) % 60);
-    timeLcd->display(displayTime.toString("mm:ss"));
+    qint64 totalTime = mediaObject->totalTime();
+    QTime totalDisplayTime(0, (totalTime / 60000) % 60, (totalTime / 1000) % 60);
+    QString text = displayTime.toString("mm:ss") + "/" + totalDisplayTime.toString("mm:ss");
+    //timeLcd->display(text);
+    timeLcd->setText(text);
 }
-
-void MainWindow::tableClicked(int row, int /* column */) {
+/*
+void MainWindow::tableClicked(int row, int column) {
     bool wasPlaying = mediaObject->state(); 
     mediaObject->stop();
     mediaObject->clearQueue();
@@ -634,12 +601,13 @@ void MainWindow::tableClicked(int row, int /* column */) {
     } else    
         mediaObject->stop();
 }
-
+*/
+/*
 void MainWindow::sourceChanged(const Phonon::MediaSource &source) {
     musicTable->selectRow(sources.indexOf(source));
     timeLcd->display("00:00");
 }
-
+*/
 void MainWindow::metaStateChanged(Phonon::State newState, Phonon::State /* oldState */) {
     if (newState == Phonon::ErrorState) {
         QMessageBox::warning(this, tr("Error opening files"), metaInformationResolver->errorString());
@@ -664,7 +632,7 @@ void MainWindow::metaStateChanged(Phonon::State newState, Phonon::State /* oldSt
     albumItem->setFlags(albumItem->flags() ^ Qt::ItemIsEditable);
     QTableWidgetItem *yearItem = new QTableWidgetItem(metaData.value("DATE"));
     yearItem->setFlags(yearItem->flags() ^ Qt::ItemIsEditable);
-
+    /*
     int currentRow = musicTable->rowCount();
     musicTable->insertRow(currentRow);
     musicTable->setItem(currentRow, 0, titleItem);
@@ -675,15 +643,19 @@ void MainWindow::metaStateChanged(Phonon::State newState, Phonon::State /* oldSt
         musicTable->selectRow(0);
         mediaObject->setCurrentSource(metaInformationResolver->currentSource());
     }
+    */
     Phonon::MediaSource source = metaInformationResolver->currentSource();
     int index = sources.indexOf(metaInformationResolver->currentSource()) + 1;
     if (sources.size() > index) {
         metaInformationResolver->setCurrentSource(sources.at(index));
-    } else {
+    }
+    /*
+    else {
         musicTable->resizeColumnsToContents();
         if (musicTable->columnWidth(0) > 600)
             musicTable->setColumnWidth(0, 600);
     }
+    */
 }
 
 void MainWindow::aboutToFinish() {

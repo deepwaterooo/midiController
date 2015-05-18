@@ -6,7 +6,6 @@
 
 extern char* device;
 extern int fd;
-//extern unsigned char notedata[6] = {SEQ_MIDIPUTC, 0, 0, 0, 0, 0};;
 
 class Thread : public QThread {     
     Q_OBJECT     
