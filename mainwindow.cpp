@@ -558,7 +558,6 @@ void MainWindow::stateChanged(Phonon::State newState, Phonon::State /* oldState 
         stopAction->setEnabled(false);
         playAction->setEnabled(true);
         pauseAction->setEnabled(false);
-        //timeLcd->display("00:00");
         timeLcd->setText("00:00/00:00");
         setColor(map[keyData], QColor(255, 255, 255));
         yy->isPlaying = 0;
@@ -586,7 +585,6 @@ void MainWindow::tick(qint64 time) {
     qint64 totalTime = mediaObject->totalTime();
     QTime totalDisplayTime(0, (totalTime / 60000) % 60, (totalTime / 1000) % 60);
     QString text = displayTime.toString("mm:ss") + "/" + totalDisplayTime.toString("mm:ss");
-    //timeLcd->display(text);
     timeLcd->setText(text);
 }
 /*

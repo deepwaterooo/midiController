@@ -3,6 +3,18 @@
 #+title: MIDI Command Controller Interface
 #+author: deepwaterooo
 
+* update 5/18/2015, Monday
+** Project
+- Didn't start this project this semester until 2/12/2015, which was ONE month after spring semester started already, and for the frist week, it was just a catch up, didn't really do anything (which made it *five week late*....);
+- This project was targeted last through out the summer section till graduation. And that's the reason the weekly meeting has been cancelled for 3/3, 3/17, 3/24, 3/31, 4/14 (which made it *five week less*....). And for the most of the meetings that we physically meet in CSAC, the meeting usually lasted for about half an hour (which made *half promoting time gone*....). 
+- This is a lonely learning process, NO classmates/teammates to discuss with, NO mentor/friends aside to guide/teach/inspire, NO admirable instuctor to offer any constructive suggestions. This project was designed to be a war against me, a war that I suffered from, and a war of my own fighting against myself.... 
+- Together with the university *chicken-smell culture*, campus food court most hard labor work ever, this spring semester, for me, has been *horrific and lasted a century....* Which also made the excellent mentor-intern experience especially memorable even it lasted only one month, recalled when my life currently suffers. 
+- I have suffered enough from here from current university designed by all the jerks, and *I would NEVER want to come back here ever again!*
+** Other
+- The *study plan* still has one course listed which I don't need and I have turned in "*change of study plan*" form to remove it and got approved by the advisor, but it IS still there today after three rounds of modifications. Will take all the effort to remove it by meeting the professionals this afternoon (within these two days).
+- Check my student account balance (need pay $25 application for graduation fee), and clear out my student account, so that I will NOT own any cent from the university.
+- Discuss with the advisor what he wants me do next, and if I have to carry the device and/or books with me, how to return these stuff back to him without I revisit the university personally physically. 
+
 * update 5/17/2015
 - It's NOT necessary to separate the player into a separate thread, because QWidget subfamilies are NOT thread safe, I will still keep the phonon-related functions in the mainwindow main GUI, just separate the checking midi port tasks into a separate thread.
 - checkout an old version of commits, and continue to remove the unnecessary menu bar, and musictable, together with fix the bugs....
