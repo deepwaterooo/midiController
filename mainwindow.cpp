@@ -491,15 +491,8 @@ MainWindow::MainWindow(QWidget *parent)
     yy->readMidi = 1;
     yy->writeMidi = 0;
     yy->isPlaying = 0;
-    //connect(yy, SIGNAL(readUpdate()), this, SLOT(readFromDevice())); 
+    connect(yy, SIGNAL(readUpdate()), this, SLOT(readFromDevice())); //
     //connect(yy, SIGNAL(finished()), this, SLOT(display()));      //前面线程读完了不是发一个信号么，这个信号就是发到这个槽     
-
-    QThread thread;
-    Player player;
-    QObject::connect(yy, SIGNAL(readUpdate()), &player, SLOT(readFromDevice()));
-    
-    //player.moveToThread(&thread);
-    //thread.start();
 
     
     // for rectangle "Bend" key connection

@@ -24,13 +24,11 @@
 #include "renderarea.h"
 #include "thread.h"
 #include "config.h"
-#include "player.h"
 
 extern int top[10]; // 1 2 4 5 6; 8 9 11 12 13
 extern int btm[15]; // 0 ~ 14
 extern unsigned char notedata[6];
 extern QMap<int, QString> mKeySong;
-extern Thread *yy;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -87,6 +85,7 @@ public slots:
     void tableClicked(int row, int column);
 private:
     MyFile file;
+    Thread *yy;
     QMutex mutex;
     int keyData;
 };
