@@ -1,4 +1,4 @@
-% Created 2015-05-05 Tue 03:29
+% Created 2015-05-17 Sun 22:16
 \documentclass[9pt,b5paper]{article}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -2024,47 +2024,190 @@ int main(int argc,char *argv[]) {
 \end{lstlisting}
 \end{itemize}
 
-\section{volatile}
+\section{another examples}
 \label{sec-8}
+\begin{itemize}
+\item TextDevice.h    
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef TEXTDEVICE_H    
+#define TEXTDEVICE_H    
+
+#include <QThread>    
+#include <QString>    
+#include <QMutex>     
+
+class TextDevice : public QThread {     
+    Q_OBJECT     
+public:     
+    TextDevice();     
+    void run();     
+    void stop();     
+public slots:     
+    void write(const QString& text);     
+private:     
+    int m_count;     
+    QMutex m_mutex;     
+};    
+
+#endif // TEXTDEVICE_H
+\end{lstlisting}
+
+\item TextDevice.cpp    
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QMutexLocker>    
+#include <QDebug>    
+#include <QString>    
+#include "textdevice.h"     
+
+TextDevice::TextDevice() {     
+    m_count = 0;     
+}     
+
+void TextDevice::run() {     
+    exec();     
+}     
+
+void TextDevice::stop() {     
+    quit();     
+}     
+
+void TextDevice::write(const QString& text) {     
+    QMutexLocker locker(&m_mutex);     
+    qDebug() << QString("Call %1: %2").arg(m_count++).arg(text);     
+}
+\end{lstlisting}
+
+\item TextThread.h    
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#ifndef TEXTTHREAD_H    
+#define TEXTTHREAD_H    
+
+#include <QThread>    
+#include <QString>     
+
+class TextThread : public QThread {     
+    Q_OBJECT     
+public:     
+    TextThread(const QString& text);     
+    void run();     
+    void stop();     
+signals:     
+    void writeText(const QString&);     
+private:     
+    QString m_text;     
+    bool m_stop;     
+};    
+
+#endif // TEXTTHREAD_H
+\end{lstlisting}
+
+\item TextThread.cpp    
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include "textthread.h"     
+
+TextThread::TextThread(const QString& text) : QThread() {     
+    m_text = text;     
+    m_stop = false;     
+}     
+
+void TextThread::stop() {     
+    m_stop = true;     
+}     
+
+void TextThread::run() {     
+    while(!m_stop) {     
+        emit writeText(m_text);     
+        sleep(1);     
+    }     
+}
+\end{lstlisting}
+
+\item main.cpp    
+\lstset{language=java,label= ,caption= ,numbers=none}
+\begin{lstlisting}
+#include <QApplication>    
+#include <QMessageBox>    
+#include "textdevice.h"    
+#include "textthread.h"     
+    
+int main(int argc, char** argv) {     
+
+    QApplication app(argc, argv);     
+    //启动线程     
+
+    TextDevice device;     
+    TextThread foo("foo"), bar("bar");     
+
+    //把两个线程使用signal/slot连接起来     
+    QObject::connect(&foo, SIGNAL(writeText(const QString&)), &device, SLOT(write(const QString&)));     
+    QObject::connect(&bar, SIGNAL(writeText(const QString&)), &device, SLOT(write(const QString&)));     
+
+    //启动线程     
+    foo.start();     
+    bar.start();     
+    device.start();     
+
+    QMessageBox::information(0, "Threading", "Close me to stop.");     
+    //停止线程     
+    foo.stop();     
+    bar.stop();     
+    device.stop();     
+
+    //等待线程结束     
+    device.wait();     
+    foo.wait();     
+    bar.wait();     
+
+    return 0;     
+}
+\end{lstlisting}
+\end{itemize}
+
+\section{volatile}
+\label{sec-9}
 \url{http://hedengcheng.com/?p=725}
 
 volatile: (The stopped variable is declared) volatile because it is accessed from different threads and we want to be sure that it is freshly read every time it is needed. If we ommitted the volatile keyword, the compiler might optimized access to the variable, possibly leading to incorrect results. 
 \subsection{Volatile：易变的}
-\label{sec-8-1}
+\label{sec-9-1}
 \subsubsection{测试用例一：非Volatile变量}
-\label{sec-8-1-1}
+\label{sec-9-1-1}
 \includegraphics[width=.9\linewidth]{../pic/v1.jpg}
 \begin{itemize}
 \item b = a + 1;这条语句，对应的汇编指令是：lea ecx, [eax + 1]。由于变量a，在前一条语句a = fn(c)执行时，被缓存在了寄存器eax中，因此b = a + 1；语句，可以直接使用仍旧在寄存器eax中的a，来进行计算，对应的也就是汇编：[eax + 1]。
 \end{itemize}
 \subsubsection{测试用例二：Volatile变量}
-\label{sec-8-1-2}
+\label{sec-9-1-2}
 \includegraphics[width=.9\linewidth]{../pic/v2.jpg}
 \begin{itemize}
 \item 与测试用例一唯一的不同之处，是变量a被设置为volatile属性，一个小小的变化，带来的是汇编代码上很大的变化。a = fn(c)执行后，寄存器ecx中的a，被写回内存：mov dword ptr [esp+0Ch], ecx。然后，在执行b = a + 1；语句时，变量a有重新被从内存中读取出来：mov eax, dword ptr [esp + 0Ch]，而不再直接使用寄存器ecx中的内容。
 \end{itemize}
 \subsubsection{结论}
-\label{sec-8-1-3}
+\label{sec-9-1-3}
 \begin{itemize}
 \item 易变性。所谓的易变性，在汇编层面反映出来，就是两条语句，下一条语句不会直接使用上一条语句对应的volatile变量的寄存器内容，而是重新从内存中读取。
 \end{itemize}
 \subsection{Volatile：不可优化的}
-\label{sec-8-2}
+\label{sec-9-2}
 \subsubsection{测试用例三：非Volatile变量}
-\label{sec-8-2-1}
+\label{sec-9-2-1}
 \includegraphics[width=.9\linewidth]{../pic/v3.jpg}
   -在这个用例中，非volatile变量a，b，c全部被编译器优化掉了 (optimize out)，因为编译器通过分析，发觉a，b，c三个变量是无用的，可以进行常量替换。最后的汇编代码相当简介，高效率。
 \subsubsection{测试用例四：Volatile变量}
-\label{sec-8-2-2}
+\label{sec-9-2-2}
 \includegraphics[width=.9\linewidth]{../pic/v4.jpg}
   -测试用例四，与测试用例三类似，不同之处在于，a，b，c三个变量，都是volatile变量。这个区别，反映到汇编语言中，就是三个变量仍旧存在，需要将三个变量从内存读入到寄存器之中，然后再调用printf()函数。
 \subsubsection{结论}
-\label{sec-8-2-3}
+\label{sec-9-2-3}
 \begin{itemize}
 \item “不可优化”特性。volatile告诉编译器，不要对我这个变量进行各种激进的优化，甚至将变量直接消除，保证程序员写在代码中的指令，一定会被执行。相对于前面提到的第一个特性：”易变”性，”不可优化”特性可能知晓的人会相对少一些。但是，相对于下面提到的C/C++ Volatile的第三个特性，无论是”易变”性，还是”不可优化”性，都是Volatile关键词非常流行的概念。
 \end{itemize}
 \subsection{Volatile：顺序性}
-\label{sec-8-3}
+\label{sec-9-3}
 \begin{itemize}
 \item C/C++ Volatile关键词前面提到的两个特性，让Volatile经常被解读为一个为多线程而生的关键词：一个全局变量，会被多线程同时访问/修改，那么线程内部，就不能假设此变量的不变性，并且基于此假设，来做一些程序设计。当然，这样的假设，本身并没有什么问题，多线程编程，并发访问/修改的全局变量，通常都会建议加上Volatile关键词修饰，来防止C/C++编译器进行不必要的优化。但是，很多时候，C/C++ Volatile关键词，在多线程环境下，会被赋予更多的功能，从而导致问题的出现。
 \item 回到本文背景部分我的那篇微博，我的这位朋友，正好犯了一个这样的问题。其对C/C++ Volatile关键词的使用，可以抽象为下面的伪代码：
@@ -2076,14 +2219,14 @@ volatile: (The stopped variable is declared) volatile because it is accessed fro
 \item 同样，为了说明C/C++ Volatile关键词的”顺序性”特征，下面给出三个简单的用例 (注：与上面的测试用例不同，下面的三个用例，基于的是Linux系统，使用的是”GCC: (Debian 4.3.2-1.1) 4.3.2″)：
 \end{itemize}
 \subsubsection{测试用例五：非Volatile变量}
-\label{sec-8-3-1}
+\label{sec-9-3-1}
 \includegraphics[width=.9\linewidth]{../pic/v6.jpg}
 \begin{itemize}
 \item 一个简单的示例，全局变量A，B均为非volatile变量。通过gcc O2优化进行编译，你可以惊奇的发现，A，B两个变量的赋值顺序被调换了！！！在对应的汇编代码中，B = 0语句先被执行，然后才是A = B + 1语句被执行。
 \item 在这里，我先简单的介绍一下C/C++编译器最基本优化原理：保证一段程序的输出，在优化前后无变化。将此原理应用到上面，可以发现，虽然gcc优化了A，B变量的赋值顺序，但是foo()函数的执行结果，优化前后没有发生任何变化，仍旧是A = 1；B = 0。因此这么做是可行的。
 \end{itemize}
 \subsubsection{测试用例六：一个Volatile变量}
-\label{sec-8-3-2}
+\label{sec-9-3-2}
 \includegraphics[width=.9\linewidth]{../pic/v7.jpg}
 \begin{itemize}
 \item 此测试，相对于测试用例五，最大的区别在于，变量B被声明为volatile变量。通过查看对应的汇编代码，B仍旧被提前到A之前赋值，Volatile变量B，并未阻止编译器优化的发生，编译后仍旧发生了乱序现象。
@@ -2091,14 +2234,14 @@ volatile: (The stopped variable is declared) volatile because it is accessed fro
 \item 通过此用例，已经能够很好的说明，本章节前面，通过flag == true，来假设something一定完成是不成立的。在多线程下，如此使用volatile，会产生很严重的问题。但是，这不是终点，请继续看下面的测试用例七。
 \end{itemize}
 \subsubsection{测试用例七：两个Volatile变量}
-\label{sec-8-3-3}
+\label{sec-9-3-3}
 \includegraphics[width=.9\linewidth]{../pic/v8.jpg}
 \begin{itemize}
 \item 同时将A，B两个变量都声明为volatile变量，再来看看对应的汇编。奇迹发生了，A，B赋值乱序的现象消失。此时的汇编代码，与用户代码顺序高度一直，先赋值变量A，然后赋值变量B。
 \item 如此看来，C/C++ Volatile变量间的操作，是不会被编译器交换顺序的。
 \end{itemize}
 \subsubsection{happens-before}
-\label{sec-8-3-4}
+\label{sec-9-3-4}
 \begin{itemize}
 \item 通过测试用例六，可以总结出：C/C++ Volatile变量与非Volatile变量间的操作顺序，有可能被编译器交换。因此，上面多线程操作的伪代码，在实际运行的过程中，就有可能变成下面的顺序：
 
@@ -2119,12 +2262,12 @@ volatile: (The stopped variable is declared) volatile because it is accessed fro
 \item 如图所示，所谓的happens-before语义，就是保证Thread1代码块中的所有代码，一定在Thread2代码块的第一条代码之前完成。当然，构建这样的语义有很多方法，我们常用的Mutex、Spinlock、RWLock，都能保证这个语义 (关于happens-before语义的构建，以及为什么锁能保证happens-before语义，以后专门写一篇文章进行讨论)。但是，C/C++ Volatile关键词不能保证这个语义，也就意味着C/C++ Volatile关键词，在多线程环境下，如果使用的不够细心，就会产生如同我这里提到的错误。
 \end{itemize}
 \subsubsection{小结}
-\label{sec-8-3-5}
+\label{sec-9-3-5}
 \begin{itemize}
 \item C/C++ Volatile关键词的第三个特性：”顺序性”，能够保证Volatile变量间的顺序性，编译器不会进行乱序优化。Volatile变量与非Volatile变量的顺序，编译器不保证顺序，可能会进行乱序优化。同时，C/C++ Volatile关键词，并不能用于构建happens-before语义，因此在进行多线程程序设计时，要小心使用volatile，不要掉入volatile变量的使用陷阱之中。
 \end{itemize}
 \subsection{Volatile：Java增强}
-\label{sec-8-4}
+\label{sec-9-4}
 \begin{itemize}
 \item 在介绍了C/C++ Volatile关键词之后，再简单介绍一下Java的Volatile。与C/C++的Volatile关键词类似，Java的Volatile也有这三个特性，但最大的不同在于：第三个特性，”顺序性”，Java的Volatile有很极大的增强，Java Volatile变量的操作，附带了Acquire与Release语义。所谓的Acquire与Release语义，可参考文章：Acquire and Release Semantics。(这一点，后续有必要的话，可以写一篇文章专门讨论)。Java Volatile所支持的Acquire、Release语义，如下：
 \item 对于Java Volatile变量的写操作，带有Release语义，所有Volatile变量写操作之前的针对其他任何变量的读写操作，都不会被编译器、CPU优化后，乱序到Volatile变量的写操作之后执行。
@@ -2135,7 +2278,7 @@ volatile: (The stopped variable is declared) volatile because it is accessed fro
 \includegraphics[width=.9\linewidth]{../pic/v12.jpg}
 \end{itemize}
 \subsection{Volatile的起源}
-\label{sec-8-5}
+\label{sec-9-5}
 \begin{itemize}
 \item C/C++的Volatile关键词，有三个特性：易变性；不可优化性；顺序性。那么，为什么Volatile被设计成这样呢？要回答这个问题，就需要从Volatile关键词的产生说起。(注：这一小节的内容，参考自C++ and the Perils of Double-Checked Locking论文的第10章节：volatile：A Brief History。这是一篇顶顶好的论文，值得多次阅读，强烈推荐！)
 \item Volatile关键词，最早出现于19世纪70年代，被用于处理memory-mapeed I/O (MMIO)带来的问题。在引入MMIO之后，一块内存地址，既有可能是真正的内存，也有可能被映射到一个I/O端口。相对的，读写一个内存地址，既有可能操作内存，也有可能读写的是一个I/O设备。MMIO为什么需要引入Volatile关键词？考虑如下的一个代码片段：
@@ -2149,11 +2292,11 @@ volatile: (The stopped variable is declared) volatile because it is accessed fro
 \end{itemize}
 
 \section{QT中实现Thread与GUI主线程连通方法}
-\label{sec-9}
+\label{sec-10}
 \url{http://mobile.51cto.com/symbian-270684.htm}
 
 \section{Other Reference}
-\label{sec-10}
+\label{sec-11}
 \begin{itemize}
 \item 了解 Qt 多线程编程 新手必学(1)
 \end{itemize}
